@@ -490,7 +490,126 @@
   @keyframes shake { 0%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}100%{transform:translateX(0)} }
   @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
-  /* ── QUIT MODAL ── */
+  /* ── STREAK DISPLAY ── */
+  .streak-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    position: relative;
+  }
+  .streak-display strong {
+    color: var(--text);
+    font-size: 17px;
+    transition: transform 0.15s, color 0.15s;
+  }
+  .streak-display.bump strong {
+    transform: scale(1.4);
+    color: var(--accent);
+  }
+  .streak-fire {
+    font-size: 18px;
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+
+  /* Multiplier badge — floats next to streak */
+  .multiplier-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--accent);
+    color: #fff;
+    letter-spacing: 0.3px;
+    transition: background 0.3s, transform 0.2s;
+    display: none;
+  }
+  .multiplier-badge.active { display: inline-block; }
+  .multiplier-badge.x2 { background: #2a7a9a; }
+  .multiplier-badge.x3 { background: #b06a10; }
+  .multiplier-badge.x4 { background: #8a2a7a; }
+  .multiplier-badge.x5 { background: #c0392b; }
+
+  /* ── STREAK MILESTONE BURST ── */
+  .streak-burst {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 300;
+    text-align: center;
+    pointer-events: none;
+    animation: burstPop 0.7s ease forwards;
+  }
+  .streak-burst.visible { display: block; }
+  .streak-burst-emoji { font-size: 56px; display: block; margin-bottom: 8px; }
+  .streak-burst-text {
+    font-family: 'Lora', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    white-space: nowrap;
+  }
+  .streak-burst-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .burst-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 299;
+    pointer-events: none;
+    display: none;
+    animation: bgFlash 0.7s ease forwards;
+  }
+  .burst-bg.visible { display: block; }
+
+  @keyframes burstPop {
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(0.5); }
+    40%  { opacity:1; transform:translate(-50%,-50%) scale(1.08); }
+    70%  { transform:translate(-50%,-50%) scale(0.97); }
+    100% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
+  @keyframes bgFlash {
+    0%   { opacity:0.35; }
+    100% { opacity:0; }
+  }
+
+  /* ── CONFETTI PARTICLES ── */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 298;
+    overflow: hidden;
+    display: none;
+  }
+  .confetti-container.visible { display: block; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Streak broken message */
+  .streak-broken {
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+  }
   .modal-overlay {
     display: none;
     position: fixed;
@@ -676,6 +795,12 @@
   <header class="game-header">
     <div class="game-logo"><span class="brand-u">Unacademy</span><span class="brand-x">X</span> &nbsp;·&nbsp; Chronology</div>
     <div class="game-stats">
+      <div class="streak-display" id="streak-display">
+        <span class="streak-fire" id="streak-fire">🔥</span>
+        <span id="streak-label">Streak</span>
+        <strong id="streak-count">0</strong>
+        <span class="multiplier-badge" id="multiplier-badge">1x</span>
+      </div>
       <div class="score-display">Score <strong id="score-display">0</strong></div>
       <div class="lives" id="lives-display"></div>
       <button onclick="quitGame()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);font-family:'Source Sans 3',sans-serif;padding:6px 10px;border-radius:8px;transition:color 0.15s,background 0.15s;" onmouseover="this.style.color='var(--text)';this.style.background='var(--border)';" onmouseout="this.style.color='var(--muted)';this.style.background='none';">✕ Quit</button>
@@ -730,6 +855,15 @@
     </div>
   </div>
 </div>
+
+<!-- STREAK BURST OVERLAY -->
+<div class="burst-bg" id="burst-bg"></div>
+<div class="streak-burst" id="streak-burst">
+  <span class="streak-burst-emoji" id="burst-emoji"></span>
+  <div class="streak-burst-text" id="burst-text"></div>
+  <div class="streak-burst-sub" id="burst-sub"></div>
+</div>
+<div class="confetti-container" id="confetti-container"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -1085,6 +1219,7 @@ function getJoke(score) {
 // ═══════════════════════════════════════════════════════════
 let deck=[], timeline=[], currentCard=null;
 let lives=3, score=0, locked=false, gameEnded=false;
+let streak=0, maxStreak=0;
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -1197,11 +1332,13 @@ function showScreen(id){
 //  START GAME
 // ═══════════════════════════════════════════════════════════
 function startGame() {
+  initAudio(); // unlock + load audio on first real user gesture
   const s=shuffle(EVENTS);
   timeline=[{ev:s[0],wrong:false}];
   currentCard=s[1];
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
+  streak=0; maxStreak=0;
   document.getElementById('end-game-bar').classList.remove('visible');
   clearQuip();
   showScreen('game');
@@ -1221,6 +1358,98 @@ function renderLives(){
   }
 }
 function renderScore(){ document.getElementById('score-display').textContent=score; }
+
+// ── Streak & Multiplier ──
+function getMultiplier(s){
+  if(s>=10) return 5;
+  if(s>=8)  return 4;
+  if(s>=5)  return 3;
+  if(s>=3)  return 2;
+  return 1;
+}
+
+function getFireEmoji(s){
+  if(s>=10) return '🔥🔥🔥';
+  if(s>=5)  return '🔥🔥';
+  if(s>=3)  return '🔥';
+  return '🔥';
+}
+
+function renderStreak(){
+  const el   = document.getElementById('streak-count');
+  const fire = document.getElementById('streak-fire');
+  const badge= document.getElementById('multiplier-badge');
+  const disp = document.getElementById('streak-display');
+
+  el.textContent   = streak;
+  fire.textContent = streak>=3 ? getFireEmoji(streak) : '🔥';
+
+  const mult = getMultiplier(streak);
+  if(mult > 1){
+    badge.textContent = mult+'x';
+    badge.className   = 'multiplier-badge active x'+mult;
+  } else {
+    badge.className = 'multiplier-badge';
+  }
+
+  // Bump animation
+  disp.classList.remove('bump');
+  void disp.offsetWidth; // reflow
+  if(streak > 0) disp.classList.add('bump');
+  setTimeout(()=>disp.classList.remove('bump'), 300);
+}
+
+// Milestone celebrations
+const MILESTONES = {
+  3:  { emoji:'🔥', text:'On Fire!',      sub:'3 in a row. Keep going!',        bg:'rgba(180,80,0,0.7)',   confetti:false },
+  5:  { emoji:'⚡', text:'Unstoppable!',  sub:'5 streak. 3x multiplier active!', bg:'rgba(40,100,160,0.7)', confetti:true  },
+  10: { emoji:'💥', text:'LEGENDARY!',    sub:'10 streak. Max 5x multiplier!',   bg:'rgba(150,20,100,0.75)',confetti:true  },
+};
+
+function triggerMilestoneBurst(s){
+  const m = MILESTONES[s];
+  if(!m) return;
+
+  const bg    = document.getElementById('burst-bg');
+  const burst = document.getElementById('streak-burst');
+  document.getElementById('burst-emoji').textContent = m.emoji;
+  document.getElementById('burst-text').textContent  = m.text;
+  document.getElementById('burst-sub').textContent   = m.sub;
+  bg.style.background = m.bg;
+
+  // Show
+  bg.classList.add('visible');
+  burst.classList.add('visible');
+
+  if(m.confetti) launchConfetti();
+
+  // Hide after 1.8s
+  setTimeout(()=>{
+    bg.classList.remove('visible');
+    burst.classList.remove('visible');
+  }, 1800);
+}
+
+function launchConfetti(){
+  const container = document.getElementById('confetti-container');
+  container.innerHTML = '';
+  container.classList.add('visible');
+  const colors = ['#08bd80','#f39c12','#e74c3c','#3498db','#9b59b6','#1abc9c','#e67e22'];
+  for(let i=0; i<60; i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left     = Math.random()*100 + 'vw';
+    piece.style.top      = '-10px';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.width    = (8+Math.random()*8) + 'px';
+    piece.style.height   = (8+Math.random()*8) + 'px';
+    piece.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+    piece.style.animationDuration  = (1.2+Math.random()*1.4) + 's';
+    piece.style.animationDelay     = (Math.random()*0.5) + 's';
+    container.appendChild(piece);
+  }
+  setTimeout(()=>{ container.classList.remove('visible'); container.innerHTML=''; }, 2500);
+}
 
 function renderCurrentCard(){
   const c=document.getElementById('current-card-container');
@@ -1330,7 +1559,7 @@ function renderTimeline(flashIdx=null, flashClass=''){
 }
 
 function renderAll(){
-  renderLives(); renderScore(); renderCurrentCard(); renderTimeline();
+  renderLives(); renderScore(); renderStreak(); renderCurrentCard(); renderTimeline();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1354,41 +1583,63 @@ function scrollToCard(idx){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SOUND - real audio files from sounds/ folder
+//  SOUND - AudioContext with fetch decode (reliable on GitHub Pages)
 // ═══════════════════════════════════════════════════════════
+let _ac = null;
+const _sfxBuffers = { correct: null, wrong: [] };
+let _audioReady = false;
 
-// Pre-load all audio objects once so they play instantly on demand
-const SFX = {
-  correct: new Audio('sounds/correct.mp3'),
-  wrong: [
-    new Audio('sounds/wrong1.mp3'),
-    new Audio('sounds/wrong2.mp3'),
-    new Audio('sounds/wrong3.mp3'),
-    new Audio('sounds/wrong4.mp3'),
-    new Audio('sounds/wrong5.mp3'),
-    new Audio('sounds/wrong6.mp3'),
-  ]
-};
+function getAC(){
+  if(!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
+  return _ac;
+}
 
-// Set volume levels
-SFX.correct.volume = 0.7;
-SFX.wrong.forEach(a => a.volume = 0.7);
-
-function playCorrectSound(){
+// Load a single file into a buffer
+async function loadSound(url){
   try {
-    SFX.correct.currentTime = 0;
-    SFX.correct.play().catch(()=>{});
+    const res = await fetch(url);
+    if(!res.ok){ console.warn('Chronology audio: could not load', url, res.status); return null; }
+    const arr = await res.arrayBuffer();
+    const buf = await getAC().decodeAudioData(arr);
+    return buf;
+  } catch(e){ console.warn('Chronology audio: error loading', url, e); return null; }
+}
+
+// Load all sounds — called once on first user interaction
+async function initAudio(){
+  if(_audioReady) return;
+  _audioReady = true;
+  // Resume context (required on mobile)
+  getAC().resume();
+  _sfxBuffers.correct = await loadSound('sounds/correct.mp3');
+  const wrongLoads = await Promise.all([1,2,3,4,5,6].map(n => loadSound(`sounds/wrong${n}.mp3`)));
+  _sfxBuffers.wrong = wrongLoads.filter(b => b !== null);
+  console.log(`Chronology audio ready. Correct: ${!!_sfxBuffers.correct}, Wrong variants: ${_sfxBuffers.wrong.length}`);
+}
+
+// Play a loaded buffer
+function playBuffer(buffer){
+  if(!buffer) return;
+  try {
+    const ac = getAC();
+    const src = ac.createBufferSource();
+    const gain = ac.createGain();
+    src.buffer = buffer;
+    gain.gain.value = 0.7;
+    src.connect(gain);
+    gain.connect(ac.destination);
+    src.start(0);
   } catch(e){}
 }
 
+function playCorrectSound(){
+  playBuffer(_sfxBuffers.correct);
+}
+
 function playWrongSound(){
-  try {
-    // Pick a random wrong sound each time
-    const idx = Math.floor(Math.random() * SFX.wrong.length);
-    const audio = SFX.wrong[idx];
-    audio.currentTime = 0;
-    audio.play().catch(()=>{});
-  } catch(e){}
+  if(!_sfxBuffers.wrong.length) return;
+  const idx = Math.floor(Math.random() * _sfxBuffers.wrong.length);
+  playBuffer(_sfxBuffers.wrong[idx]);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1453,29 +1704,45 @@ function handleDrop(dropIdx){
   currentCard=null; // clear immediately, card container already wiped by pointerup
 
   if(correct){
-    score++; renderScore();
+    streak++;
+    if(streak > maxStreak) maxStreak = streak;
+    const mult   = getMultiplier(streak);
+    const points = mult;
+    score += points;
+    renderScore();
+    renderStreak();
     playCorrectSound();
-    haptic([40]);                           // single short buzz
+    haptic([40]);
     timeline.push({ev:placed,wrong:false});
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
     renderTimeline(pi,'just-correct');
-    showToast('✓ ' + fy(placed.year), 'correct');
+    const pointsMsg = mult>1 ? ` +${points} (${mult}x)` : ` +${points}`;
+    showToast('✓ ' + fy(placed.year) + pointsMsg, 'correct');
     showQuip(getRandFrom(CORRECT_QUIPS), fy(placed.year), 'correct');
     scrollToCard(pi);
+    // Trigger milestone celebration after a short delay so toast is visible first
+    if(MILESTONES[streak]) setTimeout(()=>triggerMilestoneBurst(streak), 400);
     setTimeout(()=>{renderTimeline(); nextCard();},900);
 
   } else {
-    lives--; renderLives();
+    const hadStreak = streak;
+    streak = 0;
+    lives--;
+    renderLives();
+    renderStreak();
     playWrongSound();
-    haptic([60, 40, 60]);                   // double buzz pattern
+    haptic([60, 40, 60]);
     timeline.push({ev:placed,wrong:true});
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
     renderTimeline(pi,'wrong-flash');
     const livesMsg = lives>0 ? lives+' life'+(lives===1?'':'s')+' left' : 'Game over!';
     showToast('✗ ' + fy(placed.year) + ': ' + livesMsg, 'wrong');
-    showQuip(getRandFrom(WRONG_QUIPS), fy(placed.year), 'wrong');
+    // Add streak-broken note to quip if streak was going
+    const wrongQuip = getRandFrom(WRONG_QUIPS);
+    const streakNote = hadStreak>=3 ? `<br><span class="streak-broken">💔 ${hadStreak}-streak broken. Back to 1x.</span>` : '';
+    showQuip(wrongQuip + streakNote, fy(placed.year), 'wrong');
     scrollToCard(pi);
     setTimeout(()=>{
       if(lives<=0){ triggerGameOver(); }
@@ -1516,18 +1783,21 @@ function prepareGameOverScreen(){
     {e:'🌟', m:'Good Effort! You know your history.'},
     {e:'🏆', m:'Outstanding! IAS material confirmed.'},
   ];
-  const t=score>=16?3:score>=9?2:score>=4?1:0;
+  // Tier based on score (now points-based, so thresholds are higher)
+  const t=score>=40?3:score>=20?2:score>=8?1:0;
   document.getElementById('go-emoji').textContent=tiers[t].e;
   document.getElementById('go-title').textContent=tiers[t].m;
   document.getElementById('go-sub').innerHTML=
-    `You correctly placed <strong>${score}</strong> event${score!==1?'s':''} on the <strong>UnacademyX</strong> timeline.`;
+    `You scored <strong>${score} points</strong> on the <strong>UnacademyX</strong> Chronology timeline.`;
   document.getElementById('go-joke').innerHTML='💬 &nbsp;' + getJoke(score);
+  const correct=timeline.filter(i=>!i.wrong).length - 1; // subtract the seed card
   const wrong=timeline.filter(i=>i.wrong).length;
   const ll=Math.max(0,lives);
   document.getElementById('go-stats').innerHTML=`
-    <div>✅ Correct placements &nbsp;·&nbsp; <strong>${score}</strong></div>
+    <div>🏆 Total score &nbsp;·&nbsp; <strong>${score} pts</strong></div>
+    <div>✅ Correct placements &nbsp;·&nbsp; <strong>${correct}</strong></div>
     <div>❌ Wrong placements &nbsp;·&nbsp; <strong>${wrong}</strong></div>
-    <div>📋 Events on timeline &nbsp;·&nbsp; <strong>${timeline.length}</strong></div>
+    <div>🔥 Best streak &nbsp;·&nbsp; <strong>${maxStreak}</strong></div>
     <div>♥ Lives remaining &nbsp;·&nbsp; <strong>${'♥'.repeat(ll)}${'♡'.repeat(3-ll)}</strong></div>
     ${wrong>0?`<div style="margin-top:8px;font-size:12px;color:var(--accent);font-weight:600;">💡 Fix those ${wrong} wrong answer${wrong===1?'':'s'} with Unacademy Prime →</div>`:''}
   `;
