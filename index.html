@@ -1354,49 +1354,40 @@ function scrollToCard(idx){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SOUND - Web Audio API (no external files)
+//  SOUND - real audio files from sounds/ folder
 // ═══════════════════════════════════════════════════════════
-let audioCtx = null;
-function getAudioCtx(){
-  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
+
+// Pre-load all audio objects once so they play instantly on demand
+const SFX = {
+  correct: new Audio('sounds/correct.mp3'),
+  wrong: [
+    new Audio('sounds/wrong1.mp3'),
+    new Audio('sounds/wrong2.mp3'),
+    new Audio('sounds/wrong3.mp3'),
+    new Audio('sounds/wrong4.mp3'),
+    new Audio('sounds/wrong5.mp3'),
+    new Audio('sounds/wrong6.mp3'),
+  ]
+};
+
+// Set volume levels
+SFX.correct.volume = 0.7;
+SFX.wrong.forEach(a => a.volume = 0.7);
 
 function playCorrectSound(){
   try {
-    const ctx = getAudioCtx();
-    // Soft two-tone chime: C5 then E5
-    [[523.25, 0, 0.12], [659.25, 0.13, 0.18]].forEach(([freq, startOffset, dur])=>{
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      const t = ctx.currentTime + startOffset;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      osc.start(t); osc.stop(t + dur + 0.05);
-    });
+    SFX.correct.currentTime = 0;
+    SFX.correct.play().catch(()=>{});
   } catch(e){}
 }
 
 function playWrongSound(){
   try {
-    const ctx = getAudioCtx();
-    // Short low buzz: descending tone
-    [[220, 0, 0.08],[180, 0.07, 0.12]].forEach(([freq, startOffset, dur])=>{
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq;
-      const t = ctx.currentTime + startOffset;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.12, t + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      osc.start(t); osc.stop(t + dur + 0.05);
-    });
+    // Pick a random wrong sound each time
+    const idx = Math.floor(Math.random() * SFX.wrong.length);
+    const audio = SFX.wrong[idx];
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
   } catch(e){}
 }
 
