@@ -1630,24 +1630,6 @@ function buildCategoryBreakdown(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  CARD INFO — loaded from data/cards.json on GitHub
-//  Falls back gracefully if file is unavailable (offline etc.)
-// ═══════════════════════════════════════════════════════════
-(async function loadCardInfo(){
-  try {
-    const res = await fetch('data/cards.json');
-    if(!res.ok) return;
-    const info = await res.json();
-    // Merge info into EVENTS by card ID
-    EVENTS.forEach(ev => {
-      if(info[ev.id]) ev.info = info[ev.id];
-    });
-  } catch(e){
-    // Silently fail — game works fine without info
-  }
-})();
-
-// ═══════════════════════════════════════════════════════════
 //  CATEGORY CONFIG
 // ═══════════════════════════════════════════════════════════
 const CAT = {
@@ -1956,6 +1938,21 @@ const EVENTS = [
   { id:226, label:"National Food Security Act",                sublabel:"right to subsidised food",        year:2013,  cat:"Constitutional" },
 ];
 
+
+// ═══════════════════════════════════════════════════════════
+//  CARD INFO — loaded from data/cards.json
+//  Placed here so EVENTS is already defined when fetch resolves
+// ═══════════════════════════════════════════════════════════
+(async function loadCardInfo(){
+  try {
+    const res = await fetch('data/cards.json');
+    if(!res.ok) return;
+    const info = await res.json();
+    EVENTS.forEach(ev => {
+      if(info[ev.id]) ev.info = info[ev.id];
+    });
+  } catch(e){}
+})();
 
 // ═══════════════════════════════════════════════════════════
 //  COLLECTION RENDER - needs EVENTS and CAT
