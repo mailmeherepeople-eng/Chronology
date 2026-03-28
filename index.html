@@ -26,16 +26,21 @@
     --radius: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  html, body { height: 100%; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); }
   h1,h2,h3 { font-family: 'Lora', serif; }
+  /* Screens: inactive are hidden, active fills viewport */
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: flex; }
+  #screen-start, #screen-tutorial, #screen-gameover { overflow-y: auto; }
+  #screen-game { overflow: hidden; height: 100vh; }
 
   /* ── START ── */
   #screen-start { align-items:center; justify-content:center; flex-direction:column; padding:48px 24px; text-align:center; position:relative; }
   .start-eyebrow { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
-  .start-title { font-size:clamp(36px,6vw,56px); font-weight:700; color:var(--text); letter-spacing:-1px; line-height:1.1; margin-bottom:16px; }
-  .start-title span { color:var(--accent); }
+  .start-title { font-size:clamp(36px,6vw,56px); font-weight:700; color:var(--text); letter-spacing:-1px; line-height:1.1; margin-bottom:16px; font-family:'Lora',serif; }
+  .start-title .ch { color: #08bd80; }
+  .start-title .rest { color: #1380D0; }
   .start-desc { font-size:16px; color:var(--muted); max-width:440px; line-height:1.75; margin-bottom:36px; }
   .category-pills {
     display: flex;
@@ -61,11 +66,76 @@
     letter-spacing: 0.1px;
     line-height: 1;
   }
-  .btn-primary { background:var(--accent); color:#fff; border:none; border-radius:var(--radius); padding:14px 40px; font-size:15px; font-weight:600; font-family:'Source Sans 3',sans-serif; cursor:pointer; letter-spacing:0.3px; transition:background 0.15s,transform 0.1s; }
-  .btn-primary:hover { background:var(--accent-dark); transform:translateY(-1px); }
-  .btn-primary:active { transform:translateY(0); }
-  .btn-secondary { background:transparent; color:var(--muted); border:1.5px solid var(--border); border-radius:var(--radius); padding:12px 36px; font-size:14px; font-weight:600; font-family:'Source Sans 3',sans-serif; cursor:pointer; transition:border-color 0.15s,color 0.15s; }
-  .btn-secondary:hover { border-color:var(--muted); color:var(--text); }
+  /* How to Play — Unacademy blue */
+  .btn-primary {
+    background: #1380D0;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
+    box-shadow: 0 4px 14px rgba(19,128,208,0.35), 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .btn-primary:hover {
+    background: #0f6db5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(19,128,208,0.4), 0 2px 6px rgba(0,0,0,0.14);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(19,128,208,0.25);
+  }
+
+  /* Start Game — Unacademy green */
+  .btn-start {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
+    box-shadow: 0 4px 14px rgba(8,189,128,0.35), 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .btn-start:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(8,189,128,0.4), 0 2px 6px rgba(0,0,0,0.14);
+  }
+  .btn-start:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(8,189,128,0.25);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 36px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, box-shadow 0.12s, transform 0.12s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .btn-secondary:hover {
+    border-color: var(--muted);
+    color: var(--text);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .btn-secondary:active { transform: translateY(0); }
   .start-note { margin-top:16px; font-size:12px; color:#bbb; }
 
   /* ── BACK BUTTON - small, top-left of any screen ── */
@@ -73,7 +143,7 @@
     position:absolute; top:18px; left:20px;
     background:none; border:none; cursor:pointer;
     font-size:13px; font-weight:600; color:var(--muted);
-    font-family:'Source Sans 3',sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     display:flex; align-items:center; gap:5px;
     padding:6px 10px; border-radius:8px;
     transition:color 0.15s, background 0.15s;
@@ -83,7 +153,7 @@
   /* ── GAME ── */
   #screen-game { flex-direction:column; align-items:stretch; }
   .game-header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:20; }
-  .game-logo { font-family:'Lora',serif; font-size:17px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
+  .game-logo { font-family: 'Source Sans 3', sans-serif; font-size:17px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
   .game-logo .brand-u { color:var(--accent); }
   .game-logo .brand-x { color:var(--text); font-style:italic; }
   .game-stats { display:flex; align-items:center; gap:24px; }
@@ -101,10 +171,8 @@
   /* Always reserves the card's full height so nothing shifts when the card
      is cleared between placements. The card itself sits inside this fixed box. */
   #current-card-container {
-    width: 210px;
-    /* emoji banner (80px) + body padding (24px) + label ~3 lines (~52px) + sublabel (~16px) = ~172px
-       Add a little extra to be safe. This must never collapse. */
-    min-height: 180px;
+    width: var(--tl-card-w);
+    min-height: var(--tl-card-h);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -116,14 +184,15 @@
     cursor:grab; user-select:none; box-shadow:var(--shadow-sm);
     transition:box-shadow 0.15s, transform 0.15s, border-color 0.1s;
     position:relative; overflow:hidden;
-    width:210px;
-    animation:slideUp 0.3s ease;
+    /* Match timeline card exactly so there's no visual jump on placement */
+    width: var(--tl-card-w);
+    height: var(--tl-card-h);
     display:flex; flex-direction:column;
-    /* Prevents browser scroll-then-drag delay on touch */
+    flex-shrink:0;
+    animation:slideUp 0.3s ease;
     touch-action: none;
   }
   .event-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
-  /* Instant visual on press - shows user the card is ready to drag */
   .event-card.pressing {
     transform: scale(0.97);
     box-shadow: var(--shadow-md);
@@ -132,20 +201,20 @@
   }
   .event-card.dragging { box-shadow:var(--shadow-lg); transform:rotate(2deg) scale(1.04); cursor:grabbing; opacity:0.9; }
 
-  /* Emoji banner at top of draggable card */
+  /* Emoji banner — same height as timeline emoji band */
   .card-emoji-banner {
-    width:100%; height:80px;
+    width:100%; height: var(--tl-emoji-h);
     display:flex; align-items:center; justify-content:center;
-    font-size:38px;
+    font-size:28px;
     flex-shrink:0;
     border-bottom:1px solid var(--border);
   }
 
-  .card-body { padding:12px 14px; }
+  .card-body { padding:8px 10px; flex:1; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; }
   .card-stripe { position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
-  .card-category { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; margin-top:1px; }
-  .card-label { font-family:'Lora',serif; font-size:13px; font-weight:600; color:var(--text); line-height:1.4; margin-bottom:3px; }
-  .card-sublabel { font-size:11px; color:var(--muted); font-style:italic; }
+  .card-category { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; margin-top:1px; }
+  .card-label { font-family: 'Lora', serif; font-size:12px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:2px; }
+  .card-sublabel { font-size:10px; color:var(--muted); font-style:italic; }
 
   /* ── TIMELINE ── */
   /*
@@ -391,7 +460,7 @@
     background: var(--bg); position:relative;
   }
   .tut-eyebrow { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
-  .tut-title { font-family:'Lora',serif; font-size:28px; font-weight:700; color:var(--text); margin-bottom:32px; }
+  .tut-title { font-family: 'Source Sans 3', sans-serif; font-size:28px; font-weight:700; color:var(--text); margin-bottom:32px; }
 
   /* Step indicator dots */
   .tut-dots { display:flex; gap:8px; justify-content:center; margin-bottom:32px; }
@@ -404,7 +473,7 @@
   .tut-step.active { display:flex; animation:slideUp 0.35s ease; }
 
   .tut-step-num { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
-  .tut-step-heading { font-family:'Lora',serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; }
+  .tut-step-heading { font-family: 'Source Sans 3', sans-serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; }
   .tut-step-body { font-size:14px; color:var(--muted); line-height:1.75; max-width:380px; margin-bottom:28px; }
   .tut-step-body strong { color:var(--text); }
 
@@ -424,9 +493,9 @@
   }
   .demo-card .dc-stripe { position:absolute;top:0;left:0;right:0;height:3px;border-radius:8px 8px 0 0; }
   .demo-card .dc-emoji { font-size:22px; margin-bottom:4px; display:block; }
-  .demo-card .dc-label { font-family:'Lora',serif; font-size:11px; font-weight:600; color:var(--text); line-height:1.3; }
+  .demo-card .dc-label { font-family: 'Source Sans 3', sans-serif; font-size:11px; font-weight:600; color:var(--text); line-height:1.3; }
   .demo-card .dc-sub { font-size:9px; color:var(--muted); font-style:italic; margin-top:2px; }
-  .demo-card .dc-year { font-size:12px; font-weight:700; font-family:'Lora',serif; color:var(--text); border-top:1px solid #eee; padding-top:5px; margin-top:6px; }
+  .demo-card .dc-year { font-size:12px; font-weight:700; font-family: 'Source Sans 3', sans-serif; color:var(--text); border-top:1px solid #eee; padding-top:5px; margin-top:6px; }
 
   /* Mini timeline in demo */
   .demo-timeline {
@@ -443,8 +512,8 @@
     padding:6px 8px; width:100px; position:relative; overflow:hidden;
   }
   .demo-tl-card .dc-stripe { position:absolute;top:0;left:0;right:0;height:2px;border-radius:6px 6px 0 0; }
-  .demo-tl-card .dc-label { font-family:'Lora',serif; font-size:9px; font-weight:600; color:var(--text); line-height:1.3; }
-  .demo-tl-card .dc-year { font-size:10px; font-weight:700; font-family:'Lora',serif; color:var(--text); border-top:1px solid #eee; padding-top:3px; margin-top:4px; }
+  .demo-tl-card .dc-label { font-family: 'Source Sans 3', sans-serif; font-size:9px; font-weight:600; color:var(--text); line-height:1.3; }
+  .demo-tl-card .dc-year { font-size:10px; font-weight:700; font-family: 'Source Sans 3', sans-serif; color:var(--text); border-top:1px solid #eee; padding-top:3px; margin-top:4px; }
   .demo-drop-gap {
     width:44px; height:90px; display:flex; align-items:center; justify-content:center;
     flex-shrink:0; z-index:1;
@@ -569,7 +638,7 @@
     animation: flameLabelPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
   .flame-label-text {
-    font-family: 'Lora', serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: clamp(32px, 7vw, 52px);
     font-weight: 700;
     color: #fff;
@@ -597,6 +666,101 @@
     color: rgba(255,255,255,0.9);
     font-weight: 600;
   }
+  /* ── SHARE CARD ── */
+  .share-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+  }
+  .share-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .share-card-score {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .share-card-score span {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .share-card-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .share-card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .share-sq {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+  }
+  .share-sq.correct { background: var(--accent); }
+  .share-sq.wrong   { background: var(--danger); }
+  .share-card-brand {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .share-card-brand strong { color: var(--accent); }
+  .share-feedback {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    height: 20px;
+    margin-top: -8px;
+    margin-bottom: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .share-feedback.show { opacity: 1; }
+
+  /* ── QUIT BUTTON ── */
+  .btn-quit {
+    background: transparent;
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.12s;
+    box-shadow: 0 2px 6px rgba(192,57,43,0.15);
+  }
+  .btn-quit:hover {
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(192,57,43,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-quit:active { transform: translateY(0); }
+
+  /* ── QUIT MODAL ── */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -621,7 +785,7 @@
     animation: slideUp 0.2s ease;
   }
   .modal-icon { font-size: 36px; margin-bottom: 12px; }
-  .modal-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .modal-title { font-family: 'Source Sans 3', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
   .modal-body { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 24px; }
   .modal-actions { display: flex; gap: 10px; justify-content: center; }
   .modal-actions .btn-primary { padding: 11px 28px; font-size: 14px; }
@@ -638,12 +802,12 @@
 <!-- START -->
 <div id="screen-start" class="screen active">
   <div class="start-eyebrow">by <span style="color:var(--accent);font-weight:700;">Unacademy</span><span style="font-style:italic;font-weight:700;">X</span> · UPSC History & Polity</div>
-  <h1 class="start-title"><span>Chronology</span></h1>
+  <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
   <p class="start-desc">Test your UPSC history knowledge by placing events in the correct chronological order. Three wrong placements and the game ends.</p>
   <div class="category-pills" id="category-pills"></div>
-  <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;">
-    <button class="btn-primary" onclick="showScreen('tutorial')">How to Play →</button>
-    <button class="btn-secondary" onclick="startGame()">Start Game</button>
+  <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
+    <button class="btn-primary" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
+    <button class="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
   </div>
   <p class="start-note">220+ curated events · 9 UPSC categories · 3 lives · Made with ❤️ by UnacademyX</p>
 </div>
@@ -773,7 +937,7 @@
 
   <div class="tut-nav" id="tut-nav">
     <button class="btn-secondary" id="tut-prev" onclick="tutNav(-1)" style="display:none;">← Back</button>
-    <button class="btn-primary" id="tut-next" onclick="tutNav(1)">Next →</button>
+    <button class="btn-primary" id="tut-next" onclick="tutNav(1)">Next</button>
   </div>
 </div>
 
@@ -793,7 +957,7 @@
       </div>
       <div class="score-display">Score <strong id="score-display">0</strong></div>
       <div class="lives" id="lives-display"></div>
-      <button onclick="quitGame()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);font-family:'Source Sans 3',sans-serif;padding:6px 10px;border-radius:8px;transition:color 0.15s,background 0.15s;" onmouseover="this.style.color='var(--text)';this.style.background='var(--border)';" onmouseout="this.style.color='var(--muted)';this.style.background='none';">✕ Quit</button>
+      <button class="btn-quit" onclick="quitGame()">✕ Quit</button>
     </div>
   </header>
   <!-- Quip banner: slides in above the card stage after each answer -->
@@ -815,7 +979,7 @@
   <!-- Shown after game ends, inside game screen -->
   <div class="end-game-bar" id="end-game-bar">
     <p>Game over! Scroll through your timeline, then check your <strong>UnacademyX</strong> score report.</p>
-    <button class="btn-primary" onclick="showScreen('gameover')">See My Score →</button>
+    <button class="btn-primary" onclick="showScreen('gameover')">See My Score</button>
   </div>
 </div>
 
@@ -826,10 +990,31 @@
   <h2 class="gameover-title" id="go-title"></h2>
   <p class="gameover-sub" id="go-sub"></p>
   <div class="gameover-joke" id="go-joke"></div>
+
+  <!-- Share card -->
+  <div class="share-card" id="share-card">
+    <div class="share-card-title">Your Result</div>
+    <div class="share-card-score" id="sc-score">0 <span>pts</span></div>
+    <div class="share-card-meta" id="sc-meta"></div>
+    <div class="share-card-grid" id="sc-grid"></div>
+    <div class="share-card-brand">Chronology &nbsp;·&nbsp; <strong>UnacademyX</strong></div>
+  </div>
+
+  <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
+
   <div class="gameover-stats" id="go-stats"></div>
-  <div class="btn-group">
-    <button class="btn-primary" onclick="startGame()">Play Again →</button>
-    <button class="btn-secondary" onclick="showScreen('start')">Back to Start</button>
+  <div id="iconic-cta" style="display:none;margin-bottom:16px;width:100%;max-width:320px;">
+    <a href="https://unacademy.com/goal/upsc-civil-services-examination-ias-preparation/KSCGY/subscriptions"
+       target="_blank" rel="noopener"
+       class="btn-primary"
+       style="display:block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;">
+      💡 Fix those wrong answers with Unacademy Iconic
+    </a>
+  </div>
+  <div class="btn-group" style="width:100%;max-width:320px;">
+    <button class="btn-primary" id="share-btn" style="width:100%;" onclick="shareScore()">🔗 Challenge a Friend</button>
+    <button class="btn-primary" style="width:100%;" onclick="startGame()">Play Again</button>
+    <button class="btn-secondary" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
 </div>
 
@@ -1262,10 +1447,10 @@ function tutNav(dir){
   document.getElementById('tut-prev').style.display = tutStep===0 ? 'none' : '';
   const nextBtn = document.getElementById('tut-next');
   if(tutStep===2){
-    nextBtn.textContent = 'Got it. Start Game →';
+    nextBtn.textContent = 'Got it. Start Game';
     nextBtn.onclick = ()=>{ tutStep=0; startGame(); };
   } else {
-    nextBtn.textContent = 'Next →';
+    nextBtn.textContent = 'Next';
     nextBtn.onclick = ()=>tutNav(1);
   }
 
@@ -1297,7 +1482,7 @@ function showScreen(id){
     document.querySelectorAll('.tut-step').forEach((s,i)=>s.classList.toggle('active',i===0));
     document.querySelectorAll('.tut-dot').forEach((d,i)=>d.classList.toggle('active',i===0));
     const nb=document.getElementById('tut-next');
-    if(nb){ nb.textContent='Next →'; nb.onclick=()=>tutNav(1); }
+    if(nb){ nb.textContent='Next'; nb.onclick=()=>tutNav(1); }
     const pb=document.getElementById('tut-prev');
     if(pb) pb.style.display='none';
   }
@@ -1445,13 +1630,17 @@ function renderCurrentCard(){
   const card=document.createElement('div');
   card.className='event-card';
   card.setAttribute('draggable','true');
+  // Mirror makeTlCard structure exactly — same layout, year row hidden
   card.innerHTML=`
     <div class="card-stripe" style="background:${col.text}"></div>
-    <div class="card-emoji-banner" style="background:${col.bg};">${col.emoji}</div>
-    <div class="card-body">
-      <div class="card-category" style="color:${col.text}">${currentCard.cat}</div>
-      <div class="card-label">${currentCard.label}</div>
-      <div class="card-sublabel">${currentCard.sublabel}</div>
+    <div class="tl-emoji" style="background:${col.bg};border-bottom-color:#e4e0d8;">${col.emoji}</div>
+    <div class="tl-body">
+      <div>
+        <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:${col.text};margin-bottom:3px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${currentCard.cat}</div>
+        <div style="font-family:'Lora',serif;font-size:11px;font-weight:600;line-height:1.35;color:#1c1a16;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin-bottom:2px;">${currentCard.label}</div>
+        <div style="font-size:9px;font-style:italic;color:#8a8478;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${currentCard.sublabel}</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;font-family:'Lora',serif;border-top:1px solid #e4e0d8;padding-top:5px;color:transparent;margin-top:5px;flex-shrink:0;user-select:none;">?</div>
     </div>
   `;
 
@@ -1769,24 +1958,79 @@ function prepareGameOverScreen(){
     {e:'🌟', m:'Good Effort! You know your history.'},
     {e:'🏆', m:'Outstanding! IAS material confirmed.'},
   ];
-  // Tier based on score (now points-based, so thresholds are higher)
   const t=score>=40?3:score>=20?2:score>=8?1:0;
   document.getElementById('go-emoji').textContent=tiers[t].e;
   document.getElementById('go-title').textContent=tiers[t].m;
   document.getElementById('go-sub').innerHTML=
     `You scored <strong>${score} points</strong> on the <strong>UnacademyX</strong> Chronology timeline.`;
   document.getElementById('go-joke').innerHTML='💬 &nbsp;' + getJoke(score);
-  const correct=timeline.filter(i=>!i.wrong).length - 1; // subtract the seed card
+  const correct=timeline.filter(i=>!i.wrong).length - 1;
   const wrong=timeline.filter(i=>i.wrong).length;
-  const ll=Math.max(0,lives);
   document.getElementById('go-stats').innerHTML=`
     <div>🏆 Total score &nbsp;·&nbsp; <strong>${score} pts</strong></div>
     <div>✅ Correct placements &nbsp;·&nbsp; <strong>${correct}</strong></div>
     <div>❌ Wrong placements &nbsp;·&nbsp; <strong>${wrong}</strong></div>
     <div>🔥 Best streak &nbsp;·&nbsp; <strong>${maxStreak}</strong></div>
-    <div>♥ Lives remaining &nbsp;·&nbsp; <strong>${'♥'.repeat(ll)}${'♡'.repeat(3-ll)}</strong></div>
-    ${wrong>0?`<div style="margin-top:8px;font-size:12px;color:var(--accent);font-weight:600;">💡 Fix those ${wrong} wrong answer${wrong===1?'':'s'} with Unacademy Prime →</div>`:''}
   `;
+
+  // Show Unacademy Iconic CTA only if player got answers wrong
+  document.getElementById('iconic-cta').style.display = wrong > 0 ? 'block' : 'none';
+
+  // Populate share card
+  document.getElementById('sc-score').innerHTML = `${score} <span>pts</span>`;
+  document.getElementById('sc-meta').textContent =
+    `🔥 Best streak: ${maxStreak}  ·  ✅ ${correct} correct  ·  ❌ ${wrong} wrong`;
+
+  // Build grid — sorted timeline, skip the seed card (first one, never wrong)
+  const sorted = [...timeline].sort((a,b)=>a.ev.year - b.ev.year);
+  const grid = document.getElementById('sc-grid');
+  grid.innerHTML = '';
+  sorted.forEach((item, i) => {
+    if(i === 0) return; // skip seed card
+    const sq = document.createElement('div');
+    sq.className = 'share-sq ' + (item.wrong ? 'wrong' : 'correct');
+    grid.appendChild(sq);
+  });
+}
+
+// ── SHARE SCORE ──
+function shareScore(){
+  const correct = timeline.filter(i=>!i.wrong).length - 1;
+  const wrong   = timeline.filter(i=>i.wrong).length;
+  const sorted  = [...timeline].sort((a,b)=>a.ev.year - b.ev.year);
+
+  // Build emoji grid string
+  const grid = sorted.slice(1).map(i => i.wrong ? '🟥' : '🟩').join('');
+
+  const tierLabel = score>=40 ? '🏆 LEGENDARY' : score>=20 ? '🌟 Good' : score>=8 ? '📚 Decent' : '😬 Rough';
+
+  const text =
+`🏛️ Chronology by UnacademyX
+
+${tierLabel} — ${score} pts on the UPSC timeline!
+🔥 Best streak: ${maxStreak} | ✅ ${correct} correct | ❌ ${wrong} wrong
+
+${grid}
+
+Think you can beat me? 👇
+https://mailmeherepeople-eng.github.io/UPSC-timeline-game`;
+
+  // Web Share API with clipboard fallback
+  if(navigator.share){
+    navigator.share({
+      title: 'Chronology — UnacademyX',
+      text: text,
+    }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      const fb = document.getElementById('share-feedback');
+      fb.classList.add('show');
+      setTimeout(()=>fb.classList.remove('show'), 2500);
+    }).catch(()=>{
+      // Final fallback for very old browsers
+      prompt('Copy this and challenge your friends:', text);
+    });
+  }
 }
 
 </script>
