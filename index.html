@@ -339,17 +339,16 @@
 
   /* ── DRAGGABLE CARD (the one to place) ── */
   .event-card {
-    background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius);
+    border:1.5px solid var(--border); border-radius:var(--radius);
     cursor:grab; user-select:none; box-shadow:var(--shadow-sm);
     transition:box-shadow 0.15s, transform 0.15s, border-color 0.1s;
     position:relative; overflow:hidden;
-    /* Match timeline card exactly so there's no visual jump on placement */
     width: var(--tl-card-w);
     height: var(--tl-card-h);
-    display:flex; flex-direction:column;
     flex-shrink:0;
     animation:slideUp 0.3s ease;
     touch-action: none;
+    background: #1a1a1a; /* dark fallback while image loads */
   }
   .event-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
   .event-card.pressing {
@@ -381,7 +380,106 @@
   .card-label { font-family: 'Lora', serif; font-size:12px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:2px; }
   .card-sublabel { font-size:10px; color:var(--muted); font-style:italic; }
 
-  /* ── TIMELINE ── */
+  /* ── CARD IMAGE BACKGROUND (Option B) ── */
+  /* The card bg image sits behind everything.
+     A gradient overlay makes the bottom text readable.
+     The stripe stays at the top as a category colour accent. */
+  .card-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    border-radius: calc(var(--radius) - 1px);
+  }
+  .card-bg-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: calc(var(--radius) - 1px);
+    /* Gradient: transparent top, dark bottom for text */
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.08) 0%,
+      rgba(0,0,0,0.30) 45%,
+      rgba(0,0,0,0.82) 100%
+    );
+  }
+  /* Wrong card gets red tint over the overlay */
+  .tl-card.wrong .card-bg-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(192,57,43,0.15) 0%,
+      rgba(192,57,43,0.35) 45%,
+      rgba(0,0,0,0.88) 100%
+    );
+  }
+  /* Correct card gets green tint */
+  .tl-card.just-correct .card-bg-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(8,189,128,0.12) 0%,
+      rgba(8,189,128,0.25) 45%,
+      rgba(0,0,0,0.82) 100%
+    );
+  }
+  /* Text content sits above the overlay */
+  .card-img-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 2;
+    padding: 8px 9px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .card-img-cat {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-img-label {
+    font-family: 'Lora', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-bottom: 3px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+  }
+  .card-img-sublabel {
+    font-size: 8.5px;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+  }
+  .card-img-year {
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Lora', serif;
+    color: #fff;
+    border-top: 1px solid rgba(255,255,255,0.22);
+    padding-top: 4px;
+  }
+  /* Fallback when image missing — use category colour bg */
+  .card-no-img .card-bg-overlay {
+    background: var(--cat-bg, #eee);
+  }
   /*
    * --tl-card-w: fixed width of every timeline card
    * --tl-card-h: fixed total height of every timeline card (emoji + body)
@@ -429,52 +527,30 @@
     background:#c8c2b8; flex-shrink:0;
   }
   .tl-card {
-    background:var(--surface); border:1.5px solid var(--border);
+    border:1.5px solid var(--border);
     border-radius:var(--radius);
-    /* Fixed dimensions - cards are always identical size */
     width: var(--tl-card-w);
     height: var(--tl-card-h);
     position:relative; overflow:hidden;
-    transition:border-color 0.2s, background 0.2s;
-    display:flex; flex-direction:column;
+    transition:border-color 0.2s;
     flex-shrink:0;
-  }
-
-  /* Emoji band - fixed height */
-  .tl-emoji {
-    width: 100%;
-    height: var(--tl-emoji-h);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* Text body fills remaining height, clips overflow */
-  .tl-body {
-    padding:8px 10px;
-    flex:1;
-    overflow:hidden;
-    display:flex; flex-direction:column;
-    justify-content:space-between;
+    background: #1a1a1a; /* dark fallback while image loads */
   }
 
   .tl-card.just-correct {
     border-color:var(--success);
-    background:var(--success-light);
+    border-width: 2px;
     animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), correctRipple 0.6s ease;
   }
-  .tl-card.just-correct .tl-emoji { border-bottom-color:#c3e6cb; }
-  .tl-card.wrong { border-color:var(--danger) !important; background:var(--danger-light) !important; }
-  .tl-card.wrong .tl-emoji { border-bottom-color:#f5c6c6 !important; }
+  .tl-card.wrong {
+    border-color:var(--danger) !important;
+    border-width: 2px !important;
+  }
   .tl-card.wrong-flash {
     border-color:var(--danger);
-    background:var(--danger-light);
+    border-width: 2px;
     animation: shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97), wrongPulse 0.6s ease;
   }
-  .tl-card.wrong-flash .tl-emoji { border-bottom-color:#f5c6c6; }
 
   /* ── DROP ZONES ──
    * Strategy: the drop zone is absolutely positioned over the gap between cards.
@@ -1756,15 +1832,15 @@ function buildCategoryBreakdown(){
 //  CATEGORY CONFIG
 // ═══════════════════════════════════════════════════════════
 const CAT = {
-  "Ancient India":     { text:"#7a5c2e", bg:"#f5ede0", emoji:"🏛️" },
-  "Medieval India":    { text:"#4a5e7a", bg:"#e6edf5", emoji:"⚔️" },
-  "Colonial India":    { text:"#5e4a7a", bg:"#ede6f5", emoji:"🏴" },
-  "Post-Independence": { text:"#2c6040", bg:"#e5f2ea", emoji:"🇮🇳" },
-  "World History":     { text:"#7a3a3a", bg:"#f5e6e6", emoji:"🌍" },
-  "Science & Tech":    { text:"#2a5070", bg:"#e3eef6", emoji:"🚀" },
-  "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤" },
-  "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊" },
-  "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜" },
+  "Ancient India":     { text:"#7a5c2e", bg:"#f5ede0", emoji:"🏛️", img:"images/categories/ancient_india.jpg" },
+  "Medieval India":    { text:"#4a5e7a", bg:"#e6edf5", emoji:"⚔️", img:"images/categories/medieval_india.jpg" },
+  "Colonial India":    { text:"#5e4a7a", bg:"#ede6f5", emoji:"🏴", img:"images/categories/colonial_india.jpg" },
+  "Post-Independence": { text:"#2c6040", bg:"#e5f2ea", emoji:"🇮🇳", img:"images/categories/post_independence.jpg" },
+  "World History":     { text:"#7a3a3a", bg:"#f5e6e6", emoji:"🌍", img:"images/categories/world_history.jpg" },
+  "Science & Tech":    { text:"#2a5070", bg:"#e3eef6", emoji:"🚀", img:"images/categories/science_tech.jpg" },
+  "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤", img:"images/categories/personalities.jpg" },
+  "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊", img:"images/categories/social_reform.jpg" },
+  "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜", img:"images/categories/constitutional.jpg" },
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -2292,24 +2368,25 @@ function triggerMilestoneBurst(streakVal){
 let _fireRAF = null;  // requestAnimationFrame handle
 
 function renderCurrentCard(){
-  const c=document.getElementById('current-card-container');
-  c.innerHTML='';
-  if(!currentCard||gameEnded)return;
-  const col=CAT[currentCard.cat]||{text:'#555',bg:'#f0f0f0',emoji:'📌'};
-  const card=document.createElement('div');
-  card.className='event-card';
-  card.setAttribute('draggable','true');
-  // Mirror makeTlCard structure exactly: same layout, year row hidden
-  card.innerHTML=`
-    <div class="card-stripe" style="background:${col.text}"></div>
-    <div class="tl-emoji" style="background:${col.bg};border-bottom-color:var(--border);">${col.emoji}</div>
-    <div class="tl-body">
-      <div>
-        <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:${col.text};margin-bottom:3px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${currentCard.cat}</div>
-        <div style="font-family:'Lora',serif;font-size:11px;font-weight:600;line-height:1.35;color:var(--text);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin-bottom:2px;">${currentCard.label}</div>
-        <div style="font-size:9px;font-style:italic;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${currentCard.sublabel}</div>
-      </div>
-      <div style="font-size:13px;font-weight:700;font-family:'Lora',serif;border-top:1px solid var(--border);padding-top:5px;color:transparent;margin-top:5px;flex-shrink:0;user-select:none;">?</div>
+  const c = document.getElementById('current-card-container');
+  c.innerHTML = '';
+  if(!currentCard || gameEnded) return;
+  const col = CAT[currentCard.cat] || {text:'#555', bg:'#f0f0f0', emoji:'📌', img:''};
+  const card = document.createElement('div');
+  card.className = 'event-card';
+  card.setAttribute('draggable', 'true');
+  card.style.position = 'relative';
+  card.style.overflow = 'hidden';
+
+  card.innerHTML = `
+    <div class="card-stripe" style="background:${col.text};position:relative;z-index:3;"></div>
+    ${col.img ? `<img class="card-bg-img" src="${col.img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+    <div class="card-bg-overlay"></div>
+    <div class="card-img-content">
+      <div class="card-img-cat">${currentCard.cat}</div>
+      <div class="card-img-label">${currentCard.label}</div>
+      <div class="card-img-sublabel">${currentCard.sublabel}</div>
+      <div class="card-img-year" style="color:transparent;border-top-color:rgba(255,255,255,0.15);user-select:none;">?</div>
     </div>
   `;
 
@@ -2470,35 +2547,36 @@ function renderCurrentCard(){
 }
 
 function makeTlCard(item, extraClass=''){
-  const col=CAT[item.ev.cat]||{text:'#555',bg:'#eee',emoji:'📌'};
-  const wrap=document.createElement('div');
-  wrap.className='tl-item';
-  const tick=document.createElement('div');
-  tick.className='tl-tick';
+  const col = CAT[item.ev.cat] || {text:'#555', bg:'#eee', emoji:'📌', img:''};
+  const wrap = document.createElement('div');
+  wrap.className = 'tl-item';
+  const tick = document.createElement('div');
+  tick.className = 'tl-tick';
 
-  const card=document.createElement('div');
-  let cls='tl-card';
-  if(item.wrong) cls+=' wrong';
-  if(extraClass) cls+=' '+extraClass;
-  card.className=cls;
+  const card = document.createElement('div');
+  let cls = 'tl-card';
+  if(item.wrong) cls += ' wrong';
+  if(extraClass) cls += ' ' + extraClass;
+  card.className = cls;
+  card.style.position = 'relative';
+  card.style.overflow = 'hidden';
 
-  const emojiBg = item.wrong ? '#fdf0ee' : col.bg;
-  const divColor = item.wrong ? 'var(--danger-light)' : 'var(--border)';
-  card.innerHTML=`
-    <div class="card-stripe" style="background:${col.text}"></div>
-    <div class="tl-emoji" style="background:${emojiBg};border-bottom-color:${divColor};">${col.emoji}</div>
-    <div class="tl-body">
-      <div>
-        <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:${col.text};margin-bottom:3px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.ev.cat}</div>
-        <div style="font-family:'Lora',serif;font-size:11px;font-weight:600;line-height:1.35;color:var(--text);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;margin-bottom:2px;">${item.ev.label}</div>
-        <div style="font-size:9px;font-style:italic;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${item.ev.sublabel}</div>
-      </div>
-      <div style="font-size:13px;font-weight:700;font-family:'Lora',serif;border-top:1px solid ${divColor};padding-top:5px;color:var(--text);margin-top:5px;flex-shrink:0;">${fy(item.ev.year)}</div>
+  const divColor = item.wrong ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.22)';
+
+  card.innerHTML = `
+    <div class="card-stripe" style="background:${col.text};position:relative;z-index:3;"></div>
+    ${col.img ? `<img class="card-bg-img" src="${col.img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+    <div class="card-bg-overlay"></div>
+    <div class="card-img-content">
+      <div class="card-img-cat">${item.ev.cat}</div>
+      <div class="card-img-label">${item.ev.label}</div>
+      <div class="card-img-sublabel">${item.ev.sublabel}</div>
+      <div class="card-img-year" style="border-top-color:${divColor};">${fy(item.ev.year)}</div>
     </div>
   `;
   wrap.appendChild(tick);
   wrap.appendChild(card);
-  return {wrap,card};
+  return {wrap, card};
 }
 
 function var_border(){ return '#e4e0d8'; }
