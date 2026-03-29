@@ -2219,29 +2219,73 @@ function renderCurrentCard(){
   card.addEventListener('mouseup',   ()=>{ card.classList.remove('pressing'); });
   card.addEventListener('mouseleave',()=>{ card.classList.remove('pressing'); });
 
+  // ── Mouse drag clone (desktop) ──
+  let mouseClone = null;
+  let mouseOffsetX = 0, mouseOffsetY = 0;
+
+  function onDragMove(e){
+    if(!mouseClone) return;
+    // drag event clientX/Y can be 0 at dragend — guard against it
+    if(e.clientX === 0 && e.clientY === 0) return;
+    mouseClone.style.left = (e.clientX - mouseOffsetX) + 'px';
+    mouseClone.style.top  = (e.clientY - mouseOffsetY) + 'px';
+    // Highlight drop zone under cursor
+    document.querySelectorAll('.drop-zone').forEach(dz=>{
+      const r = dz.getBoundingClientRect();
+      const over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom;
+      dz.classList.toggle('drag-over', over);
+    });
+  }
+
+  function cleanupMouseClone(){
+    if(mouseClone){ mouseClone.remove(); mouseClone = null; }
+    card.removeEventListener('drag', onDragMove);
+    document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+    card.style.visibility = '';
+    card.style.boxShadow  = '';
+    card.classList.remove('pressing');
+    card.classList.remove('dragging');
+  }
+
   card.addEventListener('dragstart', e=>{
     card.classList.remove('pressing');
     card.classList.remove('dragging');
     e.dataTransfer.setData('text/plain','card');
     e.dataTransfer.effectAllowed='move';
-    // Remove browser's default drag ghost — prevents the shadow/duplicate visual
-    const ghost = document.createElement('div');
-    ghost.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
-    document.body.appendChild(ghost);
-    e.dataTransfer.setDragImage(ghost, 0, 0);
+
+    // Suppress browser ghost entirely
+    const blank = document.createElement('div');
+    blank.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
+    document.body.appendChild(blank);
+    e.dataTransfer.setDragImage(blank, 0, 0);
+    setTimeout(()=>{ blank.remove(); }, 0);
+
+    // Build our own visible clone
+    const rect = card.getBoundingClientRect();
+    mouseOffsetX = e.clientX - rect.left;
+    mouseOffsetY = e.clientY - rect.top;
+
+    mouseClone = card.cloneNode(true);
+    mouseClone.style.cssText = `
+      position:fixed; z-index:1000; pointer-events:none;
+      width:${rect.width}px; height:${rect.height}px;
+      left:${rect.left}px; top:${rect.top}px;
+      opacity:0.92; transform:scale(1.03) translateY(-3px);
+      box-shadow:0 8px 32px rgba(0,0,0,0.2);
+      border-radius:10px; overflow:hidden;
+    `;
+    document.body.appendChild(mouseClone);
+
     requestAnimationFrame(()=>{
       card.style.visibility = 'hidden';
-      card.style.boxShadow = 'none';
-      setTimeout(()=>{ ghost.remove(); }, 100);
+      card.style.boxShadow  = 'none';
     });
+
+    // Use 'drag' event (fires during drag, has clientX/Y unlike mousemove)
+    card.addEventListener('drag', onDragMove);
   });
-  card.addEventListener('dragend', ()=>{
-    // Always restore — covers cancelled drags, drops outside zones, everything
-    card.style.visibility = '';
-    card.style.boxShadow = '';
-    card.classList.remove('pressing');
-    card.classList.remove('dragging');
-  });
+
+  card.addEventListener('dragend', cleanupMouseClone);
 
   // ── Touch drag for iOS / Android ──
   let touchClone = null;
