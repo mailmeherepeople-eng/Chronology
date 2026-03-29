@@ -291,12 +291,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     flex-shrink: 0;
-    height: 240px;
+    height: 220px;
     background: var(--bg);
     box-sizing: border-box;
-    padding-bottom: 16px;
     gap: 6px;
   }
   .stage-label {
@@ -306,6 +305,7 @@
     text-transform: uppercase;
     color: var(--muted);
     flex-shrink: 0;
+    margin-bottom: 15px;
   }
 
   /* Row 4: (toast row removed) */
@@ -392,7 +392,7 @@
    */
   :root {
     --tl-card-w: 150px;
-    --tl-card-h: 170px;
+    --tl-card-h: 177px;
     --tl-emoji-h: 52px;
     --tl-tick-h: 18px;
     --tl-line-top: 18px;
@@ -1398,7 +1398,7 @@
   <!-- Quip banner: slides in above the card stage after each answer -->
   <div class="quip-banner" id="quip-banner"></div>
   <div class="card-stage" style="position:relative;">
-    <div class="stage-label" id="stage-label">Where does this event belong?</div>
+    <div class="stage-label" id="stage-label"><strong style="font-size:11px;color:var(--text);">WHEN</strong> DOES THIS EVENT BELONG?</div>
     <div id="current-card-container"></div>
     <div class="end-game-bar" id="end-game-bar">
       <button class="btn-primary" style="width:100%;" onclick="showScreen('gameover')">See My Score</button>
