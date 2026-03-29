@@ -74,21 +74,29 @@
   }
   .dark-toggle:active { transform: translateY(0); }
 
-  /* Dark mode toggle inside game header */
-  .dark-toggle-header {
-    background: transparent;
+  /* Dark mode toggle floating in card stage (game screen) */
+  .dark-toggle-game {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 14px;
+    padding: 5px 11px;
+    font-size: 13px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
     color: var(--muted);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
   }
-  .dark-toggle-header:hover { border-color: var(--muted); }
+  .dark-toggle-game:hover { border-color: var(--muted); transform: translateY(-1px); }
+  .dark-toggle-game:active { transform: translateY(0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); }
@@ -237,66 +245,59 @@
   .game-logo { font-family: 'Source Sans 3', sans-serif; font-size:17px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
   .game-logo .brand-u { color:var(--accent); }
   .game-logo .brand-x { color:var(--text); font-style:italic; }
-  .game-stats { display:flex; align-items:center; gap:16px; }
-  .score-display { font-size:13px; color:var(--muted); font-weight:500; }
-  .score-display strong { color:var(--text); font-size:17px; }
-  .lives { display:flex; gap:5px; }
-  .heart { font-size:18px; color:#c0392b; transition:opacity 0.3s; }
-  .heart.lost { opacity:0.2; }
+  .game-stats { display:flex; align-items:center; gap:14px; width:100%; }
 
-  /* Row 2: quip banner — fixed height, text never expands it */
-  .quip-banner {
-    width: 100%;
-    height: 52px;
-    flex-shrink: 0;
-    padding: 0 24px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-    letter-spacing: 0.1px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.25s ease, background 0.25s ease;
-    box-sizing: border-box;
+  /* Score: label + number inline, glows on increment */
+  .score-display {
+    display: flex; align-items: baseline; gap: 5px;
+    font-size: 13px; color: var(--muted); font-weight: 500;
   }
-  .quip-banner.visible {
-    opacity: 1;
-    animation: quipSlideDown 0.3s ease;
+  .score-display strong {
+    color: var(--text); font-size: 18px; font-weight: 700;
+    transition: color 0.2s;
   }
-  .quip-banner.correct { background: var(--accent); color: #fff; }
-  .quip-banner.wrong   { background: var(--danger);  color: #fff; }
-  .quip-banner.idle    { background: transparent; }
-  .quip-banner .quip-year {
-    font-size: 10px;
-    font-weight: 700;
-    opacity: 0.85;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    display: block;
-    margin-bottom: 2px;
-    white-space: nowrap;
+  .score-display.glow strong {
+    animation: scoreGlow 0.5s ease;
   }
-  @keyframes quipSlideDown {
-    from { opacity:0; transform:translateY(-4px); }
-    to   { opacity:1; transform:translateY(0); }
+  @keyframes scoreGlow {
+    0%   { color: var(--text); transform: scale(1); }
+    40%  { color: var(--accent); transform: scale(1.3); }
+    100% { color: var(--text); transform: scale(1); }
   }
 
-  /* Row 3: card stage — fixed height, nothing inside can expand it */
+  /* Hearts — bigger, with break+fall animation */
+  .lives { display:flex; gap:6px; align-items:center; }
+  .heart {
+    font-size: 34px;
+    display: inline-block;
+    color: #c0392b;
+    transition: opacity 0.3s;
+    transform-origin: center top;
+  }
+  .heart.lost { opacity: 0.18; }
+  .heart.breaking {
+    animation: heartBreak 0.7s ease forwards;
+  }
+  @keyframes heartBreak {
+    0%   { transform: scale(1) rotate(0deg);            opacity: 1; }
+    20%  { transform: scale(1.3) rotate(-8deg);         opacity: 1; }
+    40%  { transform: scale(0.9) rotate(8deg);          opacity: 0.9; }
+    60%  { transform: scale(1.1) rotate(-5deg);         opacity: 0.6; }
+    100% { transform: scale(0.7) translateY(20px) rotate(15deg); opacity: 0; }
+  }
+
+  /* Row 3: card stage — snug around the card, sits just above timeline */
   .card-stage {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     flex-shrink: 0;
-    height: 226px;
+    height: 240px;
     background: var(--bg);
     box-sizing: border-box;
-    gap: 8px;
+    padding-bottom: 16px;
+    gap: 6px;
   }
   .stage-label {
     font-size: 10px;
@@ -306,19 +307,21 @@
     color: var(--muted);
     flex-shrink: 0;
   }
+
+  /* Row 4: (toast row removed) */
+
+  /* Drag hint — visible until first card placed */
   .drag-hint {
     font-size: 10px;
     color: #bbb;
     flex-shrink: 0;
+    transition: opacity 0.4s ease, max-height 0.4s ease;
+    max-height: 20px;
+    overflow: hidden;
   }
-
-  /* Row 4: toast — fixed height */
-  .toast-row {
-    height: 32px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .drag-hint.hidden {
+    opacity: 0;
+    max-height: 0;
   }
 
   /* Row 5: timeline — takes all remaining space */
@@ -400,9 +403,8 @@
     flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 32px 48px 20px;
+    padding: 42px 48px 20px;
     -webkit-overflow-scrolling: touch;
-    /* 20px bottom padding = breathing room at bottom */
   }
   .timeline-track {
     display:flex; align-items:flex-start;
@@ -530,28 +532,27 @@
   }
 
   /* ── QUIP BANNER ── */
-  /*
-   * Always occupies its space (min-height) so the card stage never jumps.
-   * Content fades in/out but the block never collapses.
-   */
+  /* Strictly 55px. Never expands. Text clips. Nothing below it ever moves. */
   .quip-banner {
     width: 100%;
-    min-height: 56px;          /* always reserves this space */
-    padding: 12px 32px;
+    height: 55px;
+    flex-shrink: 0;
+    padding: 0 20px;
     text-align: center;
-    font-size: 14px;
+    font-size: 11.5px;
     font-weight: 600;
-    line-height: 1.55;
+    line-height: 1.35;
     letter-spacing: 0.1px;
-    position: relative;
-    z-index: 5;
-    /* Start invisible, transition to visible */
-    opacity: 0;
-    transition: opacity 0.25s ease, background 0.25s ease;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease, background 0.25s ease;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    border-bottom: 1px solid transparent;
   }
   .quip-banner.visible {
     opacity: 1;
@@ -576,43 +577,16 @@
 
   /* ── END GAME BUTTON ── */
   .end-game-bar {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
     width: var(--tl-card-w);
-    min-height: 48px;
-    visibility: hidden;  /* reserves space always, shown when game ends */
   }
-  .end-game-bar.visible { visibility: visible; }
+  .end-game-bar.visible { display: flex; }
 
   /* ── TOAST (year pill - sits in the gap between card stage and timeline) ── */
-  #toast {
-    display: none;
-    padding: 7px 18px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    pointer-events: none;
-    letter-spacing: 0.5px;
-    animation: toastIn 0.2s ease;
-    /* Centre it horizontally in the flow */
-    align-self: center;
-  }
-  #toast.correct { background:rgba(8,189,128,0.12); color:var(--accent); border:1.5px solid var(--accent); }
-  #toast.wrong   { background:rgba(192,57,43,0.10); color:var(--danger); border:1.5px solid var(--danger); }
-
-  /* Wrapper that holds the toast in the gap, always reserves its height */
-  .toast-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 36px;   /* fixed height so layout never jumps */
-    flex-shrink: 0;
-  }
-
   /* ── GAME OVER ── */
   #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:28px 24px 32px; text-align:center; position:relative; overflow-y:auto; }
   .gameover-emoji { font-size:44px; margin-bottom:6px; }
@@ -778,51 +752,37 @@
     100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
   }
 
-  /* Score pop when points added */
-  @keyframes scorePop {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.35); color: var(--accent); }
-    100% { transform: scale(1); }
-  }
-  /* Lives shudder on wrong */
-  @keyframes livesShudder {
-    0%,100% { transform: translateX(0); }
-    20%  { transform: translateX(-4px); }
-    40%  { transform: translateX(4px); }
-    60%  { transform: translateX(-3px); }
-    80%  { transform: translateX(3px); }
-  }
   /* Drop zone breathe on hover */
   @keyframes dzBreathe {
     0%,100% { box-shadow: 0 0 0 3px rgba(8,189,128,0.3); }
     50%     { box-shadow: 0 0 0 7px rgba(8,189,128,0.1); }
   }
-  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
-
   /* ── STREAK DISPLAY ── */
   .streak-display {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-size: 13px;
     color: var(--muted);
     font-weight: 500;
-    position: relative;
   }
   .streak-display strong {
     color: var(--text);
-    font-size: 17px;
-    transition: transform 0.15s, color 0.15s;
+    font-size: 18px;
+    font-weight: 700;
+    transition: color 0.2s, transform 0.2s;
   }
   .streak-display.bump strong {
-    transform: scale(1.4);
-    color: var(--accent);
+    animation: streakGlow 0.5s ease;
   }
-  .streak-fire {
-    font-size: 18px;
-    display: inline-block;
-    transition: transform 0.2s;
+  @keyframes streakGlow {
+    0%   { color: var(--text);   transform: scale(1); }
+    40%  { color: #f97316;       transform: scale(1.35); }
+    100% { color: var(--text);   transform: scale(1); }
   }
+  /* Streak turns orange when hot */
+  .streak-display.hot strong { color: #f97316; }
+  .streak-display.legendary strong { color: #e53e3e; }
 
   /* Multiplier badge: floats next to streak */
   .multiplier-badge {
@@ -1286,7 +1246,7 @@
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
     <button class="btn-secondary" style="width:100%;" onclick="showScreen('collection');if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">My Collection</button>
   </div>
-  <p class="start-note">220+ curated events · 9 UPSC categories · 3 lives · Made with ❤️ by UnacademyX</p>
+  <p class="start-note">360 curated events · 9 UPSC categories · 3 lives · Made with ❤️ by UnacademyX</p>
 </div>
 
 <!-- TUTORIAL -->
@@ -1421,36 +1381,33 @@
 <!-- GAME -->
 <div id="screen-game" class="screen">
   <header class="game-header">
-    <div class="game-logo">
-      <!-- Icon placeholder: swap this img tag for your real logo when ready -->
-      <span id="app-icon" style="font-size:28px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏳</span>
-    </div>
     <div class="game-stats">
       <div class="streak-display" id="streak-display">
-        <span class="streak-fire" id="streak-fire">🔥</span>
         <span id="streak-label">Streak</span>
         <strong id="streak-count">0</strong>
         <span class="multiplier-badge" id="multiplier-badge">1x</span>
       </div>
-      <div class="score-display">Score <strong id="score-display">0</strong></div>
+      <div class="score-display" id="score-display-wrap">
+        <span>Score</span>
+        <strong id="score-display">0</strong>
+      </div>
       <div class="lives" id="lives-display"></div>
-      <button class="btn-quit" onclick="quitGame()">✕ Quit</button>
-      <button class="dark-toggle-header" onclick="toggleDark()" id="dark-toggle-game">🌙</button>
+      <button class="btn-quit" style="margin-left:auto;" onclick="quitGame()">✕ Quit</button>
     </div>
   </header>
   <!-- Quip banner: slides in above the card stage after each answer -->
   <div class="quip-banner" id="quip-banner"></div>
-  <div class="card-stage">
+  <div class="card-stage" style="position:relative;">
     <div class="stage-label" id="stage-label">Where does this event belong?</div>
     <div id="current-card-container"></div>
     <div class="end-game-bar" id="end-game-bar">
       <button class="btn-primary" style="width:100%;" onclick="showScreen('gameover')">See My Score</button>
     </div>
     <div class="drag-hint" id="drag-hint">👆 Press &amp; hold the card, then drag it to the timeline below</div>
-  </div>
-  <!-- Toast: sits in the natural gap between card and timeline -->
-  <div class="toast-row">
-    <div id="toast"></div>
+    <!-- Dark/light toggle floats bottom-right of card stage -->
+    <button class="dark-toggle-game" onclick="toggleDark()" id="dark-toggle-game">
+      <span id="dark-icon-game">🌙</span>
+    </button>
   </div>
   <div class="timeline-wrapper" id="timeline-wrapper">
     <div class="timeline-track" id="timeline-track">
@@ -1558,12 +1515,11 @@ function trackSeen(ev){ if(ev) markSeen(ev.id); }
 // Hook: renderCollection called directly from button onclick
 function applyDark(isDark){
   document.body.classList.toggle('dark', isDark);
-  // Update all toggle buttons
   const icon  = isDark ? '☀️' : '🌙';
   const label = isDark ? 'Light' : 'Dark';
   const s = document.getElementById('dark-icon-start');
   const l = document.getElementById('dark-label-start');
-  const g = document.getElementById('dark-toggle-game');
+  const g = document.getElementById('dark-icon-game');
   if(s) s.textContent = icon;
   if(l) l.textContent = label;
   if(g) g.textContent = icon;
@@ -1962,6 +1918,7 @@ function getJoke(score) {
 let deck=[], timeline=[], currentCard=null;
 let lives=3, score=0, locked=false, gameEnded=false;
 let streak=0, maxStreak=0;
+let hintDismissed=false;
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -2083,7 +2040,7 @@ function startGame() {
   currentCard=s[1];
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
-  streak=0; maxStreak=0;
+  streak=0; maxStreak=0; hintDismissed=false;
   document.getElementById('current-card-container').innerHTML='';
   document.getElementById('end-game-bar').classList.remove('visible');
   clearQuip();
@@ -2095,15 +2052,44 @@ function startGame() {
 //  RENDER
 // ═══════════════════════════════════════════════════════════
 function renderLives(){
-  const el=document.getElementById('lives-display');
-  el.innerHTML='';
-  for(let i=0;i<3;i++){
-    const h=document.createElement('span');
-    h.className='heart'+(i>=lives?' lost':'');
-    h.textContent='♥'; el.appendChild(h);
+  const el = document.getElementById('lives-display');
+
+  // Read previous active heart count BEFORE wiping DOM
+  const prevActive = el.querySelectorAll('.heart:not(.lost):not(.breaking)').length;
+  const justLostOne = prevActive > lives && prevActive > 0;
+
+  el.innerHTML = '';
+  for(let i = 0; i < 3; i++){
+    const h = document.createElement('span');
+    h.textContent = '♥';
+
+    if(i < lives){
+      // Active heart
+      h.className = 'heart';
+    } else if(i === lives && justLostOne){
+      // This is the heart that just got lost — animate it
+      h.className = 'heart breaking';
+      h.addEventListener('animationend', () => {
+        h.classList.remove('breaking');
+        h.classList.add('lost');
+      }, { once: true });
+    } else {
+      // Already lost in a previous turn
+      h.className = 'heart lost';
+    }
+    el.appendChild(h);
   }
 }
-function renderScore(){ document.getElementById('score-display').textContent=score; }
+function renderScore(){
+  document.getElementById('score-display').textContent = score;
+  const wrap = document.getElementById('score-display-wrap');
+  if(wrap){
+    wrap.classList.remove('glow');
+    void wrap.offsetWidth;
+    wrap.classList.add('glow');
+    setTimeout(()=>wrap.classList.remove('glow'), 500);
+  }
+}
 
 // ── Streak & Multiplier ──
 function getMultiplier(s){
@@ -2114,21 +2100,12 @@ function getMultiplier(s){
   return 1;
 }
 
-function getFireEmoji(s){
-  if(s>=10) return '🔥🔥🔥';
-  if(s>=5)  return '🔥🔥';
-  if(s>=3)  return '🔥';
-  return '🔥';
-}
-
 function renderStreak(){
   const el   = document.getElementById('streak-count');
-  const fire = document.getElementById('streak-fire');
   const badge= document.getElementById('multiplier-badge');
   const disp = document.getElementById('streak-display');
 
-  el.textContent   = streak;
-  fire.textContent = streak>=3 ? getFireEmoji(streak) : '🔥';
+  el.textContent = streak;
 
   const mult = getMultiplier(streak);
   if(mult > 1){
@@ -2138,11 +2115,16 @@ function renderStreak(){
     badge.className = 'multiplier-badge';
   }
 
+  // Color state
+  disp.classList.remove('hot','legendary');
+  if(streak >= 10) disp.classList.add('legendary');
+  else if(streak >= 3) disp.classList.add('hot');
+
   // Bump animation
   disp.classList.remove('bump');
-  void disp.offsetWidth; // reflow
+  void disp.offsetWidth;
   if(streak > 0) disp.classList.add('bump');
-  setTimeout(()=>disp.classList.remove('bump'), 300);
+  setTimeout(()=>disp.classList.remove('bump'), 500);
 }
 
 // Milestone definitions
@@ -2530,19 +2512,6 @@ function haptic(pattern){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  YEAR TOAST (small pill at bottom)
-// ═══════════════════════════════════════════════════════════
-let toastTimer=null;
-function showToast(msg,type){
-  const t=document.getElementById('toast');
-  t.className='toast '+type;
-  t.innerHTML=msg;
-  t.style.display='inline-block';
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>{ t.style.display='none'; }, 5000);
-}
-
-// ═══════════════════════════════════════════════════════════
 //  QUIP BANNER - stays until next card is placed, never auto-hides
 // ═══════════════════════════════════════════════════════════
 function showQuip(text, year, type){
@@ -2571,6 +2540,13 @@ function handleDrop(dropIdx){
   // Immediately wipe the card from the stage - no remnant
   document.getElementById('current-card-container').innerHTML='';
 
+  // Dismiss the drag hint after first placement
+  if(!hintDismissed){
+    hintDismissed = true;
+    const hint = document.getElementById('drag-hint');
+    if(hint) hint.classList.add('hidden');
+  }
+
   // Clear the previous quip
   clearQuip();
 
@@ -2592,9 +2568,6 @@ function handleDrop(dropIdx){
     score += points;
     renderScore();
     renderStreak();
-    // Score pop animation
-    const scoreEl = document.getElementById('score-display');
-    if(scoreEl){ scoreEl.style.animation='none'; scoreEl.offsetHeight; scoreEl.style.animation='scorePop 0.4s ease'; }
     trackPlacement(placed.cat, true, placed);
     playCorrectSound();
     haptic([40]);
@@ -2602,8 +2575,6 @@ function handleDrop(dropIdx){
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
     renderTimeline(pi,'just-correct');
-    const pointsMsg = mult>1 ? ` +${points} (${mult}x)` : ` +${points}`;
-    showToast('✓ ' + fy(placed.year) + pointsMsg, 'correct');
     showQuip(getRandFrom(CORRECT_QUIPS), fy(placed.year), 'correct');
     scrollToCard(pi);
     // Trigger milestone celebration after a short delay so toast is visible first
@@ -2616,9 +2587,6 @@ function handleDrop(dropIdx){
     lives--;
     renderLives();
     renderStreak();
-    // Lives shudder animation
-    const livesEl = document.getElementById('lives-display');
-    if(livesEl){ livesEl.style.animation='none'; livesEl.offsetHeight; livesEl.style.animation='livesShudder 0.4s ease'; }
     trackPlacement(placed.cat, false, placed);
     playWrongSound();
     haptic([60, 40, 60]);
@@ -2626,8 +2594,6 @@ function handleDrop(dropIdx){
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
     renderTimeline(pi,'wrong-flash');
-    const livesMsg = lives>0 ? lives+' life'+(lives===1?'':'s')+' left' : 'Game over!';
-    showToast('✗ ' + fy(placed.year) + ': ' + livesMsg, 'wrong');
     // Add streak-broken note to quip if streak was going
     const wrongQuip = getRandFrom(WRONG_QUIPS);
     const streakNote = hadStreak>=3 ? `<br><span class="streak-broken">💔 ${hadStreak}-streak broken. Back to 1x.</span>` : '';
