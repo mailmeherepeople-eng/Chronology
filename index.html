@@ -1284,7 +1284,7 @@
   <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-primary" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
-    <button class="btn-secondary" style="width:100%;" onclick="showScreen('collection');renderCollection()">My Collection</button>
+    <button class="btn-secondary" style="width:100%;" onclick="showScreen('collection');if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">My Collection</button>
   </div>
   <p class="start-note">220+ curated events · 9 UPSC categories · 3 lives · Made with ❤️ by UnacademyX</p>
 </div>
@@ -1493,7 +1493,7 @@
   <button class="btn-back" onclick="showScreen('start')">← Back</button>
   <div class="collection-header">
     <div class="collection-title">My Collection</div>
-    <div class="collection-count" id="collection-count">0 / 226 unlocked</div>
+    <div class="collection-count" id="collection-count">Loading...</div>
   </div>
   <div class="collection-grid" id="collection-grid"></div>
 </div>
@@ -1745,7 +1745,7 @@ const CAT = {
 //  EVENTS — loaded from data/events.json with localStorage cache
 //  v2 cache key: bump to v3 when events.json content changes
 // ═══════════════════════════════════════════════════════════
-const EVENTS_CACHE_KEY = 'chronology-events-v2';
+const EVENTS_CACHE_KEY = 'chronology-events-v4';
 let EVENTS = [];
 
 async function loadEvents(){
@@ -1856,7 +1856,7 @@ function openCardDetail(ev){
   if(info){
     body.innerHTML = `
       ${info.what  ? `<div class="cd-fact"><div class="cd-fact-label">What happened</div>${info.what}</div>` : ''}
-      ${info.upsc  ? `<div class="cd-fact"><div class="cd-fact-label">Why UPSC tests this</div>${info.upsc}</div>` : ''}
+      ${info.upsc  ? `<div class="cd-fact"><div class="cd-fact-label">How UPSC tests this</div>${info.upsc}</div>` : ''}
       ${info.remember ? `<div class="cd-fact"><div class="cd-fact-label">Key fact</div>${info.remember}</div>` : ''}
     `;
   } else {
