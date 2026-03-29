@@ -484,8 +484,18 @@
   .tl-item {
     display:flex; flex-direction:column; align-items:center;
     position:relative; z-index:2; flex-shrink:0;
-    /* Force every item to the same column width so drop zones align */
     width: var(--tl-card-w);
+    transition: width 0.32s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  /* Push-apart: item starts at 0 width and expands */
+  .tl-item.push-in {
+    animation: pushApart 0.32s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    overflow: hidden;
+  }
+  @keyframes pushApart {
+    from { width: 0; opacity: 0.6; }
+    to   { width: var(--tl-card-w); opacity: 1; }
   }
   .tl-tick {
     width:2px; height: var(--tl-tick-h);
@@ -522,58 +532,49 @@
   .tl-card.wrong .card-img-banner::after { background: linear-gradient(to bottom, transparent, var(--danger-light)); }
   .tl-card.just-correct .card-img-banner::after { background: linear-gradient(to bottom, transparent, var(--success-light)); }
 
-  /* ── DROP ZONES ──
-   * Strategy: the drop zone is absolutely positioned over the gap between cards.
-   * It sits in the flex row but uses negative margins to reach into adjacent cards.
-   * The indicator bar is centered inside the zone and spans exactly the card height,
-   * offset down by the tick height so it visually aligns flush with the card top.
-   */
+  /* ── DROP ZONES ── */
   .drop-zone {
-    width: var(--dz-w);
+    /* Always card-width — invisible, exact size of the card */
+    width: var(--tl-card-w);
     flex-shrink: 0;
-    /* Total column height = tick + card */
     height: calc(var(--tl-tick-h) + var(--tl-card-h));
     position: relative;
     z-index: 10;
     cursor: pointer;
-    /* Reach into adjacent cards */
-    margin-left:  calc(var(--dz-w) / -2);
-    margin-right: calc(var(--dz-w) / -2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Push indicator down by tick height so it starts at the card top */
-    padding-top: var(--tl-tick-h);
+    /* Pull inward so drop zone overlaps adjacent cards — collapsed state */
+    margin-left:  calc(var(--tl-card-w) / -2);
+    margin-right: calc(var(--tl-card-w) / -2);
     background: transparent;
+    /* Smooth open/close */
+    transition: margin 0.2s cubic-bezier(0.34, 1.1, 0.64, 1);
   }
 
-  /* Indicator is exactly as tall as the card, flush with card top */
-  .drop-zone-indicator {
-    width: 4px;
-    height: var(--tl-card-h);   /* exactly matches .tl-card height */
-    border-radius: 4px;
-    background: transparent;
-    transition: background 0.1s, box-shadow 0.1s;
-    pointer-events: none;
-    flex-shrink: 0;
-  }
-  .drop-zone.drag-over .drop-zone-indicator {
-    background: var(--accent);
-    box-shadow: 0 0 0 5px var(--accent-light);
-    animation: dzBreathe 0.8s ease infinite;
-  }
-
-  /* End drop zones - much wider, extending into empty space on their open side */
-  .drop-zone.drop-zone-start {
-    width: 300px;
-    /* Only pull into the first card on the right side, leave the left open */
+  /* When active: zero out margins so both neighbours get pushed apart equally */
+  .drop-zone.drag-over {
     margin-left: 0;
-    margin-right: calc(var(--dz-w) / -2);
+    margin-right: 0;
+  }
+
+  /* Hide indicator — the gap IS the indicator */
+  .drop-zone-indicator { display: none; }
+
+  /* End drop zones — wide open space, no overlap needed */
+  .drop-zone.drop-zone-start {
+    width: var(--tl-card-w);
+    margin-left: 0;
+    margin-right: calc(var(--tl-card-w) / -2);
+  }
+  .drop-zone.drop-zone-start.drag-over {
+    margin-left: 0;
+    margin-right: 0;
   }
   .drop-zone.drop-zone-end {
-    width: 300px;
-    /* Only pull into the last card on the left side, leave the right open */
-    margin-left: calc(var(--dz-w) / -2);
+    width: var(--tl-card-w);
+    margin-left: calc(var(--tl-card-w) / -2);
+    margin-right: 0;
+  }
+  .drop-zone.drop-zone-end.drag-over {
+    margin-left: 0;
     margin-right: 0;
   }
 
@@ -829,11 +830,6 @@
     100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
   }
 
-  /* Drop zone breathe on hover */
-  @keyframes dzBreathe {
-    0%,100% { box-shadow: 0 0 0 3px rgba(8,189,128,0.3); }
-    50%     { box-shadow: 0 0 0 7px rgba(8,189,128,0.1); }
-  }
   /* ── STREAK DISPLAY ── */
   .streak-display {
     display: flex;
@@ -1720,7 +1716,7 @@
       if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}
     ">My Collection <span class="col-notif-dot" id="col-notif-dot" style="display:none;">●</span></button>
   </div>
-  <p class="start-note">350+ curated events · 9 UPSC categories · Made with ❤️ by UnacademyX</p>
+  <p class="start-note">350+ curated events · 9 UPSC categories · by <span style="color:#08bd80;font-weight:700;font-family:'Source Sans 3',sans-serif;">Unacademy</span><span style="color:#1380D0;font-weight:700;font-style:italic;font-family:'Source Sans 3',sans-serif;">X</span></p>
 </div>
 
 <!-- TUTORIAL -->
@@ -3072,22 +3068,37 @@ function renderCurrentCard(){
 
   function onDragMove(e){
     if(!mouseClone) return;
-    // drag event clientX/Y can be 0 at dragend — guard against it
     if(e.clientX === 0 && e.clientY === 0) return;
     mouseClone.style.left = (e.clientX - mouseOffsetX) + 'px';
     mouseClone.style.top  = (e.clientY - mouseOffsetY) + 'px';
+
+    // Edge scrolling
+    const wrapper = document.getElementById('timeline-wrapper');
+    if(wrapper){
+      const wr = wrapper.getBoundingClientRect();
+      const EDGE = 72;
+      const MAX_SPEED = 14;
+      if(e.clientX < wr.left + EDGE){
+        const dist = Math.max(0, e.clientX - wr.left);
+        wrapper.scrollLeft -= MAX_SPEED * (1 - dist / EDGE);
+      } else if(e.clientX > wr.right - EDGE){
+        const dist = Math.max(0, wr.right - e.clientX);
+        wrapper.scrollLeft += MAX_SPEED * (1 - dist / EDGE);
+      }
+    }
+
     // Highlight drop zone under cursor
     document.querySelectorAll('.drop-zone').forEach(dz=>{
       const r = dz.getBoundingClientRect();
       const over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom;
-      dz.classList.toggle('drag-over', over);
+      if(over) setActiveDZ(dz);
     });
   }
 
   function cleanupMouseClone(){
     if(mouseClone){ mouseClone.remove(); mouseClone = null; }
     card.removeEventListener('drag', onDragMove);
-    document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+    clearActiveDZ();
     card.style.visibility = '';
     card.style.boxShadow  = '';
     card.classList.remove('pressing');
@@ -3144,7 +3155,7 @@ function renderCurrentCard(){
     if(touchClone){ touchClone.remove(); touchClone = null; }
     card.style.visibility = '';
     card.classList.remove('pressing');
-    document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+    clearActiveDZ();
   }
 
   card.addEventListener('touchstart', e=>{
@@ -3185,11 +3196,32 @@ function renderCurrentCard(){
     touchClone.style.left = (t.clientX - touchOffsetX) + 'px';
     touchClone.style.top  = (t.clientY - touchOffsetY) + 'px';
 
+    // ── Edge scrolling ──
+    const wrapper = document.getElementById('timeline-wrapper');
+    if(wrapper){
+      const wr = wrapper.getBoundingClientRect();
+      const EDGE = 72; // px from edge that triggers scroll
+      const MAX_SPEED = 14; // max px per frame
+      let scrollSpeed = 0;
+      if(t.clientX < wr.left + EDGE){
+        // Finger near left edge — scroll left
+        const dist = Math.max(0, t.clientX - wr.left);
+        scrollSpeed = -MAX_SPEED * (1 - dist / EDGE);
+      } else if(t.clientX > wr.right - EDGE){
+        // Finger near right edge — scroll right
+        const dist = Math.max(0, wr.right - t.clientX);
+        scrollSpeed = MAX_SPEED * (1 - dist / EDGE);
+      }
+      if(scrollSpeed !== 0){
+        wrapper.scrollLeft += scrollSpeed;
+      }
+    }
+
     // Highlight drop zone under finger
     document.querySelectorAll('.drop-zone').forEach(dz=>{
       const r = dz.getBoundingClientRect();
       const over = t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom;
-      dz.classList.toggle('drag-over', over);
+      if(over) setActiveDZ(dz);
     });
   }, {passive:false});
 
@@ -3256,17 +3288,35 @@ function makeTlCard(item, extraClass=''){
 
 function var_border(){ return '#e4e0d8'; }
 
+// Track which drop zone is currently open — only one at a time
+let _activeDZ = null;
+
+function setActiveDZ(dz){
+  if(_activeDZ && _activeDZ !== dz){
+    _activeDZ.classList.remove('drag-over');
+  }
+  _activeDZ = dz;
+  if(dz) dz.classList.add('drag-over');
+}
+
+function clearActiveDZ(){
+  if(_activeDZ) _activeDZ.classList.remove('drag-over');
+  _activeDZ = null;
+}
+
 function makeDropZone(idx, extraClass=''){
-  const dz=document.createElement('div');
-  dz.className='drop-zone' + (extraClass ? ' '+extraClass : '');
-  dz.dataset.idx = idx;  // used by touch handler
-  const ind=document.createElement('div');
-  ind.className='drop-zone-indicator';
+  const dz = document.createElement('div');
+  dz.className = 'drop-zone' + (extraClass ? ' ' + extraClass : '');
+  dz.dataset.idx = idx;
+  const ind = document.createElement('div');
+  ind.className = 'drop-zone-indicator';
   dz.appendChild(ind);
-  dz.addEventListener('dragenter',e=>{e.preventDefault();dz.classList.add('drag-over');});
-  dz.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';dz.classList.add('drag-over');});
-  dz.addEventListener('dragleave',e=>{if(!dz.contains(e.relatedTarget))dz.classList.remove('drag-over');});
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');handleDrop(idx);});
+
+  // Mouse drag events
+  dz.addEventListener('dragenter', e => { e.preventDefault(); setActiveDZ(dz); });
+  dz.addEventListener('dragover',  e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setActiveDZ(dz); });
+  dz.addEventListener('dragleave', e => { if(!dz.contains(e.relatedTarget)){ if(_activeDZ === dz) clearActiveDZ(); } });
+  dz.addEventListener('drop',      e => { e.preventDefault(); clearActiveDZ(); handleDrop(idx); });
   return dz;
 }
 
@@ -3276,14 +3326,14 @@ function renderTimeline(flashIdx=null, flashClass=''){
   const sorted=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
   const last=sorted.length;
 
-  // First drop zone - wide, extends far left
   track.appendChild(makeDropZone(0, 'drop-zone-start'));
 
   sorted.forEach((item,i)=>{
     const flash=(i===flashIdx)?flashClass:'';
     const {wrap}=makeTlCard(item,flash);
+    // Push-apart animation only on correct placement
+    if(flash === 'just-correct') wrap.classList.add('push-in');
     track.appendChild(wrap);
-    // Last drop zone - wide, extends far right. Middle ones - normal.
     const isLast = (i === last-1);
     track.appendChild(makeDropZone(i+1, isLast ? 'drop-zone-end' : ''));
   });
