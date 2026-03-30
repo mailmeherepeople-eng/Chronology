@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Chronology: UnacademyX UPSC</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #f7f5f0;
@@ -2076,6 +2077,150 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════
+//  SUPABASE CONFIG
+//  Replace the two placeholder strings below with your
+//  Project URL and anon public key from:
+//  Supabase Dashboard → Project Settings → API
+// ═══════════════════════════════════════════════════════════
+const SUPABASE_URL     = 'https://scoxynaajyzpeghnpddg.supabase.co';   // e.g. https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjb3h5bmFhanl6cGVnaG5wZGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTQwNTUsImV4cCI6MjA5MDQ3MDA1NX0.b6C0bbrngvI3klS82DLEOsotpXbvu_ZjG_pG9ej8RTU;     // long eyJ... string
+
+// ── Runtime state ──
+let _sb        = null;   // supabase client, null until initSupabase() succeeds
+let _playerId  = null;   // uuid from DB players.id, set after init
+let _sbReady   = false;  // true once we have a valid playerId
+
+const _SB_LOG = (...args) => console.log('[Supabase]', ...args);
+const _SB_ERR = (...args) => console.warn('[Supabase]', ...args);
+
+// ── Supabase initialisation ──
+// Called inside the existing loadEvents() IIFE so it runs on page load.
+// On failure the game continues 100% on localStorage — nothing breaks.
+async function initSupabase() {
+  try {
+    if (!window.supabase) { _SB_ERR('SDK not loaded'); return; }
+
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Get or create a stable anonymous identity for this device/browser
+    let anonId = localStorage.getItem('chronology-anon-id');
+    if (!anonId) {
+      anonId = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Date.now());
+      localStorage.setItem('chronology-anon-id', anonId);
+    }
+
+    // Upsert player row — creates on first visit, fetches on return visits
+    const { data, error } = await _sb
+      .from('players')
+      .upsert({ anon_id: anonId }, { onConflict: 'anon_id' })
+      .select('id, high_score')
+      .single();
+
+    if (error) { _SB_ERR('upsert failed', error.message); return; }
+
+    _playerId = data.id;
+    _sbReady  = true;
+    _SB_LOG('ready | player:', _playerId, '| remote high score:', data.high_score);
+
+    // Hydrate localStorage high score from DB if DB value is higher
+    // (handles case where player played on another device)
+    if (data.high_score) {
+      const localHigh = parseInt(localStorage.getItem('chronology-high') || '0');
+      if (data.high_score > localHigh) {
+        localStorage.setItem('chronology-high', String(data.high_score));
+        _SB_LOG('high score hydrated from DB:', data.high_score);
+      }
+    }
+
+    // Hydrate seen cards from DB into localStorage (cross-device collection sync)
+    await _hydrateSeenFromDB();
+
+  } catch (e) {
+    _SB_ERR('init threw', e);
+  }
+}
+
+// Pull cards seen on other devices and merge into local seen/new sets
+async function _hydrateSeenFromDB() {
+  if (!_sbReady) return;
+  try {
+    const { data, error } = await _sb
+      .from('player_cards')
+      .select('card_id, first_seen_at')
+      .eq('player_id', _playerId);
+
+    if (error || !data || data.length === 0) return;
+
+    const localSeen = getSeenIds();
+    let added = 0;
+    data.forEach(row => {
+      const id = row.card_id;
+      if (!localSeen.has(id)) {
+        // Card seen on another device — add silently, no NEW badge
+        localSeen.add(id);
+        added++;
+        // Record unlock time from DB timestamp
+        const times = getUnlockTimes();
+        if (!times[id]) {
+          times[id] = new Date(row.first_seen_at).getTime();
+          try { localStorage.setItem(UNLOCK_TS_KEY, JSON.stringify(times)); } catch(e){}
+        }
+      }
+    });
+
+    if (added > 0) {
+      try { localStorage.setItem(SEEN_KEY, JSON.stringify([...localSeen])); } catch(e){}
+      _SB_LOG('hydrated', added, 'cards from DB');
+    }
+  } catch (e) {
+    _SB_ERR('hydrate seen threw', e);
+  }
+}
+
+// ── Fire-and-forget helper ──
+function _sbRun(label, fn) {
+  if (!_sbReady) return;
+  fn().then(() => _SB_LOG(label, 'synced')).catch(e => _SB_ERR(label, 'failed', e.message));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WEBVIEW BRIDGE
+//  The native Unacademy app calls this after loading the WebView:
+//    webView.evaluateJavascript(
+//      "window.ChronologyBridge.setUser({ userId: 'user_123' })", null
+//    );
+//  Stub only for now — links anon row to real user ID, no data merge yet.
+// ═══════════════════════════════════════════════════════════
+window.ChronologyBridge = {
+  setUser: async function({ userId, displayName }) {
+    _SB_LOG('setUser called | userId:', userId, '| displayName:', displayName);
+    if (!userId) { _SB_ERR('setUser: no userId provided'); return; }
+
+    // Store native user id locally so future sessions can use it
+    localStorage.setItem('chronology-native-uid', userId);
+
+    if (!_sbReady) {
+      _SB_ERR('setUser: Supabase not ready yet, will retry in 2s');
+      setTimeout(() => window.ChronologyBridge.setUser({ userId, displayName }), 2000);
+      return;
+    }
+
+    // Link the anon row to the real user identity
+    const { error } = await _sb
+      .from('players')
+      .update({ native_user_id: userId })
+      .eq('id', _playerId);
+
+    if (error) {
+      _SB_ERR('setUser: update failed', error.message);
+    } else {
+      _SB_LOG('setUser: player row linked to native_user_id', userId);
+    }
+    // Full data migration (merge guest history into real user) comes in a future phase
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
 //  COLLECTION - tracks every card the player has ever seen
 // ═══════════════════════════════════════════════════════════
 const SEEN_KEY      = 'chronology-seen';
@@ -2095,6 +2240,11 @@ function markSeen(id){
   markNew(id);
   // Record unlock timestamp
   recordUnlockTime(id);
+  // Supabase sync — fire and forget
+  _sbRun('markSeen:' + id, () =>
+    _sb.from('player_cards')
+      .upsert({ player_id: _playerId, card_id: id, is_new: true }, { onConflict: 'player_id,card_id' })
+  );
 }
 
 // ── NEW badge tracking ──
@@ -2113,6 +2263,13 @@ function clearNew(id){
   news.delete(id);
   try { localStorage.setItem(NEW_KEY, JSON.stringify([...news])); } catch(e){}
   updateNotifDot();
+  // Supabase sync
+  _sbRun('clearNew:' + id, () =>
+    _sb.from('player_cards')
+      .update({ is_new: false })
+      .eq('player_id', _playerId)
+      .eq('card_id', id)
+  );
 }
 function updateNotifDot(){
   const dot = document.getElementById('col-notif-dot');
@@ -2168,6 +2325,17 @@ function getCategoryStats(){
 }
 function saveCategoryStats(stats){
   try { localStorage.setItem(CAT_STATS_KEY, JSON.stringify(stats)); } catch(e){}
+  // Supabase sync — upsert all categories touched this write
+  _sbRun('catStats', () => {
+    const rows = Object.entries(stats).map(([category, d]) => ({
+      player_id: _playerId,
+      category,
+      attempts: d.attempts,
+      correct:  d.correct,
+    }));
+    return _sb.from('player_category_stats')
+      .upsert(rows, { onConflict: 'player_id,category' });
+  });
 }
 
 function getMistakes(){
@@ -2176,6 +2344,20 @@ function getMistakes(){
 }
 function saveMistakes(list){
   try { localStorage.setItem(MISTAKES_KEY, JSON.stringify(list)); } catch(e){}
+  // Supabase sync — upsert the full mistakes list
+  _sbRun('mistakes', () => {
+    const rows = list.map(m => ({
+      player_id:   _playerId,
+      card_id:     m.id,
+      label:       m.label,
+      year:        m.year,
+      category:    m.cat,
+      count:       m.count,
+      last_seen_at: new Date(m.lastSeen).toISOString(),
+    }));
+    return _sb.from('player_mistakes')
+      .upsert(rows, { onConflict: 'player_id,card_id' });
+  });
 }
 
 function trackPlacement(cat, isCorrect, ev){
@@ -2368,7 +2550,11 @@ function buildEvents(data){
   const btn = document.getElementById('btn-start');
   if(btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
 
-  loadEvents().then(() => {
+  // Run both in parallel — Supabase init doesn't block game load
+  Promise.all([
+    loadEvents(),
+    initSupabase(),
+  ]).then(() => {
     applyDark(localStorage.getItem('chronology-dark') === '1');
     updateNotifDot();
     if(btn){ btn.textContent = 'Start Game'; btn.disabled = false; }
@@ -3604,6 +3790,28 @@ function prepareGameOverScreen(){
   const prevHigh = parseInt(localStorage.getItem('chronology-high') || '0');
   const newHigh  = Math.max(prevHigh, score);
   if(score > prevHigh) localStorage.setItem('chronology-high', String(score));
+
+  // Supabase: update high score on players row + insert game session record
+  if(_sbReady){
+    const correct_count = timeline.filter(i=>!i.wrong).length - 1;
+    const wrong_count   = timeline.filter(i=>i.wrong).length;
+    _sbRun('gameOver:session', () =>
+      _sb.from('game_sessions').insert({
+        player_id:     _playerId,
+        score,
+        correct_count,
+        wrong_count,
+        max_streak:    maxStreak,
+      })
+    );
+    if(score > prevHigh){
+      _sbRun('gameOver:highScore', () =>
+        _sb.from('players')
+          .update({ high_score: score })
+          .eq('id', _playerId)
+      );
+    }
+  }
 
   // ── New cards unlocked this run ──
   // timeline contains all placed cards. Cross-reference with NEW_KEY
