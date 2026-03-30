@@ -429,9 +429,10 @@
     font-size: 8px;
     color: var(--muted);
     font-style: italic;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     flex-shrink: 0;
     margin-top: 3px;
   }
