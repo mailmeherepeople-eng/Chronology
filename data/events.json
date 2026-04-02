@@ -72,8 +72,8 @@
     "remember": "Vaishali is considered one of history's earliest republics. Its democratic assembly predates many Western democratic traditions."
   },
   "9": {
-    "label": "Battle of Hydaspes (Alexander vs Porus)",
-    "sublabel": "fought",
+    "label": "Battle of Hydaspes",
+    "sublabel": "occurred",
     "year": -326,
     "cat": "Ancient India",
     "what": "Alexander the Great defeated King Porus at the Battle of Hydaspes (Jhelum) in 326 BCE. His soldiers mutinied at the Beas river, refusing to go further east.",
@@ -351,8 +351,8 @@
     "remember": "Humayun almost drowned in the Ganges while escaping! He was saved by a humble water-carrier whom he later made 'King for a Day'."
   },
   "40": {
-    "label": "Sher Shah Suri",
-    "sublabel": "introduced Grand Trunk Road",
+    "label": "Grand Trunk Road",
+    "sublabel": "introduced by Sher Shah Suri",
     "year": 1540,
     "cat": "Medieval India",
     "what": "Sher Shah Suri built the Grand Trunk Road (2,500 km) from Chittagong to Kabul, with rest houses (sarais) and trees every two miles.",
@@ -396,7 +396,7 @@
     "remember": "The 'Ain-i-Akbari' is essentially a Mughal census, recording everything from the cost of grain to the number of Akbar's elephants."
   },
   "45": {
-    "label": "East India Company first trading post in India",
+    "label": "East India Company's first trading post",
     "sublabel": "established at Surat",
     "year": 1608,
     "cat": "Medieval India",
@@ -540,8 +540,8 @@
     "remember": "The alliance was a debt trap: rulers couldn't afford the troops, fell into arrears, and had to cede territory to pay the British."
   },
   "61": {
-    "label": "Fourth Anglo-Mysore War, Tipu Sultan killed",
-    "sublabel": "occurred",
+    "label": "Fourth Anglo-Mysore War",
+    "sublabel": "Tipu sultan defeated",
     "year": 1799,
     "cat": "Colonial India",
     "what": "The Fourth Anglo-Mysore War (1799) ended with Tipu Sultan's death at Seringapatam. Mysore was partitioned between the EIC and Wodeyars.",
@@ -738,7 +738,7 @@
     "remember": "Lajpat Rai famously said: 'Every blow struck on my body will be the last nail in the coffin of British imperialism.'"
   },
   "83": {
-    "label": "Lahore Session: Purna Swaraj Declaration",
+    "label": "Purna Swaraj Declaration",
     "sublabel": "adopted by Congress",
     "year": 1929,
     "cat": "Colonial India",
@@ -873,8 +873,8 @@
     "remember": "Bose did not create the INA from zero. What he did was give it new energy, clearer direction, and enormous symbolic power."
   },
   "98": {
-    "label": "Integration of Hyderabad (Operation Polo)",
-    "sublabel": "by Sardar Patel",
+    "label": "Operation Polo",
+    "sublabel": "integration of Hyderabad completed",
     "year": 1948,
     "cat": "Post-Independence",
     "what": "Operation Polo (1948) was the military action to integrate Hyderabad into India. Sardar Patel called it a 'Police Action'.",
@@ -1269,8 +1269,8 @@
     "remember": "Napoleon took the crown from the Pope's hands and put it on his own head to show he answered to no one."
   },
   "142": {
-    "label": "Battle of Waterloo: Napoleon's final defeat",
-    "sublabel": "occurred",
+    "label": "Battle of Waterloo",
+    "sublabel": "Napolean defeated",
     "year": 1815,
     "cat": "World History",
     "what": "The Battle of Waterloo (1815) saw Napoleon's final defeat by the Duke of Wellington and Prussian forces.",
@@ -1530,8 +1530,8 @@
     "remember": "Although it failed after four days in orbit, Aryabhata proved India could build complex satellites indigenously."
   },
   "171": {
-    "label": "India's first indigenous satellite APPLE",
-    "sublabel": "launched",
+    "label": "APPLE satellite by India",
+    "sublabel": "First indigenous satellite launched",
     "year": 1981,
     "cat": "Science & Tech",
     "what": "APPLE (Ariane Passenger Payload Experiment) was India's first experimental geostationary communication satellite, launched in 1981 by the European Ariane rocket. It demonstrated India's ability to build communication satellites.",
@@ -1800,7 +1800,7 @@
     "remember": "W.B. Yeats wrote the famous introduction to the English translation of 'Gitanjali', helping it gain global fame."
   },
   "201": {
-    "label": "Mother Teresa received Nobel Peace Prize",
+    "label": "Mother Teresa won Nobel Peace Prize",
     "sublabel": "for her work in Calcutta",
     "year": 1979,
     "cat": "Personalities",
@@ -1809,8 +1809,8 @@
     "remember": "Teresa donated the entire prize money, and the cost of the formal banquet, directly to her work in the slums."
   },
   "202": {
-    "label": "Amartya Sen won Nobel Prize in Economics",
-    "sublabel": "for welfare economics",
+    "label": "Nobel Prize in Economics",
+    "sublabel": "won by Amartya Sen",
     "year": 1998,
     "cat": "Personalities",
     "what": "Amartya Sen won the Nobel Prize in Economics in 1998 for contributions to welfare economics, social choice theory, and his analysis showing famines result from policy failure and inequality, not food shortage.",
@@ -2224,7 +2224,7 @@
   },
   "248": {
     "label": "Hunter Commission on education",
-    "sublabel": "reviewed Wood's Despatch, shaped colonial education",
+    "sublabel": "reviewed",
     "year": 1882,
     "cat": "Colonial India",
     "what": "The Hunter Commission of 1882 reviewed the state of education in India following Wood's Despatch of 1854. It recommended expansion of primary education and greater role for private enterprise in higher education.",
@@ -2566,7 +2566,7 @@
   },
   "286": {
     "label": "Sher Shah Suri's revenue reforms",
-    "sublabel": "land measurement, standardised coins, postal system",
+    "sublabel": "land, coin & postal reforms introduced",
     "year": 1540,
     "cat": "Medieval India",
     "what": "During his brief rule (1540-1545), Sher Shah Suri introduced systematic land revenue based on measurement (not estimation), standardised the silver rupee, created a postal system, and built the Grand Trunk Road.",
@@ -2575,7 +2575,7 @@
   },
   "287": {
     "label": "Maratha Confederacy formed",
-    "sublabel": "Peshwa became effective ruler after Shivaji's successors",
+    "sublabel": "Peshwa takes effective control",
     "year": 1720,
     "cat": "Medieval India",
     "what": "After the deaths of Shivaji (1680) and his son Sambhaji (1689), effective Maratha power shifted to the Peshwas (prime ministers). Under Bajirao I (1720-1740) the Marathas expanded into a pan-Indian confederacy.",
@@ -2610,8 +2610,8 @@
     "remember": "Aurangzeb died in his Deccan camp at 88, having spent the last 26 years of his life at war. He wrote a final letter admitting he had come to rule the world but failed. He was buried in a simple grave with no monument, as he had requested. The greatest Mughal emperor died defeated."
   },
   "291": {
-    "label": "Vedic period settlements on Ganges plain",
-    "sublabel": "eastward migration from Indus region",
+    "label": "Vedic settlements reach Ganges plain",
+    "sublabel": "migrated",
     "year": -900,
     "cat": "Ancient India",
     "what": "By around 900 BCE, the focus of Vedic civilisation had shifted eastward from the Indus-Saraswati region to the Gangetic plains, where iron tools enabled dense forest clearance and intensive agriculture.",
@@ -2628,8 +2628,8 @@
     "remember": "Ajatashatru killed his father Bimbisara to seize the throne. Both the Buddha and Mahavira were alive during his reign and he met both of them. His reign marks the point when Magadha became the dominant power that would eventually become the Maurya Empire."
   },
   "293": {
-    "label": "Chandragupta Maurya met Alexander's successors",
-    "sublabel": "Treaty with Seleucus, married Greek princess",
+    "label": "Treaty of Indus with Seleucus",
+    "sublabel": "signed",
     "year": -305,
     "cat": "Ancient India",
     "what": "Chandragupta Maurya defeated Seleucus Nicator (Alexander's general who took over eastern territories) around 305 BCE. The peace treaty involved Seleucus ceding eastern territories in exchange for 500 war elephants and a royal marriage alliance.",
@@ -2646,8 +2646,8 @@
     "remember": "Megasthenes described Pataliputra as a city of 400,000 people with walls and 570 towers, surrounded by a moat. No city in Europe at that time approached this scale. He also noted there was no slavery in India, which puzzled his Greek readers who considered slavery natural."
   },
   "295": {
-    "label": "Kanishka I convened Fourth Buddhist Council",
-    "sublabel": "Kushan emperor, spread Buddhism to Central Asia",
+    "label": "Fourth Buddhist Council",
+    "sublabel": "convened",
     "year": 100,
     "cat": "Ancient India",
     "what": "Kanishka I, the great Kushan emperor, convened the Fourth Buddhist Council in Kashmir around 100 CE to resolve disputes in Buddhist doctrine. He patronised Buddhism and spread it along the Silk Road to Central Asia and China.",
@@ -2656,7 +2656,7 @@
   },
   "296": {
     "label": "Samudragupta's conquests",
-    "sublabel": "Allahabad Pillar Inscription describes all India campaign",
+    "sublabel": "recorded in Allahabad Pillar",
     "year": 350,
     "cat": "Ancient India",
     "what": "Samudragupta (r. 335-375 CE) conducted a military campaign across India described in the Allahabad Pillar Inscription by his court poet Harishena. He is called the Napoleon of India for his conquests.",
@@ -2736,8 +2736,8 @@
     "remember": "Mihirakula was described by contemporaries as the most cruel ruler India had ever seen. He reportedly threw elephants off cliffs to watch them die. He was eventually defeated and humiliated by a regional king. The Gupta Empire never recovered from the Huna century."
   },
   "305": {
-    "label": "Pallava dynasty established at Kanchipuram",
-    "sublabel": "major power in Tamil region",
+    "label": "Pallava dynasty at Kanchipuram",
+    "sublabel": "established",
     "year": 275,
     "cat": "Ancient India",
     "what": "The Pallava dynasty established its capital at Kanchipuram around the 3rd century CE and became the dominant power in the Tamil region for 500 years, creating the Dravidian architectural style.",
@@ -2763,8 +2763,8 @@
     "remember": "Azad had sworn as a teenager that he would never be arrested. He kept his word by shooting himself. He was 24. He had told Bhagat Singh: the day I am arrested, consider me dead. He was never arrested."
   },
   "308": {
-    "label": "Sarojini Naidu became Congress president",
-    "sublabel": "first woman president of Indian National Congress",
+    "label": "Sarojini Naidu, Congress president",
+    "sublabel": "became",
     "year": 1925,
     "cat": "Personalities",
     "what": "Sarojini Naidu became the first woman President of the Indian National Congress at the Kanpur session in 1925. Known as the Nightingale of India, she was also a poet and later became Governor of Uttar Pradesh.",
@@ -2880,8 +2880,8 @@
     "remember": "Tata bought Jaguar Land Rover from Ford for 2.3 billion dollars in 2008. Ford had paid 2.5 billion for it in 1989 and was desperate to sell. The company the British created to symbolise British engineering prestige is now owned by an Indian company and makes most of its profits in China."
   },
   "321": {
-    "label": "Milkha Singh won Commonwealth gold",
-    "sublabel": "Flying Sikh, first Indian to win at Commonwealth Games",
+    "label": "India's First Commonwealth gold",
+    "sublabel": "won by Milkha Singh",
     "year": 1958,
     "cat": "Personalities",
     "what": "Milkha Singh won the gold medal in the 400m at the 1958 Commonwealth Games in Cardiff, becoming the first Indian athlete to win gold at the Commonwealth Games. He survived the 1947 partition as an orphan.",
@@ -3006,8 +3006,8 @@
     "remember": "India administered 25 million doses in a single day in June 2021, a world record. The CoWIN app that managed bookings was subsequently offered to other countries as a public good. India's digital vaccination infrastructure is now a model being studied globally."
   },
   "335": {
-    "label": "India launched first weather satellite INSAT-1B",
-    "sublabel": "revolutionised weather forecasting in India",
+    "label": "INSAT-1B, India's first weather satellite",
+    "sublabel": "launched",
     "year": 1983,
     "cat": "Science & Tech",
     "what": "INSAT-1B, launched in 1983, was the first fully operational satellite of the Indian National Satellite System. It provided telecommunications, broadcasting, and meteorological services, transforming weather prediction across India.",
@@ -3015,8 +3015,8 @@
     "remember": "Before INSAT, India had no early warning for cyclones. After INSAT, fishermen received weather warnings and coastal communities were evacuated. The same satellite that brought Doordarshan to villages also started saving lives from storms. Technology's highest purpose is when it saves lives."
   },
   "336": {
-    "label": "India's first mission to the Moon Chandrayaan-1",
-    "sublabel": "confirmed water molecules on the Moon",
+    "label": "Chandrayaan-1 launched",
+    "sublabel": "India's first lunar mission",
     "year": 2008,
     "cat": "Science & Tech",
     "what": "Chandrayaan-1, launched on 22 October 2008, was India's first lunar mission. Its Moon Impact Probe became the first Indian object to touch the Moon, and the mission's instruments confirmed the presence of water molecules in the lunar soil.",
@@ -3033,8 +3033,8 @@
     "remember": "PM Modi was watching live when Vikram crashed. He walked to the ISRO director and hugged him saying don't worry, India is proud of you. That image, of a leader consoling scientists after failure rather than punishing them, is credited with giving ISRO the confidence to try again and succeed."
   },
   "338": {
-    "label": "Jyotiba Phule founded Satyashodhak Samaj",
-    "sublabel": "truth-seeking society against caste oppression",
+    "label": "Satyashodhak Samaj",
+    "sublabel": "established",
     "year": 1873,
     "cat": "Social Reform",
     "what": "Jyotirao Phule founded the Satyashodhak Samaj (Truth-Seeker's Society) in Pune in 1873, targeting Brahmanical dominance and caste hierarchy. He and his wife Savitribai Phule had already opened schools for girls and lower castes.",
@@ -3051,8 +3051,8 @@
     "remember": "When the Sarda Act was passed, most Indian girls were married before puberty. The average age of marriage for girls in some communities was 5-7 years. Sarda fought for the bill for years against fierce orthodox opposition. The minimum age he achieved was still 14, a compromise from the 16 he sought."
   },
   "340": {
-    "label": "Savitribai Phule opened first girls' school",
-    "sublabel": "Pune, first woman teacher in India",
+    "label": "First girls' school in India",
+    "sublabel": "opened by Savitribai Phule",
     "year": 1848,
     "cat": "Social Reform",
     "what": "Savitribai Phule and Jyotirao Phule opened India's first school for girls in Pune on 1 January 1848. Savitribai became India's first woman teacher, defying violent opposition from those who considered women's education taboo.",
@@ -3060,8 +3060,8 @@
     "remember": "Savitribai is now officially recognised as India's first woman teacher. A university is named after her. She lived in the same century as Queen Victoria but achieved something Victoria never did: she personally taught girls from the lowest castes how to read, one by one, daily, against violent opposition."
   },
   "341": {
-    "label": "Gopal Krishna Gokhale founded Servants of India Society",
-    "sublabel": "dedicated public servants for social work",
+    "label": "Servants of India Society",
+    "sublabel": "established by Gopal Krishna Gokhale",
     "year": 1905,
     "cat": "Social Reform",
     "what": "Gopal Krishna Gokhale founded the Servants of India Society in Pune in 1905, training individuals to dedicate their lives to public service by taking a vow of poverty and working on education, healthcare, and social causes.",
@@ -3069,8 +3069,8 @@
     "remember": "Gandhi spent a year in India after returning from South Africa at Gokhale's insistence, travelling and learning before joining politics. Gokhale told him: you do not know India. Go see it first. Gandhi obeyed. The India Gandhi came to know through those travels shaped his entire political strategy."
   },
   "342": {
-    "label": "CSDS and community development programme",
-    "sublabel": "India's first community development blocks",
+    "label": "Community Development Programme",
+    "sublabel": "launched",
     "year": 1952,
     "cat": "Social Reform",
     "what": "India launched its Community Development Programme in October 1952, creating community development blocks across rural India to improve agriculture, education, health, and social life through trained extension workers.",
@@ -3079,7 +3079,7 @@
   },
   "343": {
     "label": "Special Marriage Act",
-    "sublabel": "enabled inter-religious marriages without conversion",
+    "sublabel": "inter-religious marriages legalised",
     "year": 1954,
     "cat": "Social Reform",
     "what": "The Special Marriage Act of 1954 enabled Indians of any religion to marry without religious conversion or ceremonies, with civil registration. It applies to all Indian citizens regardless of religion.",
@@ -3150,8 +3150,8 @@
     "remember": "Anna Hazare's fast in 2011 at Ramlila Maidan brought more people to a protest than any event since independence. The Parliament was forced to pass a resolution supporting the Jan Lokpal concept. The final law was weaker than demanded, but an institution that did not exist was created."
   },
   "351": {
-    "label": "Protection of Women from Domestic Violence Act",
-    "sublabel": "first law recognising domestic violence as a crime",
+    "label": "Domestic Violence Act",
+    "sublabel": "passed",
     "year": 2005,
     "cat": "Social Reform",
     "what": "The Protection of Women from Domestic Violence Act 2005 was India's first comprehensive civil law addressing domestic violence, recognising physical, emotional, sexual, verbal, and economic abuse. It created a new class of Protection Officers.",
@@ -3204,8 +3204,8 @@
     "remember": "President's Rule was used 90 times between 1950 and 1994, almost always to dismiss opposition-party state governments. The SR Bommai judgment made this politically harder. After 1994, President's Rule has been imposed fewer than 20 times. One Supreme Court judgment changed how India's federal system works."
   },
   "357": {
-    "label": "Right to Property removed as Fundamental Right",
-    "sublabel": "44th Amendment, became legal right under Article 300A",
+    "label": "Right to Property",
+    "sublabel": "demoted",
     "year": 1978,
     "cat": "Constitutional",
     "what": "The 44th Constitutional Amendment (1978) removed the Right to Property from the list of Fundamental Rights (Article 19 and Article 31) and made it a constitutional right under Article 300A , enforceable but not a fundamental right.",
@@ -3214,7 +3214,7 @@
   },
   "358": {
     "label": "Vishaka Guidelines on sexual harassment",
-    "sublabel": "Supreme Court created workplace law before Parliament",
+    "sublabel": "issued",
     "year": 1997,
     "cat": "Constitutional",
     "what": "The Supreme Court in Vishaka vs State of Rajasthan (1997) laid down binding guidelines on prevention of sexual harassment at the workplace, filling a legislative vacuum. These guidelines had the force of law until Parliament passed the POSH Act in 2013.",
@@ -3222,8 +3222,8 @@
     "remember": "The Vishaka Guidelines came from a case where a woman was gang-raped for stopping a child marriage. The perpetrators were acquitted. The outrage led to a PIL. The Supreme Court, finding no law on workplace sexual harassment, simply wrote one. A court created law because Parliament had failed to."
   },
   "359": {
-    "label": "NJAC struck down, collegium system upheld",
-    "sublabel": "Supreme Court struck down its own replacement",
+    "label": "NJAC Act struck down",
+    "sublabel": "collegium restored",
     "year": 2015,
     "cat": "Constitutional",
     "what": "The Supreme Court struck down the National Judicial Appointments Commission (NJAC) Act in 2015, which would have given the executive a role in judicial appointments. The collegium system (judges appointing judges) was upheld.",
@@ -3231,8 +3231,8 @@
     "remember": "The NJAC had been passed unanimously by Parliament and ratified by all state legislatures , the most broadly supported constitutional amendment in recent history. The Supreme Court struck it down anyway. Five judges overruled every elected representative in the country. Whether that is judicial independence or judicial overreach is the central debate."
   },
   "360": {
-    "label": "Puttaswamy judgment: Privacy as Fundamental Right",
-    "sublabel": "nine-judge bench, unanimous ruling",
+    "label": "Right to privacy declared Fundamental",
+    "sublabel": "ruled",
     "year": 2017,
     "cat": "Constitutional",
     "what": "In Justice KS Puttaswamy vs Union of India (2017), a nine-judge Supreme Court bench unanimously held that the right to privacy is a fundamental right under Article 21. The case arose from a challenge to the Aadhaar programme.",
