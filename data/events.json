@@ -2701,7 +2701,7 @@
   },
   "301": {
     "label": "Rajendra Chola's naval expedition",
-    "sublabel": "conquered Sri Vijaya, expanded to Southeast Asia",
+    "sublabel": "conquered Sri Vijaya",
     "year": 1025,
     "cat": "Ancient India",
     "what": "Rajendra Chola launched a massive naval expedition in 1025 CE that conquered parts of the Sri Vijaya empire (Malay Peninsula and Sumatra) and established Chola suzerainty over Southeast Asian trade routes.",
@@ -2710,7 +2710,7 @@
   },
   "302": {
     "label": "Second Urbanisation in Gangetic plains",
-    "sublabel": "cities emerged alongside Mahajanapadas",
+    "sublabel": "cities emerged",
     "year": -600,
     "cat": "Ancient India",
     "what": "Around 600 BCE, the Gangetic plains saw the emergence of new urban centres, marking India's Second Urbanisation (after the Indus Valley). Cities like Varanasi, Rajgir, Vaishali, and Champa developed as centres of trade and culture.",
@@ -2728,7 +2728,7 @@
   },
   "304": {
     "label": "Huna invasions and Gupta decline",
-    "sublabel": "White Huns broke Gupta power in northwest",
+    "sublabel": "began",
     "year": 455,
     "cat": "Ancient India",
     "what": "The Huna (White Hun) invasions beginning around 455 CE under Toramana and then Mihirakula devastated northwestern India and broke the Gupta Empire's hold over its northern provinces, accelerating its decline.",
@@ -2745,8 +2745,8 @@
     "remember": "Pallava-era scripts influenced writing systems across Southeast Asia. That is one of those quiet facts with huge civilisational reach."
   },
   "306": {
-    "label": "Kalidasa wrote Meghadutam",
-    "sublabel": "greatest Sanskrit lyric poem",
+    "label": "Meghadutam",
+    "sublabel": "written by Kalidasa",
     "year": 415,
     "cat": "Ancient India",
     "what": "Kalidasa composed Meghadutam (The Cloud Messenger) during the Gupta period, a lyric poem in which a yaksha exiled from his beloved asks a cloud to carry a message to her. It is considered the pinnacle of Sanskrit lyric poetry.",
@@ -2754,8 +2754,8 @@
     "remember": "Meghadutam is about a cloud being asked to carry a love message 1000 km from central India to the Himalayas. The poem describes the entire Indian landscape along the cloud's route. Ancient Indians created the world's first poetic geography of their own land."
   },
   "307": {
-    "label": "Chandrashekhar Azad's last stand",
-    "sublabel": "died in Alfred Park, Allahabad",
+    "label": "Chandrashekhar Azad",
+    "sublabel": "died",
     "year": 1931,
     "cat": "Personalities",
     "what": "Chandrashekhar Azad, leader of the Hindustan Socialist Republican Association, died on 27 February 1931 in Alfred Park (now Azad Park), Allahabad. Surrounded by British police, he shot himself rather than be captured.",
