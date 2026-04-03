@@ -2398,6 +2398,9 @@ function toggleDark(){
 // ═══════════════════════════════════════════════════════════
 const CAT_STATS_KEY     = 'chronology-cat-stats';
 const MISTAKES_KEY      = 'chronology-mistakes';
+const CARD_STATS_KEY    = 'chronology-card-stats';  // {cardId: {attempts, correct}}
+const DAY_STREAK_KEY    = 'chronology-day-streak';  // int
+const LAST_PLAYED_KEY   = 'chronology-last-played'; // YYYY-MM-DD string
 
 function getCategoryStats(){
   try { return JSON.parse(localStorage.getItem(CAT_STATS_KEY) || '{}'); }
@@ -2440,6 +2443,56 @@ function saveMistakes(list){
   });
 }
 
+// ── Per-card stats (attempts + correct per card) ──
+function getCardStats(){
+  try { return JSON.parse(localStorage.getItem(CARD_STATS_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveCardStats(stats){
+  try { localStorage.setItem(CARD_STATS_KEY, JSON.stringify(stats)); } catch(e){}
+  // Supabase sync — upsert all cards touched this write
+  _sbRun('cardStats', () => {
+    const rows = Object.entries(stats).map(([card_id, d]) => ({
+      player_id:    _playerId,
+      card_id:      parseInt(card_id),
+      attempts:     d.attempts,
+      correct_count: d.correct,
+      mastered:     d.correct >= 3,
+    }));
+    return _sb.from('player_cards')
+      .upsert(rows, { onConflict: 'player_id,card_id' });
+  });
+}
+
+// ── Day streak (consecutive days played) ──
+function updateDayStreak(){
+  const today      = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const lastPlayed = localStorage.getItem(LAST_PLAYED_KEY);
+  let streak       = parseInt(localStorage.getItem(DAY_STREAK_KEY) || '0');
+
+  if(lastPlayed === today){
+    // Already played today — streak unchanged
+  } else if(lastPlayed){
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    streak = lastPlayed === yesterday ? streak + 1 : 1;
+  } else {
+    streak = 1; // first ever play
+  }
+
+  localStorage.setItem(DAY_STREAK_KEY, String(streak));
+  localStorage.setItem(LAST_PLAYED_KEY, today);
+
+  // Sync to Supabase
+  if(_sbReady){
+    _sbRun('dayStreak', () =>
+      _sb.from('players')
+        .update({ current_streak: streak, last_played_date: today })
+        .eq('id', _playerId)
+    );
+  }
+  return streak;
+}
+
 function trackPlacement(cat, isCorrect, ev){
   // Track category accuracy
   const stats = getCategoryStats();
@@ -2447,6 +2500,15 @@ function trackPlacement(cat, isCorrect, ev){
   stats[cat].attempts++;
   if(isCorrect) stats[cat].correct++;
   saveCategoryStats(stats);
+
+  // Track per-card attempts + correct_count
+  if(ev){
+    const cardStats = getCardStats();
+    if(!cardStats[ev.id]) cardStats[ev.id] = { attempts: 0, correct: 0 };
+    cardStats[ev.id].attempts++;
+    if(isCorrect) cardStats[ev.id].correct++;
+    saveCardStats(cardStats);
+  }
 
   // Track individual mistakes with card info
   if(!isCorrect && ev){
@@ -3093,6 +3155,8 @@ let deck=[], timeline=[], currentCard=null;
 let lives=3, score=0, locked=false, gameEnded=false;
 let streak=0, maxStreak=0;
 let hintDismissed=false;
+let _sessionStartTime = null;   // ISO string, set when startGame() is called
+let _sessionCompleted = false;  // true = deck exhausted, false = ran out of lives or quit
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -3117,6 +3181,26 @@ function closeQuitModal(){
 function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
   gameEnded=true;
+
+  // Record the abandoned session to Supabase
+  if(_sbReady && _sessionStartTime){
+    const correct_count = timeline.filter(i=>!i.wrong).length - 1;
+    const wrong_count   = timeline.filter(i=>i.wrong).length;
+    _sbRun('quit:session', () =>
+      _sb.from('game_sessions').insert({
+        player_id:       _playerId,
+        score,
+        correct_count:   Math.max(0, correct_count),
+        wrong_count,
+        max_streak:      maxStreak,
+        ended_at:        new Date().toISOString(),
+        completed:       false,
+        category_filter: 'all',
+        played_at:       _sessionStartTime || new Date().toISOString(),
+      })
+    );
+  }
+
   clearQuip();
   document.getElementById('current-card-container').innerHTML='';
   document.getElementById('end-game-bar').classList.remove('visible');
@@ -3443,6 +3527,9 @@ function startGame() {
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
   streak=0; maxStreak=0; hintDismissed=false;
+  _sessionStartTime = new Date().toISOString();
+  _sessionCompleted = false;
+  updateDayStreak();
   document.getElementById('current-card-container').innerHTML='';
   document.getElementById('end-game-bar').classList.remove('visible');
   clearQuip();
@@ -4142,14 +4229,14 @@ function handleDrop(dropIdx){
     showQuip(wrongQuip, fy(placed.year), 'wrong');
     scrollToCard(pi);
     setTimeout(()=>{
-      if(lives<=0){ triggerGameOver(); }
+      if(lives<=0){ triggerGameOver(false); }
       else{ renderTimeline(); nextCard(); }
     },1100);
   }
 }
 
 function nextCard(){
-  if(deck.length===0){ triggerGameOver(); return; }
+  if(deck.length===0){ triggerGameOver(true); return; }
   currentCard=deck[0]; deck=deck.slice(1);
   renderCurrentCard(); locked=false;
 }
@@ -4157,8 +4244,9 @@ function nextCard(){
 // ═══════════════════════════════════════════════════════════
 //  GAME OVER - show banner in game screen, NOT auto-redirect
 // ═══════════════════════════════════════════════════════════
-function triggerGameOver(){
+function triggerGameOver(completed = false){
   gameEnded=true;
+  _sessionCompleted = completed;
   currentCard=null;
   clearQuip();
   prepareGameOverScreen();
@@ -4196,11 +4284,15 @@ function prepareGameOverScreen(){
     const wrong_count   = timeline.filter(i=>i.wrong).length;
     _sbRun('gameOver:session', () =>
       _sb.from('game_sessions').insert({
-        player_id:     _playerId,
+        player_id:       _playerId,
         score,
         correct_count,
         wrong_count,
-        max_streak:    maxStreak,
+        max_streak:      maxStreak,
+        ended_at:        new Date().toISOString(),
+        completed:       _sessionCompleted,
+        category_filter: 'all',
+        played_at:       _sessionStartTime || new Date().toISOString(),
       })
     );
     if(score > prevHigh){
