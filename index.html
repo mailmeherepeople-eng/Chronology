@@ -217,6 +217,7 @@
     align-items: stretch;
     height: 100vh;
     overflow: hidden;
+    position: relative;
   }
 
   /* Row 1: header — fixed */
@@ -644,75 +645,246 @@
     to   { opacity:1; transform:translateY(0); }
   }
 
-  /* ── END GAME BUTTON ── */
-  .end-game-bar {
-    display: none;
-    flex-direction: row;
+  /* ── END GAME BAR — pinned to bottom of game screen ── */
+  .end-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 14px 16px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+    z-index: 30;
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.34,1.08,0.64,1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+  }
+  body.dark .end-bar {
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+  }
+  .end-bar.show { transform: translateY(0); }
+  .btn-row { display: flex; gap: 10px; }
+
+  /* see score button */
+  .btn-score {
+    flex: 1.2;
+    height: 54px;
+    background: #4F46E5;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 35px;
+    gap: 10px;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.4);
+    transition: transform 0.12s;
+    position: relative;
+    overflow: visible;
   }
-  .end-game-bar.visible { display: flex; }
-  .btn-end {
-    width: 140px;
-    height: 55px;
-    border-radius: var(--radius);
+  .btn-score:active { transform: scale(0.98); }
+
+  .score-block { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .score-eyebrow { font-size: 8px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+  .score-count { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -1px; color: #fff; min-width: 40px; text-align: center; }
+  .score-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.2); }
+  .score-label-right { font-size: 12px; font-weight: 700; color: #fff; }
+
+  /* new cards badge — floats above the button */
+  .new-badge {
+    position: absolute;
+    top: -10px; right: -6px;
+    background: #c0392b;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.5) translateY(4px);
+    transition: opacity 0.25s, transform 0.35s cubic-bezier(0.34,1.5,0.64,1);
+  }
+  .new-badge.show { opacity: 1; transform: scale(1) translateY(0); }
+
+  .btn-replay {
+    flex: 1;
+    height: 54px;
+    background: linear-gradient(160deg, #064e3b 0%, #047857 40%, #059669 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
     font-size: 13px;
     font-weight: 700;
     font-family: 'Source Sans 3', sans-serif;
     cursor: pointer;
-    letter-spacing: 0.3px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    letter-spacing: 0.4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 16px rgba(4,120,87,0.35);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn-replay:hover {
+    box-shadow: 0 6px 20px rgba(4,120,87,0.45);
+  }
+  .btn-replay:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(4,120,87,0.25); }
+
+  /* ── streak moment — fullscreen centered overlay ── */
+  .streak-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    z-index: 200;
+    pointer-events: none;
+    transition: background 0.4s ease;
+  }
+  .streak-overlay.show {
+    background: rgba(0,0,0,0.55);
+    pointer-events: all;
+  }
+  body.dark .streak-overlay.show {
+    background: rgba(0,0,0,0.7);
+  }
+  .streak-moment {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(0.7);
+    background: rgba(8,8,16,0.95);
+    border: 1.5px solid rgba(255,185,0,0.5);
+    border-radius: 20px;
+    padding: 28px 44px;
     text-align: center;
-    line-height: 1.3;
+    z-index: 201;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34,1.1,0.64,1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    min-width: 220px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,185,0,0.08);
   }
-  .btn-end-score {
-    background: #4F46E5;
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(79,70,229,0.35);
-    transition: background 0.15s, transform 0.12s;
+  .streak-moment.show {
+    opacity: 1;
+    transform: translate(-50%,-50%) scale(1);
+    pointer-events: all;
   }
-  .btn-end-score:hover { background: #4338CA; transform: translateY(-2px); }
-  .btn-end-score:active { transform: translateY(0); }
-  .btn-end-replay {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(79,70,229,0.35);
-    transition: background 0.15s, transform 0.12s;
-  }
-  .btn-end-replay:hover { background: var(--accent-dark); transform: translateY(-2px); }
-  .btn-end-replay:active { transform: translateY(0); }
+  .sm-eyebrow { font-size:9px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,190,50,0.75); margin-bottom:6px; }
+  .sm-num { font-family:'Lora',serif; font-size:64px; font-weight:700; line-height:1; letter-spacing:-2px; color:#fff; }
+  .sm-num.record { color:#f5c842; }
+  .sm-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,190,50,0.85); margin-top:4px; }
+  .sm-sub { font-size:12px; color:rgba(255,255,255,0.5); margin-top:10px; line-height:1.4; }
+  .sm-sub.record-text { color:rgba(245,200,66,0.85); }
 
   /* ── TOAST (year pill - sits in the gap between card stage and timeline) ── */
   /* ── GAME OVER ── */
   #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:28px 24px 32px; text-align:center; position:relative; overflow-y:auto; }
-  .gameover-emoji { font-size:44px; margin-bottom:6px; }
-  .gameover-title { font-size:22px; font-weight:700; color:var(--text); margin-bottom:6px; }
-  .gameover-sub { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; max-width:360px; }
-  .gameover-stats {
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:14px 24px;
-    margin-bottom:16px;
-    font-size:13px;
-    color:var(--muted);
-    min-width:240px;
-    width:100%;
-    max-width:320px;
+  .gameover-score-hero { margin-bottom:14px; width:100%; }
+  .gameover-score-num { font-family:'Lora',serif; font-size:60px; font-weight:700; color:var(--text); line-height:1; letter-spacing:-2px; }
+  .gameover-score-label { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  .gameover-score-high { font-size:12px; color:var(--muted); margin-top:4px; }
+  .gameover-score-high strong { color:var(--accent); }
+  .gameover-insight { font-size:13px; font-weight:600; color:var(--danger); margin-bottom:14px; line-height:1.4; max-width:260px; }
+  .gameover-chips { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; margin-bottom:16px; max-width:320px; }
+
+  /* ── base chip shell ── */
+  .gameover-chip { border-radius:12px; border:1.5px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; height:88px; position:relative; }
+  .gameover-chip-val { font-size:28px; font-weight:700; font-family:'Lora',serif; line-height:1; letter-spacing:-1px; position:relative; z-index:1; }
+  .gameover-chip-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; position:relative; z-index:1; }
+
+  /* ── correct — green radial base glow ── */
+  .chip-correct {
+    background: radial-gradient(ellipse at 50% 90%, #a8ffca 0%, #22c468 22%, #059650 45%, #024f28 72%, #011c10 100%);
+    border-color: #059650;
   }
-  .gameover-stats .stat-row {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:6px 0;
-    border-bottom:1px solid var(--border);
+  body.dark .chip-correct {
+    background: radial-gradient(ellipse at 50% 90%, #bbffd4 0%, #34d870 22%, #10a855 45%, #034428 72%, #010e08 100%);
+    border-color: #12b860;
   }
+  .chip-correct .gameover-chip-val { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.9); }
+  .chip-correct .gameover-chip-label { color:#fff; opacity:0.9; text-shadow:0 1px 4px rgba(0,0,0,0.7); }
+
+  /* ── streak — diagonal fire ombre ── */
+  .chip-streak {
+    background: linear-gradient(150deg, #3a0600 0%, #7a1200 18%, #cc2800 34%, #ff5500 50%, #ff8c00 66%, #ffbb00 80%, #ffdd44 100%);
+    border-color: #cc4400;
+  }
+  body.dark .chip-streak { border-color: #ff6600; }
+  .chip-streak .gameover-chip-val { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9); }
+  .chip-streak .gameover-chip-label { color:#fff; opacity:0.95; text-shadow:0 1px 4px rgba(0,0,0,0.8); }
+
+  /* ── high score — diagonal metallic gold ── */
+  .chip-highscore {
+    background: linear-gradient(135deg, #5a3a00 0%, #a06800 18%, #d4950c 32%, #f5c842 46%, #fef0b0 52%, #f0b829 58%, #c88208 74%, #8a5500 88%, #5a3a00 100%);
+    border-color: #c8860a;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.2);
+  }
+  body.dark .chip-highscore {
+    background: linear-gradient(135deg, #2a1a00 0%, #5a3800 18%, #9a6200 32%, #d4940a 46%, #f5c230 52%, #c48808 58%, #8a5800 74%, #4a2e00 88%, #2a1a00 100%);
+    border-color: #b87800;
+  }
+  .chip-highscore .gameover-chip-val { color:#2a1400; text-shadow:0 1px 0 rgba(255,230,120,0.6), 0 2px 4px rgba(0,0,0,0.2); }
+  body.dark .chip-highscore .gameover-chip-val { color:#fff8e0; text-shadow:0 1px 4px rgba(0,0,0,0.7), 0 0 10px rgba(255,200,50,0.3); }
+  .chip-highscore .gameover-chip-label { color:#3a2000; opacity:0.9; }
+  body.dark .chip-highscore .gameover-chip-label { color:#ffe580; opacity:0.9; }
+
+  /* ── avg score — bar chip ── */
+  /* ── avg chip: tinted by outcome, no numbers ── */
+  .chip-avg {
+    padding: 10px 12px;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+  }
+  .chip-avg-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:8px; width:100%; text-align:center; }
+  .chip-avg-arrow { width:0; height:0; margin-bottom:7px; flex-shrink:0; }
+  .chip-avg-track { width:100%; height:14px; border-radius:7px; overflow:hidden; }
+  .chip-avg-fill { height:100%; border-radius:7px; min-width:6px; }
+
+  /* above average — green tint */
+  .chip-avg.avg-up {
+    background: #edf7ef;
+    border-color: #059650;
+  }
+  body.dark .chip-avg.avg-up { background: #0a2016; border-color: #4caf7a; }
+  .chip-avg.avg-up .chip-avg-label { color: #059650; }
+  body.dark .chip-avg.avg-up .chip-avg-label { color: #4caf7a; }
+  .chip-avg.avg-up .chip-avg-arrow { border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:11px solid #059650; }
+  body.dark .chip-avg.avg-up .chip-avg-arrow { border-bottom-color: #4caf7a; }
+  .chip-avg.avg-up .chip-avg-track { background: rgba(5,150,80,0.15); }
+  body.dark .chip-avg.avg-up .chip-avg-track { background: rgba(76,175,122,0.2); }
+  .chip-avg.avg-up .chip-avg-fill { background: linear-gradient(to right, #059650, #34d399); }
+  body.dark .chip-avg.avg-up .chip-avg-fill { background: linear-gradient(to right, #4caf7a, #86efac); }
+
+  /* below average — red tint */
+  .chip-avg.avg-down {
+    background: #fdf0ee;
+    border-color: #c0392b;
+  }
+  body.dark .chip-avg.avg-down { background: #2a1210; border-color: #e05c4b; }
+  .chip-avg.avg-down .chip-avg-label { color: #c0392b; }
+  body.dark .chip-avg.avg-down .chip-avg-label { color: #e05c4b; }
+  .chip-avg.avg-down .chip-avg-arrow { border-left:7px solid transparent; border-right:7px solid transparent; border-top:11px solid #c0392b; }
+  body.dark .chip-avg.avg-down .chip-avg-arrow { border-top-color: #e05c4b; }
+  .chip-avg.avg-down .chip-avg-track { background: rgba(192,57,43,0.15); }
+  body.dark .chip-avg.avg-down .chip-avg-track { background: rgba(224,92,75,0.2); }
+  .chip-avg.avg-down .chip-avg-fill { background: linear-gradient(to right, #c0392b, #f87171); }
+  body.dark .chip-avg.avg-down .chip-avg-fill { background: linear-gradient(to right, #e05c4b, #fca5a5); }
+
+  /* no data yet */
+  .chip-avg.avg-none {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+  .chip-avg.avg-none .chip-avg-label { color: var(--muted); }
+  .gameover-stats { border:1px solid var(--border); border-radius:var(--radius); padding:14px 24px; margin-bottom:16px; font-size:13px; color:var(--muted); min-width:240px; width:100%; max-width:320px; }
+  .gameover-stats .stat-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); }
   .gameover-stats .stat-row:last-child { border-bottom:none; }
-  .gameover-stats .stat-label { color:var(--muted); font-size:12px; font-weight:500; letter-spacing:0.2px; }
-  .gameover-stats .stat-value { color:var(--text); font-size:15px; font-weight:700; }
+  .gameover-stats .stat-label { color:var(--muted); font-size:11px; font-weight:500; letter-spacing:0.2px; }
+  .gameover-stats .stat-value { color:var(--text); font-size:12px; font-weight:700; }
   .btn-group { display:flex; flex-direction:column; gap:10px; align-items:center; }
 
   /* ── TUTORIAL SCREEN ── */
@@ -1098,14 +1270,7 @@
     width: 100%;
     text-align: center;
   }
-  .share-card-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
+  .share-card-title { display: none; }
   /* Stats inside the card: no outer border, tighter */
   .share-card .gameover-stats {
     border: none;
@@ -1768,45 +1933,63 @@
 
   /* New cards unlocked banner on game over */
   .go-new-cards {
-    background: var(--accent-light);
-    border: 1.5px solid var(--accent);
-    border-radius: 12px;
-    padding: 14px 18px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
+    border: 1.5px solid #6366f1;
+    border-radius: 14px;
+    padding: 14px 16px;
     margin-bottom: 16px;
     width: 100%;
     max-width: 320px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
+  body.dark .go-new-cards {
+    background: linear-gradient(135deg, #0f0c29 0%, #1e1b4b 50%, #2d2a7a 100%);
+    border-color: #818cf8;
+    box-shadow: 0 4px 24px rgba(129,140,248,0.3);
+  }
+  .go-new-cards:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(99,102,241,0.45); }
+  .go-new-cards:active { transform: translateY(0); }
+  .go-new-cards-icon {
+    width: 38px; height: 38px; flex-shrink: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .go-new-cards-text { flex: 1; min-width: 0; }
   .go-new-cards-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--accent-text);
-    margin-bottom: 4px;
+    color: #fff;
+    margin-bottom: 3px;
+    letter-spacing: -0.1px;
   }
   .go-new-cards-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .go-new-cards-preview {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .go-new-card-chip {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--accent-text);
-    background: var(--surface);
-    border: 1px solid var(--accent);
-    border-radius: 20px;
-    padding: 3px 10px;
-    max-width: 150px;
+    font-size: 11px;
+    color: rgba(199,210,254,0.85);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .go-new-cards-arrow {
+    color: rgba(255,255,255,0.7);
+    font-size: 18px;
+    font-weight: 300;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .go-new-cards-btn {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 7px 13px;
+    font-size: 11px; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
   }
 </style>
 </head>
@@ -1959,10 +2142,6 @@
   <div class="card-stage" style="position:relative;">
     <div class="stage-label" id="stage-label"><strong style="font-size:11px;color:var(--text);">WHEN</strong> DOES THIS EVENT BELONG?</div>
     <div id="current-card-container"></div>
-    <div class="end-game-bar" id="end-game-bar">
-      <button class="btn-end btn-end-score" onclick="showScreen('gameover')">See My Score</button>
-      <button class="btn-end btn-end-replay" onclick="startGame()">Replay Game</button>
-    </div>
     <div class="drag-hint" id="drag-hint">👆 Drag the card down to the timeline below</div>
     <!-- Dark/light toggle floats bottom-right of card stage -->
     <button class="dark-toggle-game" onclick="toggleDark()" id="dark-toggle-game">
@@ -1974,32 +2153,71 @@
       <div class="timeline-line"></div>
     </div>
   </div>
+
+  <!-- Streak moment — fullscreen centered with dimming overlay -->
+  <div class="streak-overlay" id="streak-overlay"></div>
+  <div class="streak-moment" id="streak-moment">
+    <div class="sm-eyebrow">This run</div>
+    <div class="sm-num" id="sm-num">0</div>
+    <div class="sm-label">Best Streak</div>
+    <div class="sm-sub" id="sm-sub"></div>
+  </div>
+
+  <!-- End game bar — fixed to bottom of game screen -->
+  <div class="end-bar" id="end-game-bar">
+    <div class="btn-row">
+      <div class="btn-score" id="btn-end-score" onclick="showScreen('gameover')" style="position:relative;">
+        <div class="score-block">
+          <div class="score-eyebrow">Your Score</div>
+          <div class="score-count" id="end-score-counter">0</div>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-label-right">See Results</div>
+        <!-- badge floats above button -->
+        <div class="new-badge" id="end-new-badge"></div>
+      </div>
+      <button class="btn-replay" onclick="startGame()">Play Again</button>
+    </div>
+  </div>
 </div>
 
 <!-- GAME OVER -->
 <div id="screen-gameover" class="screen">
-  <h2 class="gameover-title" id="go-title"></h2>
 
-  <!-- New cards unlocked this run -->
-  <div class="go-new-cards" id="go-new-cards" style="display:none;">
-    <div class="go-new-cards-title" id="go-new-cards-title"></div>
-    <div class="go-new-cards-preview" id="go-new-cards-preview"></div>
-    <button class="btn-start" style="font-size:13px;padding:9px 20px;" onclick="
-      showScreen('collection');
-      _collectionSort='recent';
-      _selectedEras=new Set(ERAS.map(e=>e.label));
-      _selectedCats=new Set(Object.keys(CAT));
-      document.getElementById('era-chips').innerHTML='';
-      document.getElementById('cat-chips').innerHTML='';
-      initAudio();
-      if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
-    ">Go to My Collection</button>
+  <!-- New cards unlocked — sits above score when present -->
+  <div class="go-new-cards" id="go-new-cards" style="display:none;" onclick="
+    showScreen('collection');
+    _collectionSort='recent';
+    _selectedEras=new Set(ERAS.map(e=>e.label));
+    _selectedCats=new Set(Object.keys(CAT));
+    document.getElementById('era-chips').innerHTML='';
+    document.getElementById('cat-chips').innerHTML='';
+    initAudio();
+    if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
+  ">
+    <div class="go-new-cards-icon">✦</div>
+    <div class="go-new-cards-text">
+      <div class="go-new-cards-title" id="go-new-cards-title"></div>
+      <div class="go-new-cards-sub" id="go-new-cards-sub"></div>
+    </div>
+    <div class="go-new-cards-arrow">›</div>
   </div>
 
-  <!-- Single result card -->
+  <!-- Hero score -->
+  <div class="gameover-score-hero" id="go-score-hero">
+    <div class="gameover-score-num" id="go-score-num">0</div>
+    <div class="gameover-score-label">Points</div>
+    <div class="gameover-score-high" id="go-score-high"></div>
+  </div>
+
+  <!-- Personalised insight -->
+  <div class="gameover-insight" id="go-insight" style="display:none;"></div>
+
+  <!-- 2x2 stat chips -->
+  <div class="gameover-chips" id="go-chips"></div>
+
+  <!-- Category breakdown card -->
   <div class="share-card" id="share-card">
-    <div class="share-card-title">Your Result</div>
-    <div class="gameover-stats" id="go-stats"></div>
     <div id="sc-cats"></div>
     <div class="share-card-brand">Chronology &nbsp;·&nbsp; <strong>UPSC History</strong></div>
   </div>
@@ -2007,7 +2225,7 @@
   <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
 
   <div class="btn-group" style="width:100%;max-width:320px;">
-    <button class="btn-primary" id="share-btn" style="width:100%;" onclick="shareScore()">🔗 Challenge a Friend</button>
+    <button class="btn-primary" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
     <button class="btn-primary" style="width:100%;" onclick="startGame()">Play Again</button>
     <button class="btn-secondary" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
@@ -2398,9 +2616,7 @@ function toggleDark(){
 // ═══════════════════════════════════════════════════════════
 const CAT_STATS_KEY     = 'chronology-cat-stats';
 const MISTAKES_KEY      = 'chronology-mistakes';
-const CARD_STATS_KEY    = 'chronology-card-stats';  // {cardId: {attempts, correct}}
-const DAY_STREAK_KEY    = 'chronology-day-streak';  // int
-const LAST_PLAYED_KEY   = 'chronology-last-played'; // YYYY-MM-DD string
+const AVG_SCORE_KEY     = 'chronology-avg-score';    // running avg: {total, count}
 
 function getCategoryStats(){
   try { return JSON.parse(localStorage.getItem(CAT_STATS_KEY) || '{}'); }
@@ -2443,55 +2659,14 @@ function saveMistakes(list){
   });
 }
 
-// ── Per-card stats (attempts + correct per card) ──
-function getCardStats(){
-  try { return JSON.parse(localStorage.getItem(CARD_STATS_KEY) || '{}'); }
-  catch(e){ return {}; }
+// ── Running average score + correct tracking ──
+function getAvgData(key){ try { return JSON.parse(localStorage.getItem(key) || '{"total":0,"count":0}'); } catch(e){ return {total:0,count:0}; } }
+function recordSessionAvg(sessionScore, sessionCorrect){
+  const sc = getAvgData(AVG_SCORE_KEY);
+  sc.total += sessionScore; sc.count++;
+  try { localStorage.setItem(AVG_SCORE_KEY, JSON.stringify(sc)); } catch(e){}
 }
-function saveCardStats(stats){
-  try { localStorage.setItem(CARD_STATS_KEY, JSON.stringify(stats)); } catch(e){}
-  // Supabase sync — upsert all cards touched this write
-  _sbRun('cardStats', () => {
-    const rows = Object.entries(stats).map(([card_id, d]) => ({
-      player_id:    _playerId,
-      card_id:      parseInt(card_id),
-      attempts:     d.attempts,
-      correct_count: d.correct,
-      mastered:     d.correct >= 3,
-    }));
-    return _sb.from('player_cards')
-      .upsert(rows, { onConflict: 'player_id,card_id' });
-  });
-}
-
-// ── Day streak (consecutive days played) ──
-function updateDayStreak(){
-  const today      = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const lastPlayed = localStorage.getItem(LAST_PLAYED_KEY);
-  let streak       = parseInt(localStorage.getItem(DAY_STREAK_KEY) || '0');
-
-  if(lastPlayed === today){
-    // Already played today — streak unchanged
-  } else if(lastPlayed){
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    streak = lastPlayed === yesterday ? streak + 1 : 1;
-  } else {
-    streak = 1; // first ever play
-  }
-
-  localStorage.setItem(DAY_STREAK_KEY, String(streak));
-  localStorage.setItem(LAST_PLAYED_KEY, today);
-
-  // Sync to Supabase
-  if(_sbReady){
-    _sbRun('dayStreak', () =>
-      _sb.from('players')
-        .update({ current_streak: streak, last_played_date: today })
-        .eq('id', _playerId)
-    );
-  }
-  return streak;
-}
+function getAvgScore(){ const d = getAvgData(AVG_SCORE_KEY); return d.count > 0 ? Math.round(d.total / d.count) : null; }
 
 function trackPlacement(cat, isCorrect, ev){
   // Track category accuracy
@@ -2500,15 +2675,6 @@ function trackPlacement(cat, isCorrect, ev){
   stats[cat].attempts++;
   if(isCorrect) stats[cat].correct++;
   saveCategoryStats(stats);
-
-  // Track per-card attempts + correct_count
-  if(ev){
-    const cardStats = getCardStats();
-    if(!cardStats[ev.id]) cardStats[ev.id] = { attempts: 0, correct: 0 };
-    cardStats[ev.id].attempts++;
-    if(isCorrect) cardStats[ev.id].correct++;
-    saveCardStats(cardStats);
-  }
 
   // Track individual mistakes with card info
   if(!isCorrect && ev){
@@ -2613,7 +2779,7 @@ function buildCategoryBreakdown(){
   let html = '';
 
   if(worst.length > 0){
-    html += `<div class="cat-breakdown-title">Needs Work</div>`;
+    html += `<div class="cat-breakdown-title">Focus Areas</div>`;
     html += worst.map(makeRow).join('');
   }
   if(best.length > 0){
@@ -3155,8 +3321,8 @@ let deck=[], timeline=[], currentCard=null;
 let lives=3, score=0, locked=false, gameEnded=false;
 let streak=0, maxStreak=0;
 let hintDismissed=false;
-let _sessionStartTime = null;   // ISO string, set when startGame() is called
-let _sessionCompleted = false;  // true = deck exhausted, false = ran out of lives or quit
+let _sessionStartTime = null;
+let _sessionCompleted = false;
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -3181,29 +3347,12 @@ function closeQuitModal(){
 function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
   gameEnded=true;
-
-  // Record the abandoned session to Supabase
-  if(_sbReady && _sessionStartTime){
-    const correct_count = timeline.filter(i=>!i.wrong).length - 1;
-    const wrong_count   = timeline.filter(i=>i.wrong).length;
-    _sbRun('quit:session', () =>
-      _sb.from('game_sessions').insert({
-        player_id:       _playerId,
-        score,
-        correct_count:   Math.max(0, correct_count),
-        wrong_count,
-        max_streak:      maxStreak,
-        ended_at:        new Date().toISOString(),
-        completed:       false,
-        category_filter: 'all',
-        played_at:       _sessionStartTime || new Date().toISOString(),
-      })
-    );
-  }
-
+  const badge2 = document.getElementById('end-new-badge');
+  if(badge2){ badge2.textContent=''; badge2.classList.remove('show'); }
+  _hideStreakMoment();
   clearQuip();
   document.getElementById('current-card-container').innerHTML='';
-  document.getElementById('end-game-bar').classList.remove('visible');
+  document.getElementById('end-game-bar').classList.remove('show');
   showScreen('start');
 }
 
@@ -3522,16 +3671,20 @@ function startGame() {
   initAudio();
   const s=shuffle(EVENTS);
   timeline=[{ev:s[0],wrong:false}];
-  trackSeen(s[0]); // seed card is seen immediately
+  trackSeen(s[0]);
   currentCard=s[1];
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
   streak=0; maxStreak=0; hintDismissed=false;
   _sessionStartTime = new Date().toISOString();
   _sessionCompleted = false;
-  updateDayStreak();
+  // reset end-game elements
   document.getElementById('current-card-container').innerHTML='';
-  document.getElementById('end-game-bar').classList.remove('visible');
+  document.getElementById('end-game-bar').classList.remove('show');
+  document.getElementById('end-score-counter').textContent = '0';
+  const badge = document.getElementById('end-new-badge');
+  badge.textContent = ''; badge.classList.remove('show');
+  _hideStreakMoment();
   clearQuip();
   showScreen('game');
   renderAll();
@@ -4229,14 +4382,14 @@ function handleDrop(dropIdx){
     showQuip(wrongQuip, fy(placed.year), 'wrong');
     scrollToCard(pi);
     setTimeout(()=>{
-      if(lives<=0){ triggerGameOver(false); }
+      if(lives<=0){ triggerGameOver(); }
       else{ renderTimeline(); nextCard(); }
     },1100);
   }
 }
 
 function nextCard(){
-  if(deck.length===0){ triggerGameOver(true); return; }
+  if(deck.length===0){ _sessionCompleted=true; triggerGameOver(); return; }
   currentCard=deck[0]; deck=deck.slice(1);
   renderCurrentCard(); locked=false;
 }
@@ -4244,34 +4397,119 @@ function nextCard(){
 // ═══════════════════════════════════════════════════════════
 //  GAME OVER - show banner in game screen, NOT auto-redirect
 // ═══════════════════════════════════════════════════════════
-function triggerGameOver(completed = false){
+function triggerGameOver(){
   gameEnded=true;
-  _sessionCompleted = completed;
   currentCard=null;
   clearQuip();
   prepareGameOverScreen();
-
-  // Clear the card slot and show the See My Score button
   document.getElementById('current-card-container').innerHTML='';
-  document.getElementById('end-game-bar').classList.add('visible');
 
+  // Scroll timeline to start
   setTimeout(()=>{
     const w=document.getElementById('timeline-wrapper');
     if(w) w.scrollTo({left:0,behavior:'smooth'});
   },200);
+
+  // Determine run quality
+  const isGood = score >= 30;
+  const isBad  = score < 15;
+
+  // New cards count
+  const newIds = getNewIds();
+  const newThisRun = timeline.map(i=>i.ev).filter(ev=>newIds.has(ev.id));
+  const newCount = newThisRun.length;
+
+  // Check streak personal record
+  const prevBestStreak = parseInt(localStorage.getItem('chronology-best-streak')||'0');
+  const isStreakRecord  = maxStreak > 0 && maxStreak > prevBestStreak;
+  if(isStreakRecord) localStorage.setItem('chronology-best-streak', String(maxStreak));
+
+  // SEQUENCE — always show the full end-game effect:
+  // No streak (0):  bar slides up at t=300
+  // Any streak (1+): streak moment t=0 → fade → bar slides up
+  //   Normal (score < 30):  hold 1800ms
+  //   Good   (score >= 30): hold 2100ms
+
+  if(maxStreak < 1){
+    // no streak to show — go straight to bar
+    _showEndBar(score, newCount, 300);
+  } else {
+    _showStreakMoment(maxStreak, isStreakRecord);
+    // Hold for 3 seconds, then fade out and show bar
+    const holdDur = 3000;
+    setTimeout(()=>{
+      _hideStreakMoment();
+    }, holdDur);
+    const barDelay = holdDur + 400;
+    _showEndBar(score, newCount, barDelay);
+  }
+}
+
+function _showStreakMoment(streak, isRecord){
+  const overlay = document.getElementById('streak-overlay');
+  const moment  = document.getElementById('streak-moment');
+  const num     = document.getElementById('sm-num');
+  const sub     = document.getElementById('sm-sub');
+  num.textContent = streak;
+  num.className   = 'sm-num' + (isRecord ? ' record' : '');
+  if(isRecord){
+    sub.textContent  = 'New personal record!';
+    sub.className    = 'sm-sub record-text';
+  } else if(streak >= 7){
+    sub.textContent  = 'Unstoppable. Can you beat it?';
+    sub.className    = 'sm-sub';
+  } else if(streak >= 3){
+    sub.textContent  = 'Solid streak. Can you beat it?';
+    sub.className    = 'sm-sub';
+  } else {
+    sub.textContent  = 'Keep going next round';
+    sub.className    = 'sm-sub';
+  }
+  overlay.classList.add('show');
+  moment.classList.add('show');
+}
+
+function _hideStreakMoment(){
+  document.getElementById('streak-moment').classList.remove('show');
+  document.getElementById('streak-overlay').classList.remove('show');
+}
+
+function _showEndBar(finalScore, newCount, delay){
+  setTimeout(()=>{
+    // determine count-up duration by run quality
+    const duration = finalScore >= 30 ? 600 : finalScore >= 15 ? 1200 : 2500;
+    const bar      = document.getElementById('end-game-bar');
+    const counter  = document.getElementById('end-score-counter');
+    counter.textContent = '0';
+    bar.classList.add('show');
+
+    // score count-up
+    const steps    = 24;
+    const interval = duration / steps;
+    const inc      = finalScore / steps;
+    let val        = 0;
+    const t = setInterval(()=>{
+      val = Math.min(finalScore, val + inc);
+      counter.textContent = Math.round(val);
+      if(val >= finalScore){
+        clearInterval(t);
+        counter.textContent = finalScore;
+        // badge pops after score lands
+        if(newCount > 0){
+          setTimeout(()=>{
+            const badge = document.getElementById('end-new-badge');
+            badge.textContent = newCount + ' new';
+            badge.classList.add('show');
+          }, 350);
+        }
+      }
+    }, interval);
+  }, delay);
 }
 
 function prepareGameOverScreen(){
-  const tiers=[
-    {m:"Yeh toh Prelims bhi clear nahi hoga..."},
-    {m:'Keep Practicing. UPSC hai, easy nahi hai!'},
-    {m:'Good Effort! You know your history.'},
-    {m:'Outstanding! IAS material confirmed.'},
-  ];
-  const t=score>=40?3:score>=20?2:score>=8?1:0;
-  document.getElementById('go-title').textContent=tiers[t].m;
-  const correct=timeline.filter(i=>!i.wrong).length - 1;
-  const wrong=timeline.filter(i=>i.wrong).length;
+  const correct = timeline.filter(i=>!i.wrong).length - 1;
+  const wrong   = timeline.filter(i=>i.wrong).length;
 
   // High score via localStorage
   const prevHigh = parseInt(localStorage.getItem('chronology-high') || '0');
@@ -4304,49 +4542,108 @@ function prepareGameOverScreen(){
     }
   }
 
+  // ── Hero score ──
+  document.getElementById('go-score-num').textContent = score;
+  const highEl = document.getElementById('go-score-high');
+  if(score > prevHigh && prevHigh > 0){
+    highEl.innerHTML = 'New high score!';
+    highEl.style.color = 'var(--accent)';
+    highEl.style.fontWeight = '700';
+  } else {
+    highEl.innerHTML = `High score: <strong>${newHigh} pts</strong>`;
+  }
+
+  // ── Personalised insight ──
+  const insightEl = document.getElementById('go-insight');
+  const catStats = getCategoryStats();
+  const worstCat = Object.entries(catStats)
+    .filter(([,d]) => d.attempts >= 2)
+    .sort((a,b) => (a[1].correct/a[1].attempts) - (b[1].correct/b[1].attempts))[0];
+  const mistakes = getMistakes();
+  const topMistake = [...mistakes].sort((a,b) => b.count - a.count)[0];
+
+  let insight = '';
+  if(topMistake && topMistake.count >= 3){
+    insight = `You've got "${topMistake.label}" wrong ${topMistake.count} times now.`;
+  } else if(worstCat && (worstCat[1].correct / worstCat[1].attempts) < 0.4){
+    const pct = Math.round(worstCat[1].correct / worstCat[1].attempts * 100);
+    insight = `${worstCat[0]}: ${pct}% accuracy. That's your weak spot.`;
+  } else if(score === 0){
+    insight = `Zero points. Everyone starts somewhere.`;
+  }
+  if(insight){
+    insightEl.textContent = insight;
+    insightEl.style.display = '';
+  } else {
+    insightEl.style.display = 'none';
+  }
+
+  // ── Record running averages (must happen BEFORE reading them below) ──
+  recordSessionAvg(score, correct);
+
+
+  // ── 2x2 stat chips ──
+  const avgScore = getAvgScore();
+  const avgData  = getAvgData(AVG_SCORE_KEY);
+
+  // avg chip: determine state
+  let avgClass = 'avg-none';
+  let avgArrow = '';
+  let avgBarPct = 0;
+  if(avgData.count >= 2 && avgScore !== null){
+    // compare THIS session score vs historical avg (before this session was added)
+    const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
+    if(score >= prevAvg){
+      avgClass = 'avg-up';
+      avgArrow = '<div class="chip-avg-arrow"></div>';
+      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+    } else {
+      avgClass = 'avg-down';
+      avgArrow = '<div class="chip-avg-arrow"></div>';
+      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+    }
+  } else {
+    avgBarPct = 0;
+  }
+
+  document.getElementById('go-chips').innerHTML = `
+    <div class="gameover-chip chip-correct">
+      <div class="gameover-chip-label">Correct</div>
+      <div class="gameover-chip-val">${correct}</div>
+    </div>
+    <div class="gameover-chip chip-streak">
+      <div class="gameover-chip-label">Best Streak</div>
+      <div class="gameover-chip-val">${maxStreak}</div>
+    </div>
+    <div class="gameover-chip chip-avg ${avgClass}">
+      <div class="chip-avg-label">Average</div>
+      ${avgArrow}
+      <div class="chip-avg-track">
+        <div class="chip-avg-fill" style="width:${avgBarPct}%"></div>
+      </div>
+    </div>
+    <div class="gameover-chip chip-highscore">
+      <div class="gameover-chip-label">High Score</div>
+      <div class="gameover-chip-val">${newHigh}</div>
+    </div>
+  `;
+
   // ── New cards unlocked this run ──
-  // timeline contains all placed cards. Cross-reference with NEW_KEY
-  // to find which ones were freshly unlocked this session.
   const newIds = getNewIds();
-  const newThisRun = timeline
-    .map(i => i.ev)
-    .filter(ev => newIds.has(ev.id));
-
+  const newThisRun = timeline.map(i => i.ev).filter(ev => newIds.has(ev.id));
   const newCardsEl = document.getElementById('go-new-cards');
-  const newCardsTitleEl = document.getElementById('go-new-cards-title');
-  const newCardsPreviewEl = document.getElementById('go-new-cards-preview');
-
   if(newThisRun.length > 0){
-    newCardsEl.style.display = 'block';
-    newCardsTitleEl.textContent = newThisRun.length === 1
-      ? 'You unlocked 1 new card this run!'
-      : `You unlocked ${newThisRun.length} new cards this run!`;
-    newCardsPreviewEl.innerHTML = '';
+    newCardsEl.style.display = 'flex';
+    document.getElementById('go-new-cards-title').textContent =
+      newThisRun.length === 1 ? '1 new card unlocked' : `${newThisRun.length} new cards unlocked`;
+    const preview = newThisRun.slice(0, 2).map(ev => ev.label).join(' · ')
+      + (newThisRun.length > 2 ? ` · +${newThisRun.length - 2} more` : '');
+    document.getElementById('go-new-cards-sub').textContent = preview;
   } else {
     newCardsEl.style.display = 'none';
   }
 
-  // Stats inside the single result card
-  document.getElementById('go-stats').innerHTML=`
-    <div class="stat-row">
-      <span class="stat-label">Score</span>
-      <span class="stat-value">${score} pts${score > prevHigh && prevHigh > 0 ? ' 🏆' : ''}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">High Score</span>
-      <span class="stat-value">${newHigh} pts</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Correct Placements</span>
-      <span class="stat-value">${correct}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Best Streak</span>
-      <span class="stat-value">${maxStreak}</span>
-    </div>
-  `;
-
-  // Category breakdown: shows history across all sessions
+  // ── Category breakdown ──
   document.getElementById('sc-cats').innerHTML = buildCategoryBreakdown();
 }
 

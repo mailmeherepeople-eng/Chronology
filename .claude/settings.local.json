@@ -5,7 +5,9 @@
       "Bash(where npx:*)",
       "Bash(cmd.exe /c \"where npx & where python & where python3 & where node\")",
       "Bash(cmd.exe /c \"where npx\")",
-      "Bash(start \"\" \"C:\\\\Users\\\\user\\\\Documents\\\\GitHub\\\\UPSC-timeline-game\\\\index.html\")"
+      "Bash(start \"\" \"C:\\\\Users\\\\user\\\\Documents\\\\GitHub\\\\UPSC-timeline-game\\\\index.html\")",
+      "Bash(ls *.html *.json)",
+      "Bash(dir /b *.html *.json)"
     ]
   }
 }
