@@ -571,7 +571,7 @@
   .card-stripe { position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
   .card-category { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; margin-top:1px; }
   .card-label { font-family: 'Lora', serif; font-size:12px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:2px; }
-  .card-sublabel { font-size:10px; color:var(--muted); font-style:italic; }
+  .card-sublabel { font-size:12px; color:var(--muted); font-style:italic; font-weight:700; }
 
   /* ── CARD LAYOUT: 90px image top, text body bottom ── */
   .card-img-banner {
@@ -647,7 +647,7 @@
     text-shadow: 0 1px 4px rgba(255,255,255,0.5);
   }
   .card-img-sublabel {
-    font-size: 8px;
+    font-size: 10px;
     color: var(--muted);
     font-style: italic;
     overflow: hidden;
@@ -691,10 +691,12 @@
     padding: 42px 12px 20px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x;
+    overscroll-behavior-x: contain;
   }
   .timeline-track {
     display:flex; align-items:flex-start;
     min-width:max-content; position:relative;
+    touch-action: pan-x;
   }
   .timeline-line {
     position:absolute;
@@ -739,11 +741,17 @@
     background: var(--surface);
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
     /* Allow iOS to scroll the timeline horizontally even though tl-cards
        now have JS touch listeners (addLongPress). Without this declaration,
        iOS defers scroll initiation when it sees a touchstart handler on a
        child element, breaking -webkit-overflow-scrolling: touch. */
     touch-action: pan-x;
+  }
+  .tl-card img {
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
   }
 
   .tl-card.just-correct {
@@ -1940,6 +1948,9 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
     padding: 0;
     width: 100%;
     box-shadow: var(--shadow-lg);
@@ -1961,6 +1972,9 @@
     height: 100%;
     object-fit: cover;
     object-position: center 25%;
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
   }
   .card-detail-img::after {
     content: '';
@@ -2002,7 +2016,7 @@
   }
   .card-detail-sublabel {
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
     font-style: italic;
     padding: 0 20px;
@@ -4325,7 +4339,10 @@ function renderCurrentCard(){
   }, {passive:true});
 
   card.addEventListener('touchmove', e=>{
-    e.preventDefault();
+    // NOTE: no e.preventDefault() — touch-action:none on .event-card CSS
+    // already prevents scroll/zoom. Removing the non-passive handler lets
+    // iOS WebKit (Safari, Chrome, Instagram WKWebView) freely scroll
+    // other containers like the timeline.
     if(!touchClone) return;
     const t = e.touches[0];
 
@@ -4366,7 +4383,7 @@ function renderCurrentCard(){
       const over = t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom;
       if(over) setActiveDZ(dz);
     });
-  }, {passive:false});
+  }, {passive:true});
 
   function onTouchEnd(e){
     const t = e.changedTouches[0];
