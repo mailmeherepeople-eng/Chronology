@@ -163,6 +163,27 @@
     box-shadow: 0 2px 8px rgba(79,70,229,0.25);
   }
 
+  .btn-collection-green {
+    background: #14532D;
+    color: #A7F3D0;
+    border: 1px solid rgba(167,243,208,0.15);
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
+    box-shadow: 0 4px 14px rgba(20,83,45,0.45), 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .btn-collection-green:hover {
+    background: #166534;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20,83,45,0.5), 0 2px 6px rgba(0,0,0,0.14);
+  }
+  .btn-collection-green:active { transform: translateY(0); }
+
   .btn-secondary {
     background: transparent;
     color: var(--text);
@@ -841,8 +862,10 @@
   }
   .chip-avg-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:8px; width:100%; text-align:center; }
   .chip-avg-arrow { width:0; height:0; margin-bottom:7px; flex-shrink:0; }
-  .chip-avg-track { width:100%; height:14px; border-radius:7px; overflow:hidden; }
-  .chip-avg-fill { height:100%; border-radius:7px; min-width:6px; }
+  .chip-avg-track { width:100%; height:14px; border-radius:7px; overflow:hidden; position:relative; }
+  .chip-avg-center { position:absolute; left:50%; top:0; bottom:0; width:2px; transform:translateX(-1px); background:rgba(255,255,255,0.5); z-index:2; }
+  body.dark .chip-avg-center { background:rgba(255,255,255,0.3); }
+  .chip-avg-fill { height:100%; border-radius:7px; min-width:6px; position:relative; z-index:1; }
 
   /* above average — green tint */
   .chip-avg.avg-up {
@@ -2008,7 +2031,7 @@
   <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-primary" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
-    <button class="btn-secondary" style="width:100%;position:relative;" id="btn-collection" onclick="
+    <button class="btn-collection-green" style="width:100%;position:relative;" id="btn-collection" onclick="
       showScreen('collection');
       _collectionSort='date';
       _selectedEras=new Set(ERAS.map(e=>e.label));
@@ -2227,7 +2250,7 @@
   <div class="btn-group" style="width:100%;max-width:320px;">
     <button class="btn-primary" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
     <button class="btn-primary" style="width:100%;" onclick="startGame()">Play Again</button>
-    <button class="btn-secondary" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
+    <button class="btn-collection-green" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
 </div>
 
@@ -4478,25 +4501,34 @@ function _hideStreakMoment(){
 
 function _showEndBar(finalScore, newCount, delay){
   setTimeout(()=>{
-    // determine count-up duration by run quality
-    const duration = finalScore >= 30 ? 600 : finalScore >= 15 ? 1200 : 2500;
-    const bar      = document.getElementById('end-game-bar');
-    const counter  = document.getElementById('end-score-counter');
+    const TOTAL_DUR = 1500; // always 1.5s
+    const bar     = document.getElementById('end-game-bar');
+    const counter = document.getElementById('end-score-counter');
     counter.textContent = '0';
     bar.classList.add('show');
 
-    // score count-up
-    const steps    = 24;
-    const interval = duration / steps;
-    const inc      = finalScore / steps;
-    let val        = 0;
-    const t = setInterval(()=>{
-      val = Math.min(finalScore, val + inc);
-      counter.textContent = Math.round(val);
-      if(val >= finalScore){
-        clearInterval(t);
+    if(finalScore <= 0){
+      counter.textContent = '0';
+      return;
+    }
+
+    // Easing exponent: low score = gentle curve (feels slow),
+    // high score = steep curve (feels fast), all slow down at end
+    const exp = finalScore >= 30 ? 3.0 : finalScore >= 15 ? 2.2 : 1.6;
+
+    const startTime = performance.now();
+    function tick(now){
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / TOTAL_DUR); // 0→1 linear progress
+      // ease-out power curve: fast start, slows near end
+      const eased = 1 - Math.pow(1 - t, exp);
+      const val = Math.round(eased * finalScore);
+      counter.textContent = val;
+
+      if(t < 1){
+        requestAnimationFrame(tick);
+      } else {
         counter.textContent = finalScore;
-        // badge pops after score lands
         if(newCount > 0){
           setTimeout(()=>{
             const badge = document.getElementById('end-new-badge');
@@ -4505,11 +4537,12 @@ function _showEndBar(finalScore, newCount, delay){
           }, 350);
         }
       }
-    }, interval);
+    }
+    requestAnimationFrame(tick);
   }, delay);
 }
 
-function prepareGameOverScreen(){
+async function prepareGameOverScreen(){
   const correct = timeline.filter(i=>!i.wrong).length - 1;
   const wrong   = timeline.filter(i=>i.wrong).length;
 
@@ -4580,32 +4613,71 @@ function prepareGameOverScreen(){
     insightEl.style.display = 'none';
   }
 
-  // ── Record running averages (must happen BEFORE reading them below) ──
+  // ── Record running averages ──
   recordSessionAvg(score, correct);
 
-
-  // ── 2x2 stat chips ──
-  const avgScore = getAvgScore();
-  const avgData  = getAvgData(AVG_SCORE_KEY);
-
-  // avg chip: determine state
+  // ── Fetch global average from Supabase ──
   let avgClass = 'avg-none';
   let avgArrow = '';
   let avgBarPct = 0;
-  if(avgData.count >= 2 && avgScore !== null){
-    // compare THIS session score vs historical avg (before this session was added)
-    const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
-    if(score >= prevAvg){
-      avgClass = 'avg-up';
-      avgArrow = '<div class="chip-avg-arrow"></div>';
-      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
-    } else {
-      avgClass = 'avg-down';
-      avgArrow = '<div class="chip-avg-arrow"></div>';
-      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+
+  if(_sbReady){
+    try {
+      const { data: globalData } = await _sb.rpc('get_global_avg_score').maybeSingle
+        ? await _sb.from('game_sessions').select('score')
+        : { data: null };
+      // Fallback: compute from all game_sessions
+      const { data: allSessions } = await _sb.from('game_sessions').select('score');
+      if(allSessions && allSessions.length >= 2){
+        const globalTotal = allSessions.reduce((sum, s) => sum + s.score, 0);
+        const globalAvg = globalTotal / allSessions.length;
+        if(score >= globalAvg){
+          avgClass = 'avg-up';
+          avgArrow = '<div class="chip-avg-arrow"></div>';
+          // Bar: 50% = global avg. Score above avg maps 50-100%
+          const ratio = globalAvg > 0 ? score / globalAvg : 1;
+          avgBarPct = Math.min(100, Math.round(50 * ratio));
+        } else {
+          avgClass = 'avg-down';
+          avgArrow = '<div class="chip-avg-arrow"></div>';
+          // Bar: score below avg maps 0-50%
+          const ratio = globalAvg > 0 ? score / globalAvg : 0;
+          avgBarPct = Math.max(5, Math.round(50 * ratio));
+        }
+      }
+    } catch(e){
+      // If Supabase query fails, fall back to local average
+      const avgScore = getAvgScore();
+      const avgData  = getAvgData(AVG_SCORE_KEY);
+      if(avgData.count >= 2 && avgScore !== null){
+        const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
+        if(score >= prevAvg){
+          avgClass = 'avg-up';
+          avgArrow = '<div class="chip-avg-arrow"></div>';
+          avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+        } else {
+          avgClass = 'avg-down';
+          avgArrow = '<div class="chip-avg-arrow"></div>';
+          avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+        }
+      }
     }
   } else {
-    avgBarPct = 0;
+    // No Supabase — use local average
+    const avgScore = getAvgScore();
+    const avgData  = getAvgData(AVG_SCORE_KEY);
+    if(avgData.count >= 2 && avgScore !== null){
+      const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
+      if(score >= prevAvg){
+        avgClass = 'avg-up';
+        avgArrow = '<div class="chip-avg-arrow"></div>';
+        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+      } else {
+        avgClass = 'avg-down';
+        avgArrow = '<div class="chip-avg-arrow"></div>';
+        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
+      }
+    }
   }
 
   document.getElementById('go-chips').innerHTML = `
@@ -4618,9 +4690,10 @@ function prepareGameOverScreen(){
       <div class="gameover-chip-val">${maxStreak}</div>
     </div>
     <div class="gameover-chip chip-avg ${avgClass}">
-      <div class="chip-avg-label">Average</div>
+      <div class="chip-avg-label">vs Global Average</div>
       ${avgArrow}
       <div class="chip-avg-track">
+        <div class="chip-avg-center"></div>
         <div class="chip-avg-fill" style="width:${avgBarPct}%"></div>
       </div>
     </div>

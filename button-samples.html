@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Collection Button Samples</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: #0D0D0D;
+    color: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 40px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .option-card {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+  .option-card h2 {
+    font-size: 18px;
+    margin: 0 0 6px 0;
+    color: #fff;
+  }
+  .option-card p {
+    font-size: 13px;
+    color: #999;
+    margin: 0 0 20px 0;
+  }
+  .option-card button {
+    letter-spacing: 0.3px;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .option-card button:hover {
+    transform: translateY(-2px);
+  }
+  .option-card button:active {
+    transform: translateY(0);
+  }
+  .current-label {
+    display: inline-block;
+    background: #333;
+    color: #aaa;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+
+<h1>My Collection Button — Color Options</h1>
+
+<!-- CURRENT -->
+<div class="option-card">
+  <span class="current-label">CURRENT</span>
+  <h2>Current Style (Secondary)</h2>
+  <p>Transparent with border — blends in, not distinctive</p>
+  <button style="
+    background: transparent;
+    color: #E0E0E0;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    width: 100%;
+  ">My Collection</button>
+</div>
+
+<!-- OPTION A -->
+<div class="option-card">
+  <h2>Option A — Emerald Solid</h2>
+  <p>Rich jewel tone — #047857 — Bold and confident</p>
+  <button style="
+    background: #047857;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(4,120,87,0.35), 0 1px 3px rgba(0,0,0,0.12);
+    width: 100%;
+  ">My Collection</button>
+</div>
+
+<!-- OPTION B -->
+<div class="option-card">
+  <h2>Option B — Forest Green Gradient</h2>
+  <p>Deep forest to emerald — #065F46 → #047857 — Premium feel</p>
+  <button style="
+    background: linear-gradient(135deg, #065F46, #047857);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(6,95,70,0.4), 0 1px 3px rgba(0,0,0,0.15);
+    width: 100%;
+  ">My Collection</button>
+</div>
+
+<!-- OPTION C -->
+<div class="option-card">
+  <h2>Option C — Dark Racing Green (Luxury)</h2>
+  <p>Very dark green with mint text — #14532D + #A7F3D0</p>
+  <button style="
+    background: #14532D;
+    color: #A7F3D0;
+    border: 1px solid rgba(167,243,208,0.15);
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(20,83,45,0.45), 0 1px 3px rgba(0,0,0,0.2);
+    width: 100%;
+  ">My Collection</button>
+</div>
+
+<!-- OPTION D -->
+<div class="option-card">
+  <h2>Option D — Green with Gold (Royal)</h2>
+  <p>Deep green with gold text — #064E3B + #FCD34D — Regal, historical</p>
+  <button style="
+    background: linear-gradient(135deg, #064E3B, #065F46);
+    color: #FCD34D;
+    border: 1px solid rgba(252,211,77,0.2);
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(6,78,59,0.5), 0 1px 3px rgba(0,0,0,0.2);
+    width: 100%;
+  ">My Collection</button>
+</div>
+
+</body>
+</html>
