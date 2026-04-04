@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extra Life — Mechanic Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e4e0d8;
+    --text: #1c1a16;
+    --muted: #8a8478;
+    --accent: #4F46E5;
+    --accent-rgb: 79, 70, 229;
+    --accent-dark: #4338CA;
+    --accent-light: #EEF2FF;
+    --danger: #c0392b;
+    --danger-light: #fdf0ee;
+    --success: #27613a;
+    --success-light: #edf7ef;
+    --gold: #f0a500;
+    --gold-light: #fffbeb;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+    gap: 28px;
+  }
+
+  h1 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+
+  /* ── GAME HEADER MOCK ── */
+  .game-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    gap: 16px;
+  }
+
+  .stat-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stat-value {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    min-width: 32px;
+    text-align: center;
+    transition: transform 0.15s, color 0.15s;
+  }
+  .stat-value.bump {
+    animation: statBump 0.35s cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  @keyframes statBump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.35); color: var(--accent); }
+    100% { transform: scale(1); }
+  }
+
+  /* Hearts */
+  .lives {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .heart {
+    font-size: 28px;
+    display: inline-block;
+    color: var(--danger);
+    transform-origin: center top;
+    transition: opacity 0.3s;
+    line-height: 1;
+  }
+  .heart.lost { opacity: 0.18; }
+  .heart.breaking {
+    animation: heartBreak 0.6s ease forwards;
+  }
+  @keyframes heartBreak {
+    0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+    20%  { transform: scale(1.35) rotate(-10deg); opacity: 1; }
+    50%  { transform: scale(0.9) rotate(8deg); opacity: 0.7; }
+    100% { transform: scale(0.7) translateY(18px) rotate(15deg); opacity: 0; }
+  }
+
+  /* ── SHIELD (EXTRA LIFE) ── */
+  .shield-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 40px;
+  }
+
+  .shield {
+    width: 36px;
+    height: 36px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+  }
+
+  .shield-icon {
+    font-size: 28px;
+    line-height: 1;
+    transition: transform 0.2s, filter 0.2s, opacity 0.3s;
+    filter: grayscale(1) opacity(0.25);
+    transform-origin: center;
+  }
+
+  /* EARNED state */
+  .shield.earned .shield-icon {
+    filter: none;
+    animation: shieldPop 0.5s cubic-bezier(0.34, 1.7, 0.64, 1) forwards;
+  }
+  @keyframes shieldPop {
+    0%   { transform: scale(0.3) rotate(-20deg); filter: none; }
+    60%  { transform: scale(1.2) rotate(5deg); }
+    80%  { transform: scale(0.92) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  /* Glow pulse on earned shield */
+  .shield.earned::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(240, 165, 0, 0.4) 0%, transparent 70%);
+    animation: shieldGlow 1.8s ease-in-out infinite;
+  }
+  @keyframes shieldGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  /* USED / SPENT state */
+  .shield.used .shield-icon {
+    filter: grayscale(1) opacity(0.18);
+    animation: shieldShatter 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+  }
+  @keyframes shieldShatter {
+    0%   { transform: scale(1) rotate(0deg); filter: none; }
+    15%  { transform: scale(1.3) rotate(-8deg); filter: drop-shadow(0 0 6px rgba(240,165,0,0.8)); }
+    30%  { transform: scale(0.85) rotate(12deg); }
+    50%  { transform: scale(1.1) rotate(-6deg); opacity: 0.7; }
+    80%  { transform: scale(0.7) rotate(5deg); opacity: 0.3; filter: grayscale(1); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; filter: grayscale(1) opacity(0.18); }
+  }
+
+  .shield-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    transition: color 0.3s;
+  }
+  .shield-wrap.earned .shield-label {
+    color: var(--gold);
+  }
+
+  /* ── EARN BANNER ── */
+  .earn-banner {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(135deg, #78350f, #a16207, #ca8a04, #f0a500, #fbbf24);
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(240,165,0,0.35);
+    transform: translateY(-12px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .earn-banner.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .earn-banner-icon { font-size: 28px; flex-shrink: 0; }
+  .earn-banner-text {}
+  .earn-banner-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.1px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .earn-banner-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.82);
+    margin-top: 1px;
+  }
+
+  /* ── SAVE FLASH ── */
+  .save-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(240,165,0,0.22) 0%, transparent 65%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100;
+    transition: opacity 0.1s;
+  }
+  .save-flash.show {
+    animation: flashPulse 0.6s ease-out forwards;
+  }
+  @keyframes flashPulse {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── SAVE TOAST ── */
+  .save-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.7);
+    background: rgba(10,8,4,0.92);
+    border: 1.5px solid rgba(240,165,0,0.55);
+    border-radius: 16px;
+    padding: 18px 32px;
+    text-align: center;
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 0 0 rgba(240,165,0,0);
+  }
+  .save-toast.show {
+    animation: toastIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) forwards,
+               toastOut 0.35s ease 1.4s forwards;
+  }
+  @keyframes toastIn {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.65); box-shadow: 0 0 0 0 rgba(240,165,0,0.4); }
+    60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 40px 8px rgba(240,165,0,0.18); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 24px 4px rgba(240,165,0,0.1); }
+  }
+  @keyframes toastOut {
+    0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
+  .save-toast-icon { font-size: 36px; margin-bottom: 8px; display: block; }
+  .save-toast-title {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .save-toast-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.4;
+  }
+
+  /* ── QUIP BANNER ── */
+  .quip-banner {
+    width: 100%;
+    max-width: 420px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    opacity: 0;
+    transition: opacity 0.25s, background 0.2s;
+  }
+  .quip-banner.show { opacity: 1; animation: quipIn 0.3s ease; }
+  @keyframes quipIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
+  .quip-banner.correct { background: var(--accent); color: #fff; }
+  .quip-banner.wrong   { background: var(--danger);  color: #fff; }
+  .quip-banner.saved   { background: linear-gradient(90deg, #92400e, #d97706); color: #fff; }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+  .btn-correct {
+    background: var(--success);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(39,97,58,0.35);
+  }
+  .btn-correct:hover:not(:disabled) {
+    background: #1f5230;
+    box-shadow: 0 6px 20px rgba(39,97,58,0.45);
+  }
+  .btn-wrong {
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(192,57,43,0.35);
+  }
+  .btn-wrong:hover:not(:disabled) {
+    background: #a93226;
+    box-shadow: 0 6px 20px rgba(192,57,43,0.45);
+  }
+  .btn-reset {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    flex: 0 0 auto;
+    min-width: auto;
+    padding: 14px 16px;
+  }
+  .btn-reset:hover { border-color: var(--muted); }
+
+  /* ── STATE LOG ── */
+  .state-log {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .state-log-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .log-entry {
+    padding: 2px 0;
+    transition: color 0.2s;
+  }
+  .log-entry.correct { color: var(--success); }
+  .log-entry.wrong   { color: var(--danger); }
+  .log-entry.saved   { color: var(--gold); font-weight: 700; }
+  .log-entry.system  { color: var(--accent); }
+
+  /* ── MECHANIC NOTES ── */
+  .notes {
+    width: 100%;
+    max-width: 420px;
+    background: var(--accent-light);
+    border: 1px solid rgba(79,70,229,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .notes-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .divider {
+    width: 100%;
+    max-width: 420px;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <h1>Extra Life — Mechanic Demo</h1>
+  <p class="subtitle">Simulate correct / wrong answers to see how it plays out</p>
+</div>
+
+<!-- Earn banner (appears when milestone hit) -->
+<div class="earn-banner" id="earn-banner">
+  <div class="earn-banner-icon">🛡️</div>
+  <div class="earn-banner-text">
+    <div class="earn-banner-title">Extra Life earned!</div>
+    <div class="earn-banner-sub">5-streak. One free pass saved up.</div>
+  </div>
+</div>
+
+<!-- Game Header Mock -->
+<div class="game-header">
+  <!-- Streak -->
+  <div class="stat-group">
+    <div class="stat-label">Streak</div>
+    <div class="stat-value" id="streak-val">0</div>
+  </div>
+
+  <!-- Score -->
+  <div class="stat-group">
+    <div class="stat-label">Score</div>
+    <div class="stat-value" id="score-val">0</div>
+  </div>
+
+  <!-- Hearts -->
+  <div class="lives" id="lives">
+    <span class="heart" id="h0">♥</span>
+    <span class="heart" id="h1">♥</span>
+    <span class="heart" id="h2">♥</span>
+  </div>
+
+  <!-- Shield (extra life) -->
+  <div class="shield-wrap" id="shield-wrap">
+    <div class="shield" id="shield">
+      <span class="shield-icon">🛡️</span>
+    </div>
+    <div class="shield-label" id="shield-label">Shield</div>
+  </div>
+</div>
+
+<!-- Quip Banner -->
+<div class="quip-banner" id="quip-banner"></div>
+
+<!-- Controls -->
+<div class="controls">
+  <button class="btn btn-correct" id="btn-correct" onclick="handleCorrect()">✓ Correct answer</button>
+  <button class="btn btn-wrong" id="btn-wrong" onclick="handleWrong()">✗ Wrong answer</button>
+  <button class="btn btn-reset" onclick="resetGame()" title="Reset">↺</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- State log -->
+<div class="state-log">
+  <div class="state-log-title">Event Log</div>
+  <div id="log-entries">
+    <div class="log-entry system">→ Game started. 3 lives. No shield.</div>
+  </div>
+</div>
+
+<!-- Mechanic notes -->
+<div class="notes">
+  <div class="notes-title">How the mechanic works</div>
+  <strong>Earning:</strong> Reach a 5-streak and the shield icon lights up with a pop animation + earn banner. One per game — no re-earning after it's spent.<br><br>
+  <strong>Absorbing a hit:</strong> Get a wrong answer while the shield is active → shield shatters, gold flash fills the screen, a toast confirms the save. Hearts stay intact. Streak resets as normal.<br><br>
+  <strong>UI placement:</strong> Lives on the right of the header, shield sits next to them — grayed out until earned, glowing gold while active, faded grey once spent.
+</div>
+
+<!-- Save flash overlay -->
+<div class="save-flash" id="save-flash"></div>
+
+<!-- Save toast -->
+<div class="save-toast" id="save-toast">
+  <span class="save-toast-icon">🛡️</span>
+  <div class="save-toast-title">Shield Absorbed It</div>
+  <div class="save-toast-sub">Bhai lucky hai tू.<br>Streak reset, but you kept your life.</div>
+</div>
+
+<script>
+  let streak = 0;
+  let score  = 0;
+  let lives  = 3;
+  let shieldState = 'none'; // none | earned | used
+  let gameOver = false;
+
+  const CORRECT_QUIPS = [
+    "Bilkul sahi! W. Carry on.",
+    "Correct. As expected.",
+    "Nailed it. Keep going.",
+    "That's the one. Streak building.",
+    "Sahi hai. UPSC material."
+  ];
+  const WRONG_QUIPS = [
+    "Skill issue.",
+    "L + ratio. Lost a life.",
+    "That was rough. -1 life.",
+    "Wrong. Touch grass.",
+    "Galat. Ek aur gaya."
+  ];
+  const SAVED_QUIPS = [
+    "Shield took the hit. Lucky.",
+    "Bhai lucky hai tू. Shield gone.",
+    "Saved by the shield. Don't waste it again.",
+  ];
+
+  function log(msg, type='') {
+    const el = document.getElementById('log-entries');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + type;
+    entry.textContent = '→ ' + msg;
+    el.appendChild(entry);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function bumpStat(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 400);
+  }
+
+  function showQuip(text, type) {
+    const banner = document.getElementById('quip-banner');
+    banner.textContent = text;
+    banner.className = 'quip-banner show ' + type;
+    setTimeout(() => { banner.classList.remove('show'); }, 2200);
+  }
+
+  function earnShield() {
+    shieldState = 'earned';
+    const wrap = document.getElementById('shield-wrap');
+    const shield = document.getElementById('shield');
+    wrap.classList.add('earned');
+    shield.classList.add('earned');
+    document.getElementById('shield-label').textContent = 'Active';
+
+    // Show earn banner
+    const banner = document.getElementById('earn-banner');
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 2800);
+
+    log('5-streak! Extra life (shield) earned.', 'saved');
+  }
+
+  function spendShield() {
+    shieldState = 'used';
+    const wrap = document.getElementById('shield-wrap');
+    const shield = document.getElementById('shield');
+    wrap.classList.remove('earned');
+    shield.classList.remove('earned');
+    shield.classList.add('used');
+    document.getElementById('shield-label').textContent = 'Spent';
+
+    // Gold flash
+    const flash = document.getElementById('save-flash');
+    flash.classList.add('show');
+    setTimeout(() => flash.classList.remove('show'), 700);
+
+    // Toast
+    const toast = document.getElementById('save-toast');
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1900);
+  }
+
+  function breakHeart() {
+    const hearts = document.querySelectorAll('.heart');
+    // Find the rightmost active heart
+    let target = null;
+    for (let i = hearts.length - 1; i >= 0; i--) {
+      if (!hearts[i].classList.contains('lost') && !hearts[i].classList.contains('breaking')) {
+        target = hearts[i];
+        break;
+      }
+    }
+    if (!target) return;
+    target.classList.add('breaking');
+    setTimeout(() => {
+      target.classList.remove('breaking');
+      target.classList.add('lost');
+    }, 650);
+    lives--;
+  }
+
+  function handleCorrect() {
+    if (gameOver) return;
+    streak++;
+    score += streak * 2; // simple scoring
+    document.getElementById('streak-val').textContent = streak;
+    document.getElementById('score-val').textContent  = score;
+    bumpStat('streak-val');
+    bumpStat('score-val');
+
+    const q = CORRECT_QUIPS[Math.floor(Math.random() * CORRECT_QUIPS.length)];
+    showQuip(q, 'correct');
+    log(`Correct. Streak: ${streak}, Score: ${score}`, 'correct');
+
+    // Check for shield milestone
+    if (streak === 5 && shieldState === 'none') {
+      setTimeout(earnShield, 300);
+    }
+  }
+
+  function handleWrong() {
+    if (gameOver) return;
+
+    if (shieldState === 'earned') {
+      // Shield absorbs the hit
+      streak = 0;
+      document.getElementById('streak-val').textContent = 0;
+      spendShield();
+      const q = SAVED_QUIPS[Math.floor(Math.random() * SAVED_QUIPS.length)];
+      setTimeout(() => showQuip(q, 'saved'), 200);
+      log('Wrong — but shield absorbed the hit! Streak reset, life saved.', 'saved');
+    } else {
+      // Normal wrong — lose a life
+      streak = 0;
+      document.getElementById('streak-val').textContent = 0;
+      breakHeart();
+
+      const q = WRONG_QUIPS[Math.floor(Math.random() * WRONG_QUIPS.length)];
+      showQuip(q, 'wrong');
+      log(`Wrong. Lost a life. ${lives} remaining.`, 'wrong');
+
+      if (lives <= 0) {
+        setTimeout(() => {
+          gameOver = true;
+          document.getElementById('btn-correct').disabled = true;
+          document.getElementById('btn-wrong').disabled = true;
+          showQuip('Game over. Final score: ' + score, 'wrong');
+          log(`Game over. Final score: ${score}.`, 'wrong');
+        }, 700);
+      }
+    }
+  }
+
+  function resetGame() {
+    streak = 0; score = 0; lives = 3; shieldState = 'none'; gameOver = false;
+    document.getElementById('streak-val').textContent = 0;
+    document.getElementById('score-val').textContent  = 0;
+
+    // Reset hearts
+    ['h0','h1','h2'].forEach(id => {
+      const h = document.getElementById(id);
+      h.className = 'heart';
+    });
+
+    // Reset shield
+    const wrap   = document.getElementById('shield-wrap');
+    const shield = document.getElementById('shield');
+    wrap.classList.remove('earned');
+    shield.className = 'shield';
+    document.getElementById('shield-label').textContent = 'Shield';
+
+    // Reset earn banner
+    document.getElementById('earn-banner').classList.remove('show');
+
+    // Reset quip
+    const banner = document.getElementById('quip-banner');
+    banner.className = 'quip-banner';
+
+    // Reset buttons
+    document.getElementById('btn-correct').disabled = false;
+    document.getElementById('btn-wrong').disabled   = false;
+
+    // Reset log
+    document.getElementById('log-entries').innerHTML =
+      '<div class="log-entry system">→ Game reset. 3 lives. No shield.</div>';
+  }
+</script>
+</body>
+</html>

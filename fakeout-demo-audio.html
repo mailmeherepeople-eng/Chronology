@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fake-Out Mechanic — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e4e0d8;
+    --text: #1c1a16;
+    --muted: #8a8478;
+    --accent: #4F46E5;
+    --accent-light: #EEF2FF;
+    --danger: #c0392b;
+    --danger-light: #fdf0ee;
+    --success: #27613a;
+    --success-light: #edf7ef;
+    --warn: #b45309;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 48px;
+    gap: 18px;
+  }
+  h1 { font-family: 'Lora', serif; font-size: 21px; font-weight: 700; }
+  .subtitle { font-size: 12px; color: var(--muted); text-align: center; margin-top: 3px; max-width: 360px; line-height: 1.5; }
+
+  /* ── CARD STAGE ── */
+  .stage {
+    width: 100%; max-width: 420px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .stage-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.8px;
+    text-transform: uppercase; color: var(--muted); text-align: center;
+    transition: color 0.3s;
+  }
+  .stage-label.warn { color: var(--warn); }
+
+  /* ── THE CARD ── */
+  .event-card {
+    width: 155px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden; position: relative; flex-shrink: 0;
+    animation: cardSlideUp 0.35s ease;
+  }
+  @keyframes cardSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .card-stripe { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }
+  .card-emoji-banner {
+    height: 52px; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; border-bottom: 1px solid var(--border); background: var(--bg);
+  }
+  .card-body { padding: 8px 10px; }
+  .card-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--warn); margin-bottom: 3px; }
+  .card-label { font-family: 'Lora', serif; font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 3px; }
+  .card-sublabel { font-size: 11px; color: var(--muted); font-style: italic; }
+
+  /* Fake-out pulsing border */
+  .event-card.fakeout-active { border-color: rgba(180,83,9,0.5); animation: cardSlideUp 0.35s ease, fakeoutPulse 2s ease-in-out 0.35s infinite; }
+  @keyframes fakeoutPulse {
+    0%,100% { border-color: rgba(180,83,9,0.25); box-shadow: 0 0 0 0 rgba(180,83,9,0); }
+    50%     { border-color: rgba(180,83,9,0.72); box-shadow: 0 0 0 3px rgba(180,83,9,0.1); }
+  }
+  /* ⚠ pip */
+  .fakeout-pip {
+    position: absolute; top: 6px; right: 7px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #b45309; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 900; color: #fff; z-index: 5;
+    opacity: 0; transform: scale(0.4);
+    transition: opacity 0.3s, transform 0.4s cubic-bezier(0.34,1.6,0.64,1);
+  }
+  .event-card.fakeout-active .fakeout-pip { opacity: 1; transform: scale(1); }
+
+  /* Shake */
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    15% { transform: translateX(-7px) rotate(-1.5deg); }
+    30% { transform: translateX(7px)  rotate(1.5deg); }
+    45% { transform: translateX(-5px) rotate(-1deg); }
+    60% { transform: translateX(5px)  rotate(1deg); }
+    80% { transform: translateX(-2px); }
+  }
+  .event-card.shake { animation: wrongShake 0.5s cubic-bezier(0.36,0.07,0.19,0.97); }
+
+  /* ── AUDIO INDICATOR ── */
+  .audio-indicator {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    height: 22px; opacity: 0; transition: opacity 0.3s;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 0 10px;
+  }
+  .audio-indicator.show { opacity: 1; }
+  .audio-bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .audio-bar { width: 3px; border-radius: 2px; }
+  .audio-indicator.playing-normal .audio-bar  { background: var(--accent); animation: barBounce 0.5s ease-in-out infinite alternate; }
+  .audio-indicator.playing-fakeout .audio-bar { background: var(--warn);   animation: barBounce 0.35s ease-in-out infinite alternate; }
+  .audio-indicator.playing-fakeout-hit .audio-bar { background: var(--danger); animation: barBounce 0.2s ease-in-out infinite alternate; }
+  .audio-indicator.playing-success .audio-bar { background: var(--success); animation: barBounce 0.45s ease-in-out infinite alternate; }
+  .audio-bar:nth-child(1) { height: 5px;  animation-delay: 0s; }
+  .audio-bar:nth-child(2) { height: 10px; animation-delay: 0.08s; }
+  .audio-bar:nth-child(3) { height: 7px;  animation-delay: 0.16s; }
+  .audio-bar:nth-child(4) { height: 12px; animation-delay: 0.04s; }
+  .audio-bar:nth-child(5) { height: 6px;  animation-delay: 0.12s; }
+  @keyframes barBounce { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+
+  /* ── TIMELINE ── */
+  .timeline-section {
+    width: 100%; max-width: 420px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 18px 14px; overflow-x: auto;
+  }
+  .tl-label { font-size: 9px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; text-align: center; }
+  .timeline-track { display: flex; align-items: flex-start; min-width: max-content; position: relative; }
+  .tl-line { position: absolute; top: 16px; left: 0; right: 0; height: 2px; background: var(--border); pointer-events: none; }
+  .tl-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex-shrink: 0; }
+  .tl-tick { width: 2px; height: 16px; background: #c8c2b8; }
+  .tl-card-mini { width: 120px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); overflow: hidden; }
+  .tl-emoji { height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .tl-body { padding: 6px 8px; }
+  .tl-name { font-family: 'Lora', serif; font-size: 10px; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 2px; }
+  .tl-year { font-size: 9px; font-weight: 700; color: var(--muted); border-top: 1px solid var(--border); padding-top: 3px; margin-top: 3px; }
+
+  /* Drop zones */
+  .drop-zone {
+    width: 64px; height: 104px; flex-shrink: 0; position: relative; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding-top: 4px; cursor: pointer; border-radius: 8px;
+    transition: background 0.2s;
+  }
+  .drop-zone.dz-start, .drop-zone.dz-end { width: 80px; }
+  .drop-zone:hover { background: rgba(79,70,229,0.05); }
+  .dz-line { width: 3px; height: 60px; border-radius: 3px; background: transparent; margin-top: 10px; transition: all 0.2s; }
+  .dz-lbl { font-size: 8px; font-weight: 700; letter-spacing: 0.5px; color: transparent; text-transform: uppercase; margin-top: 4px; text-align: center; transition: color 0.2s; }
+  .drop-zone:hover .dz-line { height: 72px; background: var(--accent); box-shadow: 0 0 0 6px var(--accent-light); }
+  .drop-zone:hover .dz-lbl  { color: var(--muted); }
+
+  /* Trap zone highlight */
+  .drop-zone.trap { background: rgba(180,83,9,0.06); }
+  .drop-zone.trap .dz-line { background: rgba(180,83,9,0.38); box-shadow: 0 0 0 4px rgba(180,83,9,0.08); }
+  .drop-zone.trap .dz-lbl  { color: #b45309; }
+  .drop-zone.trap:hover .dz-line { background: #b45309; box-shadow: 0 0 0 6px rgba(180,83,9,0.14); }
+  .drop-zone.trap:hover .dz-lbl  { color: #b45309; }
+  /* Correct hint */
+  .drop-zone.hint-correct .dz-line { background: rgba(39,97,58,0.22); }
+
+  /* ── SCREEN FLASH ── */
+  .screen-flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 290; }
+  .screen-flash.f-fakeout { background: radial-gradient(circle at center, rgba(180,83,9,0.28) 0%, transparent 60%); animation: flashPop 0.55s ease-out forwards; }
+  .screen-flash.f-correct { background: radial-gradient(circle at center, rgba(39,97,58,0.22) 0%, transparent 60%);  animation: flashPop 0.4s ease-out forwards; }
+  @keyframes flashPop { 0%{opacity:0} 18%{opacity:1} 100%{opacity:0} }
+
+  /* ── OUTCOME TOAST ── */
+  .toast-wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 300; }
+  .outcome-toast {
+    background: rgba(8,6,3,0.93); border-radius: 18px; padding: 22px 36px; text-align: center;
+    pointer-events: none; opacity: 0; transform: scale(0.6); backdrop-filter: blur(10px); max-width: 280px;
+  }
+  .outcome-toast.t-fakeout { border: 1.5px solid rgba(180,83,9,0.6); box-shadow: 0 0 40px rgba(180,83,9,0.18); }
+  .outcome-toast.t-correct { border: 1.5px solid rgba(39,97,58,0.6);  box-shadow: 0 0 40px rgba(39,97,58,0.18); }
+  .outcome-toast.show { animation: tIn 0.5s cubic-bezier(0.34,1.4,0.64,1) forwards, tOut 0.3s ease 1.8s forwards; }
+  @keyframes tIn  { 0%{opacity:0;transform:scale(0.65)} 60%{opacity:1;transform:scale(1.04)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes tOut { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(0.88)} }
+  .t-icon  { font-size: 34px; margin-bottom: 8px; display: block; }
+  .t-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; margin-bottom: 5px; line-height: 1.1; }
+  .t-fakeout .t-title { color: #f97316; }
+  .t-correct .t-title { color: #4ade80; }
+  .t-sub   { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; margin-bottom: 8px; }
+  .t-year  { font-size: 13px; font-weight: 700; font-family: 'Lora', serif; padding: 4px 14px; border-radius: 20px; display: inline-block; }
+  .t-fakeout .t-year { background: rgba(180,83,9,0.25); color: #fb923c; }
+  .t-correct .t-year { background: rgba(39,97,58,0.25);  color: #4ade80; }
+
+  /* ── QUIP BANNER ── */
+  .quip-banner {
+    width: 100%; max-width: 420px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; opacity: 0; transition: opacity 0.2s;
+    padding: 0 16px; text-align: center;
+  }
+  .quip-banner.show { opacity: 1; animation: qIn 0.25s ease; }
+  @keyframes qIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+  .quip-banner.correct { background: var(--success); color: #fff; }
+  .quip-banner.wrong   { background: var(--danger);  color: #fff; }
+  .quip-banner.fakeout { background: linear-gradient(90deg,#92400e,#c2410c); color: #fff; }
+  .quip-banner.saw     { background: var(--success);  color: #fff; }
+
+  /* ── CONTROLS ── */
+  .controls { width: 100%; max-width: 420px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    flex: 1; min-width: 120px; padding: 13px 16px; border: none; border-radius: 12px;
+    font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; letter-spacing: 0.1px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+  .btn-normal  { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(79,70,229,0.35); }
+  .btn-fakeout { background: linear-gradient(135deg,#92400e,#b45309,#d97706); color: #fff; box-shadow: 0 4px 14px rgba(180,83,9,0.4); }
+  .btn-reset   { flex:0 0 auto; min-width:auto; padding:13px 16px; background:var(--surface); color:var(--muted); border:1.5px solid var(--border); }
+
+  /* ── NOTES ── */
+  .notes { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; font-size:12px; color:var(--text); line-height:1.75; }
+  .notes-title { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:6px; }
+  .nr { display:flex; gap:8px; margin-bottom:2px; }
+  .nk { font-weight:700; flex-shrink:0; min-width:90px; }
+  .nv { color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="screen-flash" id="screen-flash"></div>
+<div class="toast-wrap">
+  <div class="outcome-toast" id="outcome-toast">
+    <span class="t-icon"  id="t-icon">💀</span>
+    <div class="t-title"  id="t-title">FAKE OUT</div>
+    <div class="t-sub"    id="t-sub">That was designed to trick you.</div>
+    <div class="t-year"   id="t-year">1757 CE</div>
+  </div>
+</div>
+
+<div style="text-align:center;">
+  <h1>Fake-Out Mechanic — Demo</h1>
+  <p class="subtitle">Load a card, hear the audio, then drop in the amber trap zone or the correct zone</p>
+</div>
+
+<!-- Stage -->
+<div class="stage" id="stage">
+  <div class="stage-label" id="stage-label">WHEN DOES THIS BELONG?</div>
+  <div id="card-slot" style="min-height:155px;display:flex;align-items:center;justify-content:center;">
+    <div style="font-size:12px;color:var(--muted);">← Load a card to begin</div>
+  </div>
+  <div class="audio-indicator" id="audio-indicator">
+    <div class="audio-bars">
+      <div class="audio-bar"></div><div class="audio-bar"></div>
+      <div class="audio-bar"></div><div class="audio-bar"></div>
+      <div class="audio-bar"></div>
+    </div>
+    <span id="audio-label">—</span>
+  </div>
+</div>
+
+<div class="quip-banner" id="quip-banner"></div>
+
+<!-- Timeline -->
+<div class="timeline-section">
+  <div class="tl-label">Timeline — click a slot to place the card</div>
+  <div class="timeline-track">
+    <div class="tl-line"></div>
+    <div class="drop-zone dz-start" onclick="drop('early')"><div class="dz-line"></div><div class="dz-lbl">Before</div></div>
+    <div class="tl-item"><div class="tl-tick"></div><div class="tl-card-mini"><div class="tl-emoji">🕌</div><div class="tl-body"><div class="tl-name">Babur founds Mughal Empire</div><div class="tl-year">1526 CE</div></div></div></div>
+    <div class="drop-zone" id="dz-trap" onclick="drop('trap')"><div class="dz-line"></div><div class="dz-lbl">Trap?</div></div>
+    <div class="tl-item"><div class="tl-tick"></div><div class="tl-card-mini"><div class="tl-emoji">⚔️</div><div class="tl-body"><div class="tl-name">Robert Clive arrives</div><div class="tl-year">1744 CE</div></div></div></div>
+    <div class="drop-zone" id="dz-correct" onclick="drop('correct')"><div class="dz-line"></div><div class="dz-lbl">Correct?</div></div>
+    <div class="tl-item"><div class="tl-tick"></div><div class="tl-card-mini"><div class="tl-emoji">🪖</div><div class="tl-body"><div class="tl-name">Sepoy Mutiny</div><div class="tl-year">1857 CE</div></div></div></div>
+    <div class="drop-zone dz-end" onclick="drop('late')"><div class="dz-line"></div><div class="dz-lbl">After</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-normal"  id="btn-normal"  onclick="loadCard(false)">Load normal card</button>
+  <button class="btn btn-fakeout" id="btn-fakeout" onclick="loadCard(true)">Load fake-out card ⚠</button>
+  <button class="btn btn-reset"   onclick="reset()">↺</button>
+</div>
+
+<div class="notes">
+  <div class="notes-title">Audio key</div>
+  <div class="nr"><span class="nk">Normal load</span><span class="nv">Bright major sting — category sound equivalent</span></div>
+  <div class="nr"><span class="nk">Fake-out load</span><span class="nv">Uneasy minor drone — tritone + slow low pulse. Starts the moment the card appears.</span></div>
+  <div class="nr"><span class="nk">Fell for it</span><span class="nv">Vine boom — deep bass drop. Plays on wrong placement in trap zone.</span></div>
+  <div class="nr"><span class="nk">Saw through it</span><span class="nv">Surprised ascending fanfare — different from normal correct, more triumphant.</span></div>
+  <div class="nr"><span class="nk">Timing</span><span class="nv">Fake-out is flagged when card is drawn. Audio plays on card load, not on drop.</span></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   WEB AUDIO SYNTHESIS
+═══════════════════════════════════════════ */
+let AC = null;
+function getAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+
+/* Utility: create a gain node at a given value */
+function gain(ac, val, dest) {
+  const g = ac.createGain();
+  g.gain.value = val;
+  g.connect(dest || ac.destination);
+  return g;
+}
+
+/* Utility: schedule an oscillator */
+function osc(ac, type, freq, start, dur, vol, dest, freqEnd) {
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, start);
+  if (freqEnd !== undefined) o.frequency.linearRampToValueAtTime(freqEnd, start + dur);
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  o.connect(g);
+  g.connect(dest || ac.destination);
+  o.start(start);
+  o.stop(start + dur);
+}
+
+/* Utility: schedule a noise burst */
+function noise(ac, start, dur, vol, dest) {
+  const bufLen = Math.ceil(ac.sampleRate * dur);
+  const buf = ac.createBuffer(1, bufLen, ac.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+  const src = ac.createBufferSource();
+  src.buffer = buf;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  src.connect(g);
+  g.connect(dest || ac.destination);
+  src.start(start);
+  src.stop(start + dur);
+}
+
+/* Reverb (convolver with a simple exponential decay buffer) */
+function makeReverb(ac, decaySec) {
+  const conv = ac.createConvolver();
+  const len = Math.ceil(ac.sampleRate * decaySec);
+  const buf = ac.createBuffer(2, len, ac.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const ch = buf.getChannelData(c);
+    for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.5);
+  }
+  conv.buffer = buf;
+  return conv;
+}
+
+/* ── 1. NORMAL CARD LOAD ── bright major two-note sting */
+function playNormalLoad() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.05;
+  const rev = makeReverb(ac, 1.0);
+  rev.connect(ac.destination);
+  // Root
+  osc(ac, 'sine',     392, t,       0.18, 0.35, rev);  // G4
+  osc(ac, 'sine',     784, t+0.01,  0.16, 0.16, 0.18, rev); // G5 overtone
+  // Second note (major third up)
+  osc(ac, 'sine',     493.88, t+0.14, 0.22, 0.28, 0.32, rev); // B4
+  osc(ac, 'triangle', 987.77, t+0.15, 0.20, 0.20, 0.14, rev); // B5
+  // Bright transient click
+  noise(ac, t, 0.025, 0.06, rev);
+}
+
+/* ── 2. FAKE-OUT CARD LOAD ── uneasy tritone pulse, low drone */
+function playFakeoutLoad() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.05;
+  const rev = makeReverb(ac, 2.5);
+  rev.connect(ac.destination);
+
+  // Low ominous drone — tritone interval (C + F#, the "devil's interval")
+  osc(ac, 'sine',     65.41,  t,      2.2, 0.28, rev);         // C2 drone
+  osc(ac, 'sine',     92.5,   t,      2.2, 0.12, rev);         // F#2 tritone
+
+  // Pulse — beats against itself creating beating effect
+  osc(ac, 'sine',     65.9,   t,      2.2, 0.10, rev);         // slightly detuned C2
+
+  // Mid tension layer — slow attack
+  osc(ac, 'triangle', 196,    t+0.4,  1.4, 0.15, rev);         // G3
+  osc(ac, 'triangle', 277.18, t+0.6,  1.1, 0.10, rev);         // C#4 (more tritone)
+
+  // High eerie whistle — fades in
+  const oHigh = ac.createOscillator();
+  const gHigh = ac.createGain();
+  oHigh.type = 'sine';
+  oHigh.frequency.value = 880;
+  gHigh.gain.setValueAtTime(0, t);
+  gHigh.gain.linearRampToValueAtTime(0.07, t + 1.2);
+  gHigh.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
+  oHigh.connect(gHigh); gHigh.connect(rev);
+  oHigh.start(t); oHigh.stop(t + 2.2);
+
+  // Subtle low rumble noise
+  noise(ac, t + 0.5, 1.5, 0.04, rev);
+}
+
+/* ── 3. VINE BOOM — fell for the fake-out ── */
+function playVineBoom() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.04;
+
+  // Classic vine boom: deep bass that plummets
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  const dist = ac.createWaveShaper();
+  // Mild distortion curve
+  const curve = new Float32Array(256);
+  for (let i = 0; i < 256; i++) {
+    const x = (i * 2) / 256 - 1;
+    curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
+  }
+  dist.curve = curve;
+
+  o.type = 'sawtooth';
+  o.frequency.setValueAtTime(90, t);
+  o.frequency.exponentialRampToValueAtTime(28, t + 0.65);
+
+  g.gain.setValueAtTime(0.8, t);
+  g.gain.setValueAtTime(0.8, t + 0.05);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+
+  o.connect(dist); dist.connect(g); g.connect(ac.destination);
+  o.start(t); o.stop(t + 0.85);
+
+  // Sub layer — pure sine for the chest hit
+  const sub = ac.createOscillator();
+  const subG = ac.createGain();
+  sub.type = 'sine';
+  sub.frequency.setValueAtTime(60, t);
+  sub.frequency.exponentialRampToValueAtTime(18, t + 0.6);
+  subG.gain.setValueAtTime(0.9, t);
+  subG.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
+  sub.connect(subG); subG.connect(ac.destination);
+  sub.start(t); sub.stop(t + 0.7);
+
+  // Sharp transient
+  noise(ac, t, 0.04, 0.3);
+}
+
+/* ── 4. SAW THROUGH IT — triumphant ascending arpeggio ── */
+function playSawThrough() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.04;
+  const rev = makeReverb(ac, 1.2);
+  rev.connect(ac.destination);
+
+  // Ascending C major arpeggio — quick and celebratory
+  const notes = [261.63, 329.63, 392, 523.25, 659.25]; // C4 E4 G4 C5 E5
+  notes.forEach((freq, i) => {
+    osc(ac, 'sine',     freq,      t + i*0.085, 0.35, 0.45 - i*0.04, rev);
+    osc(ac, 'triangle', freq*2,    t + i*0.085, 0.20, 0.15, rev);
+  });
+
+  // Final chord hit
+  [523.25, 659.25, 783.99].forEach(freq => {
+    osc(ac, 'sine', freq, t + 0.42, 0.55, 0.22, rev);
+  });
+
+  // Sparkle shimmer
+  osc(ac, 'sine', 2093, t + 0.42, 0.30, 0.08, rev);
+  osc(ac, 'sine', 2637, t + 0.48, 0.25, 0.06, rev);
+  noise(ac, t + 0.42, 0.06, 0.05, rev);
+}
+
+/* ── 5. NORMAL WRONG ── simple descending sad tones */
+function playNormalWrong() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.04;
+  osc(ac, 'sine', 440, t,       0.18, 0.3);
+  osc(ac, 'sine', 349.23, t+0.16, 0.22, 0.28, 0.28);
+  osc(ac, 'sine', 261.63, t+0.34, 0.28, 0.30, 0.22);
+}
+
+/* ── 6. NORMAL CORRECT ── simple two-tone chime */
+function playNormalCorrect() {
+  const ac = getAC();
+  const t = ac.currentTime + 0.04;
+  const rev = makeReverb(ac, 0.8);
+  rev.connect(ac.destination);
+  osc(ac, 'sine', 523.25, t,       0.2, 0.3, rev);
+  osc(ac, 'sine', 659.25, t+0.12, 0.22, 0.28, 0.28, rev);
+}
+
+/* ═══════════════════════════════════════════
+   GAME STATE
+═══════════════════════════════════════════ */
+let cardLoaded = false;
+let isFakeout  = false;
+let placed     = false;
+let audioIndTimer = null;
+
+const FAKEOUT_CARD = { emoji:'⚔️', cat:'Colonial India', label:'Battle of Plassey', sublabel:'fought', year:1757 };
+const NORMAL_CARD  = { emoji:'📜', cat:'Colonial India', label:'Partition of Bengal', sublabel:'announced', year:1905 };
+
+function loadCard(fakeout) {
+  if (placed) return;
+  isFakeout  = fakeout;
+  cardLoaded = true;
+  placed     = false;
+
+  const card = fakeout ? FAKEOUT_CARD : NORMAL_CARD;
+  const slot = document.getElementById('card-slot');
+  slot.innerHTML = '';
+
+  const el = document.createElement('div');
+  el.id = 'active-card';
+  el.className = 'event-card' + (fakeout ? ' fakeout-active' : '');
+  el.innerHTML = `
+    <div class="card-stripe" style="background:${fakeout ? '#b45309' : '#4F46E5'}"></div>
+    <div class="fakeout-pip">⚠</div>
+    <div class="card-emoji-banner">${card.emoji}</div>
+    <div class="card-body">
+      <div class="card-cat">${card.cat}</div>
+      <div class="card-label">${card.label}</div>
+      <div class="card-sublabel">${card.sublabel}</div>
+    </div>
+  `;
+  slot.appendChild(el);
+
+  // Drop zone states
+  document.getElementById('dz-trap').className    = 'drop-zone' + (fakeout ? ' trap' : '');
+  document.getElementById('dz-correct').className = 'drop-zone' + (fakeout ? ' hint-correct' : '');
+
+  // Stage label
+  const lbl = document.getElementById('stage-label');
+  lbl.textContent = fakeout ? '⚠ SOMETHING FEELS OFF...' : 'WHEN DOES THIS BELONG?';
+  lbl.className   = 'stage-label' + (fakeout ? ' warn' : '');
+
+  // Play audio & show indicator
+  if (fakeout) {
+    playFakeoutLoad();
+    showAudioInd('playing-fakeout', '♩ Suspense sting — tritone drone, uneasy', 2400);
+  } else {
+    playNormalLoad();
+    showAudioInd('playing-normal', '♩ Category sting — bright major', 1200);
+  }
+
+  clearQuip();
+}
+
+function drop(zone) {
+  if (!cardLoaded || placed) return;
+  placed = true;
+
+  if (!isFakeout) {
+    // Normal card
+    if (zone === 'correct') {
+      playNormalCorrect();
+      showAudioInd('playing-success', '♩ Correct — clean chime', 1000);
+      showQuip('Correct. Partition of Bengal — 1905.', 'correct');
+    } else {
+      const el = document.getElementById('active-card');
+      if (el) { el.classList.remove('fakeout-active'); el.classList.add('shake'); }
+      playNormalWrong();
+      showAudioInd('playing-fakeout-hit', '♩ Wrong — descending tones', 1000);
+      showQuip('Wrong. Try again.', 'wrong');
+    }
+    setTimeout(cleanup, 2200);
+    return;
+  }
+
+  // Fake-out card
+  if (zone === 'trap') {
+    // Fell for it
+    const el = document.getElementById('active-card');
+    if (el) { el.classList.remove('fakeout-active'); el.classList.add('shake'); }
+
+    // Flash
+    flash('f-fakeout');
+
+    // Vine boom plays immediately
+    playVineBoom();
+    showAudioInd('playing-fakeout-hit', '♩ VINE BOOM — you fell for it', 1000);
+
+    // Toast
+    setTimeout(() => {
+      showToast('t-fakeout', '💀', 'FAKE OUT', 'Battle of Plassey was 1757 — colonial era, not Mughal.', '1757 CE');
+    }, 200);
+
+    showQuip('Skill issue. Plassey was 1757. L.', 'fakeout');
+    setTimeout(cleanup, 2700);
+
+  } else if (zone === 'correct') {
+    // Saw through it
+    flash('f-correct');
+    playSawThrough();
+    showAudioInd('playing-success', '♩ Triumphant fanfare — you weren\'t fooled', 1600);
+
+    setTimeout(() => {
+      showToast('t-correct', '🧠', 'You Saw Through It', 'Resisted the trap. +1 streak bonus.', '1757 CE ✓');
+    }, 150);
+
+    showQuip('Not fooled. Battle of Plassey — 1757. Smart.', 'saw');
+    setTimeout(cleanup, 2700);
+
+  } else {
+    // Wrong but not the trap
+    const el = document.getElementById('active-card');
+    if (el) { el.classList.remove('fakeout-active'); el.classList.add('shake'); }
+    playNormalWrong();
+    showAudioInd('playing-fakeout-hit', '♩ Wrong sound', 1000);
+    showQuip('Wrong — but not the intended trap.', 'wrong');
+    setTimeout(cleanup, 2200);
+  }
+}
+
+function cleanup() {
+  document.getElementById('dz-trap').className    = 'drop-zone';
+  document.getElementById('dz-correct').className = 'drop-zone';
+  const lbl = document.getElementById('stage-label');
+  lbl.textContent = 'WHEN DOES THIS BELONG?';
+  lbl.className   = 'stage-label';
+  placed     = false;
+  cardLoaded = false;
+}
+
+/* ── Helpers ── */
+function flash(cls) {
+  const el = document.getElementById('screen-flash');
+  el.className = 'screen-flash ' + cls;
+  setTimeout(() => el.className = 'screen-flash', 600);
+}
+
+function showToast(cls, icon, title, sub, year) {
+  const t = document.getElementById('outcome-toast');
+  t.className = 'outcome-toast ' + cls;
+  document.getElementById('t-icon').textContent  = icon;
+  document.getElementById('t-title').textContent = title;
+  document.getElementById('t-sub').textContent   = sub;
+  document.getElementById('t-year').textContent  = year;
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function showQuip(text, type) {
+  const b = document.getElementById('quip-banner');
+  b.textContent = text;
+  b.className   = 'quip-banner show ' + type;
+  setTimeout(() => b.classList.remove('show'), 2500);
+}
+function clearQuip() { document.getElementById('quip-banner').className = 'quip-banner'; }
+
+function showAudioInd(cls, label, dur) {
+  clearTimeout(audioIndTimer);
+  const ind = document.getElementById('audio-indicator');
+  const lbl = document.getElementById('audio-label');
+  ind.className = 'audio-indicator show ' + cls;
+  lbl.textContent = label;
+  audioIndTimer = setTimeout(() => ind.classList.remove('show'), dur);
+}
+
+function reset() {
+  placed = false; cardLoaded = false; isFakeout = false;
+  clearTimeout(audioIndTimer);
+  document.getElementById('card-slot').innerHTML = '<div style="font-size:12px;color:var(--muted);">← Load a card to begin</div>';
+  document.getElementById('stage-label').textContent = 'WHEN DOES THIS BELONG?';
+  document.getElementById('stage-label').className   = 'stage-label';
+  document.getElementById('audio-indicator').className = 'audio-indicator';
+  document.getElementById('quip-banner').className     = 'quip-banner';
+  document.getElementById('outcome-toast').className   = 'outcome-toast';
+  document.getElementById('screen-flash').className    = 'screen-flash';
+  document.getElementById('dz-trap').className         = 'drop-zone';
+  document.getElementById('dz-correct').className      = 'drop-zone';
+}
+</script>
+</body>
+</html>

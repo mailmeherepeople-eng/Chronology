@@ -4223,30 +4223,29 @@ function renderCurrentCard(){
   function onDragMove(e){
     if(!mouseClone) return;
     if(e.clientX === 0 && e.clientY === 0) return;
+
+    // ── READ phase (all getBoundingClientRect before any transform write) ──
+    const wrap = _tlEls.wrap;
+    const wr = wrap ? wrap.getBoundingClientRect() : null;
+    let hitDZ = null;
+    _cachedDZs.forEach(dz=>{
+      const r = dz.getBoundingClientRect();
+      if(e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom) hitDZ=dz;
+    });
+
+    // ── WRITE phase (DOM mutations after all reads) ──
     mouseClone.style.left = (e.clientX - mouseOffsetX) + 'px';
     mouseClone.style.top  = (e.clientY - mouseOffsetY) + 'px';
 
-    // Edge scrolling
-    const wrapper = document.getElementById('timeline-wrapper');
-    if(wrapper){
-      const wr = wrapper.getBoundingClientRect();
-      const EDGE = 72;
-      const MAX_SPEED = 14;
-      if(e.clientX < wr.left + EDGE){
-        const dist = Math.max(0, e.clientX - wr.left);
-        tlScrollBy(-MAX_SPEED * (1 - dist / EDGE));
-      } else if(e.clientX > wr.right - EDGE){
-        const dist = Math.max(0, wr.right - e.clientX);
-        tlScrollBy(MAX_SPEED * (1 - dist / EDGE));
+    if(wr){
+      const EDGE=72, MAX_SPEED=14;
+      if(e.clientX < wr.left+EDGE){
+        tlScrollBy(-MAX_SPEED * (1 - Math.max(0,e.clientX-wr.left)/EDGE));
+      } else if(e.clientX > wr.right-EDGE){
+        tlScrollBy(MAX_SPEED * (1 - Math.max(0,wr.right-e.clientX)/EDGE));
       }
     }
-
-    // Highlight drop zone under cursor
-    document.querySelectorAll('.drop-zone').forEach(dz=>{
-      const r = dz.getBoundingClientRect();
-      const over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom;
-      if(over) setActiveDZ(dz);
-    });
+    if(hitDZ) setActiveDZ(hitDZ);
   }
 
   function cleanupMouseClone(){
@@ -4338,10 +4337,6 @@ function renderCurrentCard(){
   }, {passive:true});
 
   card.addEventListener('touchmove', e=>{
-    // NOTE: no e.preventDefault() — touch-action:none on .event-card CSS
-    // already prevents scroll/zoom. Removing the non-passive handler lets
-    // iOS WebKit (Safari, Chrome, Instagram WKWebView) freely scroll
-    // other containers like the timeline.
     if(!touchClone) return;
     const t = e.touches[0];
 
@@ -4352,36 +4347,30 @@ function renderCurrentCard(){
       card.classList.remove('pressing');
     }
 
+    // ── READ phase (all layout reads before any transform write) ──
+    const wrap = _tlEls.wrap;
+    const wr = wrap ? wrap.getBoundingClientRect() : null;
+    let hitDZ = null;
+    _cachedDZs.forEach(dz=>{
+      const r = dz.getBoundingClientRect();
+      if(t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom) hitDZ=dz;
+    });
+
+    // ── WRITE phase (DOM mutations after all reads) ──
     touchClone.style.left = (t.clientX - touchOffsetX) + 'px';
     touchClone.style.top  = (t.clientY - touchOffsetY) + 'px';
 
-    // ── Edge scrolling ──
-    const wrapper = document.getElementById('timeline-wrapper');
-    if(wrapper){
-      const wr = wrapper.getBoundingClientRect();
-      const EDGE = 72; // px from edge that triggers scroll
-      const MAX_SPEED = 14; // max px per frame
-      let scrollSpeed = 0;
-      if(t.clientX < wr.left + EDGE){
-        // Finger near left edge — scroll left
-        const dist = Math.max(0, t.clientX - wr.left);
-        scrollSpeed = -MAX_SPEED * (1 - dist / EDGE);
-      } else if(t.clientX > wr.right - EDGE){
-        // Finger near right edge — scroll right
-        const dist = Math.max(0, wr.right - t.clientX);
-        scrollSpeed = MAX_SPEED * (1 - dist / EDGE);
+    if(wr){
+      const EDGE=72, MAX_SPEED=14;
+      let scrollSpeed=0;
+      if(t.clientX < wr.left+EDGE){
+        scrollSpeed = -MAX_SPEED * (1 - Math.max(0,t.clientX-wr.left)/EDGE);
+      } else if(t.clientX > wr.right-EDGE){
+        scrollSpeed = MAX_SPEED * (1 - Math.max(0,wr.right-t.clientX)/EDGE);
       }
-      if(scrollSpeed !== 0){
-        tlScrollBy(scrollSpeed);
-      }
+      if(scrollSpeed!==0) tlScrollBy(scrollSpeed);
     }
-
-    // Highlight drop zone under finger
-    document.querySelectorAll('.drop-zone').forEach(dz=>{
-      const r = dz.getBoundingClientRect();
-      const over = t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom;
-      if(over) setActiveDZ(dz);
-    });
+    if(hitDZ) setActiveDZ(hitDZ);
   }, {passive:true});
 
   function onTouchEnd(e){
@@ -4392,7 +4381,7 @@ function renderCurrentCard(){
     if(wasDragging){
       // Find which drop zone finger lifted from
       let handled = false;
-      document.querySelectorAll('.drop-zone').forEach(dz=>{
+      _cachedDZs.forEach(dz=>{
         if(handled) return;
         const r = dz.getBoundingClientRect();
         if(t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom){
@@ -4573,7 +4562,8 @@ function renderTimeline(flashIdx=null, flashClass=''){
     const isLast = (i === last-1);
     track.appendChild(makeDropZone(i+1, isLast ? 'drop-zone-end' : ''));
   });
-  // Recalculate max scroll (track width changed), then re-clamp position
+  // Cache drop zones and recalculate max scroll
+  _cachedDZs = Array.from(track.querySelectorAll('.drop-zone'));
   tlUpdateMax();
   tlSetScroll(_tlScroll);
 }
@@ -4591,6 +4581,7 @@ function renderAll(){
 let _tlScroll = 0;
 let _tlAnimId = null;
 let _tlMaxCache = 0;
+let _cachedDZs = [];
 const _tlEls = { track: null, wrap: null };
 
 function _tlRefs(){
