@@ -105,11 +105,12 @@
   /* Screens: inactive are hidden, active fills viewport */
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: flex; }
-  #screen-start, #screen-tutorial, #screen-gameover { overflow-y: auto; }
+  #screen-start, #screen-tutorial, #screen-settings, #screen-gameover { overflow-y: auto; }
   #screen-game { height: 100vh; }
 
   /* ── START ── */
   #screen-start { align-items:center; justify-content:center; flex-direction:column; padding:48px 24px; text-align:center; position:relative; }
+  #screen-settings { align-items:center; flex-direction:column; padding:60px 24px 32px; position:relative; }
   .start-eyebrow { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
   .start-title { font-size:clamp(36px,6vw,56px); font-weight:700; color:var(--text); letter-spacing:-1px; line-height:1.1; margin-bottom:16px; font-family:'Lora',serif; }
   .start-title .ch, .start-title .rest { color: var(--accent); }
@@ -206,6 +207,128 @@
   }
   .btn-secondary:active { transform: translateY(0); }
   .start-note { margin-top:16px; font-size:12px; color:#bbb; }
+
+  /* ── SETTINGS GAME BUTTON ── */
+  .btn-settings-game {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-settings-game:hover {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--muted);
+    transform: translateY(-1px);
+  }
+  .btn-settings-game:active { transform: translateY(0); }
+
+  /* ── SETTINGS SCREEN & MODAL CONTROLS ── */
+  .settings-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 320px;
+  }
+  #screen-settings .settings-section { margin: 0 auto 16px; }
+  .settings-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .settings-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .settings-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+  .settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .settings-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .settings-slider-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 36px;
+    text-align: right;
+  }
+  .settings-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .settings-toggle-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .settings-toggle {
+    width: 48px;
+    height: 26px;
+    border-radius: 13px;
+    border: none;
+    background: var(--border);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    padding: 0;
+  }
+  .settings-toggle.active {
+    background: var(--accent);
+  }
+  .settings-toggle-knob {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .settings-toggle.active .settings-toggle-knob {
+    transform: translateX(22px);
+  }
 
   /* ── BACK BUTTON - premium frosted pill ── */
   .btn-back {
@@ -2041,6 +2164,7 @@
       initAudio();
       if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}
     ">My Collection <span class="col-notif-dot" id="col-notif-dot" style="display:none;">●</span></button>
+    <button class="btn-secondary" style="width:100%;" onclick="showScreen('settings')">Settings</button>
   </div>
   <p class="start-note">360 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
@@ -2143,6 +2267,43 @@
   </button>
 </div>
 
+<!-- SETTINGS -->
+<div id="screen-settings" class="screen">
+  <button class="btn-back" onclick="goBack()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back
+  </button>
+
+  <div class="tut-eyebrow">PREFERENCES</div>
+  <h2 class="tut-title" style="margin-bottom:24px;">Settings</h2>
+
+  <div class="settings-section">
+    <div class="settings-label">Audio Volume</div>
+    <div class="settings-slider-row">
+      <input type="range" class="settings-slider" id="settings-volume" min="0" max="100" value="70" oninput="onVolumeChange(this.value)">
+      <span class="settings-slider-val" id="settings-volume-val">70%</span>
+    </div>
+    <div class="settings-toggle-row" style="margin-top:10px;">
+      <span class="settings-toggle-label">Mute</span>
+      <button class="settings-toggle" id="settings-mute" onclick="toggleMute()">
+        <span class="settings-toggle-knob"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-label">Haptics / Vibration</div>
+    <div class="settings-toggle-row">
+      <span class="settings-toggle-label">Vibration</span>
+      <button class="settings-toggle active" id="settings-vibration" onclick="toggleVibration()">
+        <span class="settings-toggle-knob"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- GAME -->
 <div id="screen-game" class="screen">
   <header class="game-header">
@@ -2157,7 +2318,10 @@
         <strong id="score-display">0</strong>
       </div>
       <div class="lives" id="lives-display"></div>
-      <button class="btn-quit" style="margin-left:auto;" onclick="quitGame()">✕ Quit</button>
+      <button class="btn-settings-game" style="margin-left:auto;" onclick="openSettingsModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="btn-quit" onclick="quitGame()">✕ Quit</button>
     </div>
   </header>
   <!-- Quip banner: slides in above the card stage after each answer -->
@@ -2363,6 +2527,38 @@
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeQuitModal()">Keep Playing</button>
       <button class="btn-primary" onclick="confirmQuit()">Yes, Quit</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL (in-game) -->
+<div class="modal-overlay" id="settings-modal" onclick="if(event.target===this)closeSettingsModal()">
+  <div class="modal-box" style="text-align:left;">
+    <div class="modal-title" style="text-align:center;">Settings</div>
+    <div class="settings-section" style="margin-top:16px;">
+      <div class="settings-label">Audio Volume</div>
+      <div class="settings-slider-row">
+        <input type="range" class="settings-slider" id="modal-volume" min="0" max="100" value="70" oninput="onVolumeChange(this.value)">
+        <span class="settings-slider-val" id="modal-volume-val">70%</span>
+      </div>
+      <div class="settings-toggle-row" style="margin-top:10px;">
+        <span class="settings-toggle-label">Mute</span>
+        <button class="settings-toggle" id="modal-mute" onclick="toggleMute()">
+          <span class="settings-toggle-knob"></span>
+        </button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Haptics / Vibration</div>
+      <div class="settings-toggle-row">
+        <span class="settings-toggle-label">Vibration</span>
+        <button class="settings-toggle active" id="modal-vibration" onclick="toggleVibration()">
+          <span class="settings-toggle-knob"></span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn-primary" onclick="closeSettingsModal()">Done</button>
     </div>
   </div>
 </div>
@@ -3257,42 +3453,42 @@ function closeCardDetail(){
 //  CORRECT QUIPS - shown in toast when user gets one right
 // ═══════════════════════════════════════════════════════════
 const CORRECT_QUIPS = [
-  "🔥 Bilkul sahi! UPSC topper energy detected.",
-  "✅ Sahi jawab! Your neurons are working overtime.",
-  "🎯 Spot on! You're basically a walking NCERT now.",
-  "⭐ Correct! Topper material detected. UPSC ki date confirm karo.",
-  "💪 Shabash! That answer just paid for one month of your prep.",
-  "🧠 Big brain energy! Chanakya would've hired you as a minister.",
-  "🚀 Nailed it! UPSC 2025 mein naam aane wala hai.",
-  "🎉 Sahi hai! Your history teacher would finally be happy.",
-  "✨ Excellent! Even Chandragupta is impressed from the afterlife.",
-  "📚 Correct! Prelims clear aur mains bhi lagta hai pakka hai.",
-  "💡 Waah! That's the kind of answer that gets you an IAS posting.",
-  "🏆 Perfect! Rank 1 se kam kuch nahi tere liye.",
-  "😎 Ek dum sahi! Desh mein ek aur IAS officer aa raha hai.",
-  "🔑 Right answer! Now imagine knowing ALL of these.",
-  "🌟 Brilliant! Nehru would've written a letter about you.",
+  "Bilkul sahi! UPSC topper energy detected.",
+  "Sahi jawab! Your neurons are working overtime.",
+  "Spot on! You're basically a walking NCERT now.",
+  "Correct! Topper material detected. UPSC ki date confirm karo.",
+  "Shabash! That answer just paid for one month of your prep.",
+  "Big brain energy! Chanakya would've hired you as a minister.",
+  "Nailed it! UPSC 2025 mein naam aane wala hai.",
+  "Sahi hai! Your history teacher would finally be happy.",
+  "Excellent! Even Chandragupta is impressed from the afterlife.",
+  "Correct! Prelims clear aur mains bhi lagta hai pakka hai.",
+  "Waah! That's the kind of answer that gets you an IAS posting.",
+  "Perfect! Rank 1 se kam kuch nahi tere liye.",
+  "Ek dum sahi! Desh mein ek aur IAS officer aa raha hai.",
+  "Right answer! Now imagine knowing ALL of these.",
+  "Brilliant! Nehru would've written a letter about you.",
 ];
 
 // ═══════════════════════════════════════════════════════════
 //  WRONG QUIPS - shown in toast when user gets one wrong
 // ═══════════════════════════════════════════════════════════
 const WRONG_QUIPS = [
-  "❌ Oops! Thoda aur padhai ki zaroorat hai. Keep going.",
-  "💔 Wrong! Yeh toh syllabus mein tha yaar. Dobara dekho.",
-  "📺 Galat! NCERT ke chapter 3 mein tha yeh. Did you skip it?",
-  "🙈 Galat! Yeh exam mein 47 baar aaya hai. We checked.",
-  "😬 Wrong! UPSC is merciless — but you can still beat it.",
-  "📖 Chapter 3. We forgive you. Ek baar aur padh lo.",
-  "🔔 Notification miss kar diya? Yeh last week ka topic tha.",
-  "😅 Galat jawab! Don't worry — mistakes make memory stronger.",
-  "🤦 Toppers answer this in their sleep. You'll get there.",
-  "⚡ Wrong! Mock test Series 1 mein bhi tha yeh. Just saying.",
-  "🎓 Incorrect! Your future self will remember this one.",
-  "😤 Nahi hua! Itna toh 11th class NCERT mein tha yaar.",
-  "🙏 Galat! Ek baar aur dekh lo. Ek baar hi kaafi hai.",
-  "📱 Wrong! Yeh recent exam mein bhi poochha gaya tha.",
-  "🤷 Humne bataya tha, tum soya the. Ab toh yaad rahega.",
+  "Oops! Thoda aur padhai ki zaroorat hai. Keep going.",
+  "Wrong! Yeh toh syllabus mein tha yaar. Dobara dekho.",
+  "Galat! NCERT ke chapter 3 mein tha yeh. Did you skip it?",
+  "Galat! Yeh exam mein 47 baar aaya hai. We checked.",
+  "Wrong! UPSC is merciless — but you can still beat it.",
+  "Chapter 3. We forgive you. Ek baar aur padh lo.",
+  "Notification miss kar diya? Yeh last week ka topic tha.",
+  "Galat jawab! Don't worry — mistakes make memory stronger.",
+  "Toppers answer this in their sleep. You'll get there.",
+  "Wrong! Mock test Series 1 mein bhi tha yeh. Just saying.",
+  "Incorrect! Your future self will remember this one.",
+  "Nahi hua! Itna toh 11th class NCERT mein tha yaar.",
+  "Galat! Ek baar aur dekh lo. Ek baar hi kaafi hai.",
+  "Wrong! Yeh recent exam mein bhi poochha gaya tha.",
+  "Humne bataya tha, tum soya the. Ab toh yaad rahega.",
 ];
 
 function getRandFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
@@ -3685,6 +3881,7 @@ function _showScreenInternal(id){
   } else {
     clearTimeout(tutDemoTimer); _d1Active = false; _s1Active = false;
   }
+  if(id === 'settings') syncSettingsUI();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4212,6 +4409,66 @@ function scrollToCard(idx){
 }
 
 // ═══════════════════════════════════════════════════════════
+//  SETTINGS — volume, mute, vibration (persisted in localStorage)
+// ═══════════════════════════════════════════════════════════
+function getSettingVolume(){
+  const v = localStorage.getItem('chronology-volume');
+  return v !== null ? parseInt(v) : 70;
+}
+function getSettingMuted(){
+  return localStorage.getItem('chronology-muted') === 'true';
+}
+function getSettingVibration(){
+  const v = localStorage.getItem('chronology-vibration');
+  return v !== null ? v === 'true' : true; // default on
+}
+
+function onVolumeChange(val){
+  val = parseInt(val);
+  localStorage.setItem('chronology-volume', String(val));
+  // sync all volume controls
+  document.querySelectorAll('#settings-volume, #modal-volume').forEach(s => s.value = val);
+  document.querySelectorAll('#settings-volume-val, #modal-volume-val').forEach(s => s.textContent = val + '%');
+}
+
+function toggleMute(){
+  const muted = !getSettingMuted();
+  localStorage.setItem('chronology-muted', String(muted));
+  syncSettingsUI();
+}
+
+function toggleVibration(){
+  const on = !getSettingVibration();
+  localStorage.setItem('chronology-vibration', String(on));
+  syncSettingsUI();
+}
+
+function syncSettingsUI(){
+  const vol = getSettingVolume();
+  const muted = getSettingMuted();
+  const vib = getSettingVibration();
+
+  document.querySelectorAll('#settings-volume, #modal-volume').forEach(s => s.value = vol);
+  document.querySelectorAll('#settings-volume-val, #modal-volume-val').forEach(s => s.textContent = vol + '%');
+
+  document.querySelectorAll('#settings-mute, #modal-mute').forEach(btn => {
+    btn.classList.toggle('active', muted);
+  });
+
+  document.querySelectorAll('#settings-vibration, #modal-vibration').forEach(btn => {
+    btn.classList.toggle('active', vib);
+  });
+}
+
+function openSettingsModal(){
+  syncSettingsUI();
+  document.getElementById('settings-modal').classList.add('visible');
+}
+function closeSettingsModal(){
+  document.getElementById('settings-modal').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════
 //  SOUND - AudioContext with fetch decode (reliable on GitHub Pages)
 // ═══════════════════════════════════════════════════════════
 let _ac = null;
@@ -4273,14 +4530,14 @@ async function initAudio(){
 // Play a loaded buffer
 function playBuffer(buffer){
   if(!buffer) return;
+  if(getSettingMuted()) return;
   try {
     const ac = getAC();
-    // Always resume - iOS suspends AudioContext aggressively
     if(ac.state === 'suspended') ac.resume();
     const src = ac.createBufferSource();
     const gain = ac.createGain();
     src.buffer = buffer;
-    gain.gain.value = 0.7;
+    gain.gain.value = getSettingVolume() / 100;
     src.connect(gain);
     gain.connect(ac.destination);
     src.start(0);
@@ -4310,6 +4567,7 @@ function playCatTapSound(cat){
 //  HAPTIC FEEDBACK
 // ═══════════════════════════════════════════════════════════
 function haptic(pattern){
+  if(!getSettingVibration()) return;
   try { if(navigator.vibrate) navigator.vibrate(pattern); } catch(e){}
 }
 
@@ -4731,17 +4989,17 @@ function shareScore(){
   // Build emoji grid string
   const grid = sorted.slice(1).map(i => i.wrong ? '🟥' : '🟩').join('');
 
-  const tierLabel = score>=40 ? '🏆 LEGENDARY' : score>=20 ? '🌟 Good' : score>=8 ? '📚 Decent' : '😬 Rough';
+  const tierLabel = score>=40 ? 'LEGENDARY' : score>=20 ? 'Good' : score>=8 ? 'Decent' : 'Rough';
 
   const text =
-`🏛️ Chronology: UPSC History
+`Chronology: UPSC History
 
 ${tierLabel}: ${score} pts on the UPSC timeline!
-🔥 Best streak: ${maxStreak} | ✅ ${correct} correct | ❌ ${wrong} wrong
+Best streak: ${maxStreak} | ${correct} correct | ${wrong} wrong
 
 ${grid}
 
-Think you can beat me? 👇
+Think you can beat me?
 https://mailmeherepeople-eng.github.io/UPSC-timeline-game`;
 
   // Web Share API with clipboard fallback
