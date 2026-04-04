@@ -3158,6 +3158,7 @@ function setTutFlyingCard(ev){
     initSupabase(),
   ]).then(() => {
     applyDark(localStorage.getItem('chronology-dark') === '1');
+    syncSettingsUI();
     updateNotifDot();
     if(btn){ btn.textContent = 'Start Game'; btn.disabled = false; }
   });
