@@ -418,6 +418,7 @@
     align-items: stretch;
     height: 100vh;
     overflow: hidden;
+    overflow: clip;
     position: relative;
   }
 
@@ -4579,6 +4580,47 @@ function renderTimeline(flashIdx=null, flashClass=''){
 function renderAll(){
   renderLives(); renderScore(); renderStreak(); renderCurrentCard(); renderTimeline();
 }
+
+// ═══════════════════════════════════════════════════════════
+//  iOS TOUCH-SCROLL FALLBACK — if native CSS overflow-x scroll
+//  is blocked by WebKit (WKWebView, Safari, Chrome on iOS),
+//  this manually scrolls the timeline via scrollLeft.
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const w = document.getElementById('timeline-wrapper');
+  if(!w) return;
+  let sx=0, sl=0, active=false, vx=0, lx=0, lt=0, raf=null;
+
+  w.addEventListener('touchstart', e=>{
+    const t=e.touches[0];
+    sx=t.clientX; sl=w.scrollLeft; active=false;
+    vx=0; lx=t.clientX; lt=Date.now();
+    if(raf){cancelAnimationFrame(raf);raf=null;}
+  },{passive:true});
+
+  w.addEventListener('touchmove', e=>{
+    const t=e.touches[0], dx=sx-t.clientX;
+    if(!active && Math.abs(dx)>4) active=true;
+    if(active){
+      w.scrollLeft = sl+dx;
+      const now=Date.now(), dt=now-lt;
+      if(dt>0){vx=(lx-t.clientX)/dt;}
+      lx=t.clientX; lt=now;
+    }
+  },{passive:true});
+
+  w.addEventListener('touchend', ()=>{
+    if(active && Math.abs(vx)>0.08){
+      let v=vx*16;
+      (function coast(){
+        if(Math.abs(v)<0.5)return;
+        w.scrollLeft+=v; v*=0.95;
+        raf=requestAnimationFrame(coast);
+      })();
+    }
+    active=false;
+  },{passive:true});
+})();
 
 // ═══════════════════════════════════════════════════════════
 //  SCROLL - measures actual DOM position of placed card
