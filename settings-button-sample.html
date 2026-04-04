@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button Samples — Settings + Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Lora:wght@700&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: #0D0D0D;
+    color: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .mock-screen {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mock-title {
+    font-family: 'Lora', serif;
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .mock-title .ch { color: #6C63FF; }
+  .mock-title .rest { color: #E8E4DC; }
+
+  .btn-primary {
+    background: #4F46E5;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+  }
+
+  .btn-start {
+    background: #6C63FF;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+  }
+
+  /* ── COLLECTION BUTTON WITH CARD PATTERN ── */
+  .btn-collection-pattern {
+    background: #14532D;
+    color: #A7F3D0;
+    border: 1px solid rgba(167,243,208,0.15);
+    border-radius: 12px;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    height: 52px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(20,83,45,0.45);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn-collection-pattern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20,83,45,0.5);
+  }
+
+  /* Card pattern background — tilted playing-card shapes */
+  .btn-collection-pattern .card-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.10;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect x='5' y='3' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(-12 13 14)'/%3E%3Crect x='12' y='5' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(5 20 16)'/%3E%3Crect x='35' y='8' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(-6 43 19)'/%3E%3Crect x='42' y='3' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(10 50 14)'/%3E%3C/svg%3E");
+    background-size: 60px 40px;
+  }
+
+  .btn-collection-pattern .card-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-collection-pattern .card-icon svg {
+    opacity: 0.7;
+  }
+
+  /* ── SETTINGS BUTTON WITH GEAR PATTERN ── */
+  .btn-settings-img {
+    background: transparent;
+    color: #E8E4DC;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    height: 52px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, transform 0.12s;
+  }
+  .btn-settings-img:hover {
+    border-color: #555;
+    transform: translateY(-2px);
+  }
+
+  .btn-settings-img .gear-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ffffff"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>');
+    background-size: 18px 18px;
+    opacity: 0.08;
+  }
+
+  .btn-settings-img .gear-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-settings-img .gear-icon svg {
+    opacity: 0.7;
+  }
+
+  .label { font-size: 11px; color: #888; text-align: center; margin-top: 32px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .sublabel { font-size: 10px; color: #555; text-align: center; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="mock-screen">
+  <div class="mock-title"><span class="ch">Ch</span><span class="rest">ronology</span></div>
+
+  <button class="btn-primary">How to Play</button>
+  <button class="btn-start">Start Game</button>
+
+  <div class="label">Collection with card pattern</div>
+
+  <button class="btn-collection-pattern">
+    <div class="card-bg"></div>
+    <span class="card-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="18" rx="3"/>
+        <path d="M2 8h20"/>
+        <path d="M8 8v13"/>
+      </svg>
+      My Collection
+    </span>
+  </button>
+
+  <div class="label">Settings with gear pattern</div>
+
+  <button class="btn-settings-img">
+    <div class="gear-bg"></div>
+    <span class="gear-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </span>
+  </button>
+
+  <div class="label" style="margin-top:40px;">Full mockup together</div>
+
+  <button class="btn-primary">How to Play</button>
+  <button class="btn-start">Start Game</button>
+  <button class="btn-collection-pattern">
+    <div class="card-bg"></div>
+    <span class="card-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="18" rx="3"/>
+        <path d="M2 8h20"/>
+        <path d="M8 8v13"/>
+      </svg>
+      My Collection
+    </span>
+  </button>
+  <button class="btn-settings-img">
+    <div class="gear-bg"></div>
+    <span class="gear-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </span>
+  </button>
+</div>
+
+</body>
+</html>

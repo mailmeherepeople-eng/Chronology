@@ -177,13 +177,64 @@
     letter-spacing: 0.3px;
     transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
     box-shadow: 0 4px 14px rgba(20,83,45,0.45), 0 1px 3px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
   }
+  .btn-collection-green .btn-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect x='5' y='3' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(-12 13 14)'/%3E%3Crect x='12' y='5' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(5 20 16)'/%3E%3Crect x='35' y='8' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(-6 43 19)'/%3E%3Crect x='42' y='3' width='16' height='22' rx='2.5' fill='none' stroke='%23A7F3D0' stroke-width='1.5' transform='rotate(10 50 14)'/%3E%3C/svg%3E");
+    background-size: 60px 40px;
+    opacity: 0.10;
+    pointer-events: none;
+  }
+  .btn-collection-green .btn-label { position: relative; z-index: 1; }
   .btn-collection-green:hover {
     background: #166534;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(20,83,45,0.5), 0 2px 6px rgba(0,0,0,0.14);
   }
   .btn-collection-green:active { transform: translateY(0); }
+
+  /* ── SETTINGS START BUTTON WITH GEAR PATTERN ── */
+  .btn-settings-start {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.12s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-settings-start .btn-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ffffff"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>');
+    background-size: 18px 18px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .btn-settings-start .btn-label {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-settings-start:hover {
+    border-color: var(--muted);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+  }
+  .btn-settings-start:active { transform: translateY(0); }
 
   .btn-secondary {
     background: transparent;
@@ -2163,8 +2214,8 @@
       document.getElementById('cat-chips').innerHTML='';
       initAudio();
       if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}
-    ">My Collection <span class="col-notif-dot" id="col-notif-dot" style="display:none;">●</span></button>
-    <button class="btn-secondary" style="width:100%;" onclick="showScreen('settings')">Settings</button>
+    "><div class="btn-pattern"></div><span class="btn-label">My Collection <span class="col-notif-dot" id="col-notif-dot" style="display:none;">●</span></span></button>
+    <button class="btn-settings-start" style="width:100%;" onclick="showScreen('settings')"><div class="btn-pattern"></div><span class="btn-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</span></button>
   </div>
   <p class="start-note">360 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
