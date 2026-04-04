@@ -418,6 +418,7 @@
     align-items: stretch;
     height: 100vh;
     overflow: hidden;
+    overflow: clip;
     position: relative;
   }
 
@@ -686,16 +687,17 @@
 
   .timeline-wrapper {
     flex: 1;
-    overflow: hidden;
+    overflow-x: scroll;
+    overflow-y: hidden;
     padding: 42px 12px 20px;
     touch-action: pan-x;
-    position: relative;
+    overscroll-behavior-x: contain;
+    -webkit-transform: translateZ(0);
   }
   .timeline-track {
     display:flex; align-items:flex-start;
     min-width:max-content; position:relative;
     touch-action: pan-x;
-    will-change: transform;
   }
   .timeline-line {
     position:absolute;
@@ -4234,10 +4236,10 @@ function renderCurrentCard(){
       const MAX_SPEED = 14;
       if(e.clientX < wr.left + EDGE){
         const dist = Math.max(0, e.clientX - wr.left);
-        tlScrollBy(-MAX_SPEED * (1 - dist / EDGE));
+        wrapper.scrollLeft -= MAX_SPEED * (1 - dist / EDGE);
       } else if(e.clientX > wr.right - EDGE){
         const dist = Math.max(0, wr.right - e.clientX);
-        tlScrollBy(MAX_SPEED * (1 - dist / EDGE));
+        wrapper.scrollLeft += MAX_SPEED * (1 - dist / EDGE);
       }
     }
 
@@ -4372,7 +4374,7 @@ function renderCurrentCard(){
         scrollSpeed = MAX_SPEED * (1 - dist / EDGE);
       }
       if(scrollSpeed !== 0){
-        tlScrollBy(scrollSpeed);
+        wrapper.scrollLeft += scrollSpeed;
       }
     }
 
@@ -4573,8 +4575,6 @@ function renderTimeline(flashIdx=null, flashClass=''){
     const isLast = (i === last-1);
     track.appendChild(makeDropZone(i+1, isLast ? 'drop-zone-end' : ''));
   });
-  // Re-apply transform scroll position (clamps if track shrank)
-  tlSetScroll(_tlScroll);
 }
 
 function renderAll(){
@@ -4582,75 +4582,29 @@ function renderAll(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  TRANSFORM-BASED TIMELINE SCROLL
-//  Bypasses native overflow scroll entirely — moves the track
-//  with translateX via touch events. Works on every browser
-//  including iOS WebKit, WKWebView, Instagram in-app browser.
+//  iOS TOUCH-SCROLL FALLBACK — if native CSS overflow-x scroll
+//  is blocked by WebKit (WKWebView, Safari, Chrome on iOS),
+//  this manually scrolls the timeline via scrollLeft.
 // ═══════════════════════════════════════════════════════════
-let _tlScroll = 0;
-let _tlAnimId = null;
-
-function tlGetMax(){
-  const track = document.getElementById('timeline-track');
-  const wrap  = document.getElementById('timeline-wrapper');
-  if(!track||!wrap) return 0;
-  return Math.max(0, track.scrollWidth - wrap.clientWidth);
-}
-
-function tlSetScroll(val){
-  const track = document.getElementById('timeline-track');
-  if(!track) return;
-  _tlScroll = Math.max(0, Math.min(val, tlGetMax()));
-  track.style.transform = 'translateX(' + (-_tlScroll) + 'px)';
-}
-
-function tlScrollBy(delta){
-  tlSetScroll(_tlScroll + delta);
-}
-
-function tlSmoothScrollTo(target, duration){
-  duration = duration || 300;
-  if(_tlAnimId){ cancelAnimationFrame(_tlAnimId); _tlAnimId=null; }
-  const start = _tlScroll;
-  const delta = target - start;
-  if(Math.abs(delta) < 1){ tlSetScroll(target); return; }
-  const t0 = performance.now();
-  (function step(now){
-    const p = Math.min((now - t0) / duration, 1);
-    const ease = p<0.5 ? 2*p*p : -1+(4-2*p)*p;
-    tlSetScroll(start + delta * ease);
-    if(p < 1) _tlAnimId = requestAnimationFrame(step);
-    else _tlAnimId = null;
-  })(performance.now());
-}
-
-// Scroll input handlers — touch, mouse wheel, mouse drag
 (function(){
   const w = document.getElementById('timeline-wrapper');
   if(!w) return;
-
-  // ── Touch (mobile) ──
-  let sx=0, sl=0, active=false, vx=0, lx=0, lt=0, coast=null;
-
-  function stopCoast(){
-    if(_tlAnimId){ cancelAnimationFrame(_tlAnimId); _tlAnimId=null; }
-    if(coast){ cancelAnimationFrame(coast); coast=null; }
-  }
+  let sx=0, sl=0, active=false, vx=0, lx=0, lt=0, raf=null;
 
   w.addEventListener('touchstart', e=>{
-    stopCoast();
     const t=e.touches[0];
-    sx=t.clientX; sl=_tlScroll; active=false;
+    sx=t.clientX; sl=w.scrollLeft; active=false;
     vx=0; lx=t.clientX; lt=Date.now();
+    if(raf){cancelAnimationFrame(raf);raf=null;}
   },{passive:true});
 
   w.addEventListener('touchmove', e=>{
     const t=e.touches[0], dx=sx-t.clientX;
     if(!active && Math.abs(dx)>4) active=true;
     if(active){
-      tlSetScroll(sl + dx);
+      w.scrollLeft = sl+dx;
       const now=Date.now(), dt=now-lt;
-      if(dt>0) vx=(lx-t.clientX)/dt;
+      if(dt>0){vx=(lx-t.clientX)/dt;}
       lx=t.clientX; lt=now;
     }
   },{passive:true});
@@ -4658,46 +4612,14 @@ function tlSmoothScrollTo(target, duration){
   w.addEventListener('touchend', ()=>{
     if(active && Math.abs(vx)>0.08){
       let v=vx*16;
-      (function glide(){
-        if(Math.abs(v)<0.5){ coast=null; return; }
-        tlScrollBy(v); v*=0.95;
-        coast=requestAnimationFrame(glide);
+      (function coast(){
+        if(Math.abs(v)<0.5)return;
+        w.scrollLeft+=v; v*=0.95;
+        raf=requestAnimationFrame(coast);
       })();
     }
     active=false;
   },{passive:true});
-
-  // ── Mouse wheel (desktop) ──
-  w.addEventListener('wheel', e=>{
-    e.preventDefault();
-    stopCoast();
-    // Use deltaX if available (horizontal scroll), else fall back to deltaY
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    tlScrollBy(delta);
-  },{passive:false});
-
-  // ── Mouse drag (desktop — click and drag to scroll) ──
-  let mx=0, msl=0, mdrag=false;
-
-  w.addEventListener('mousedown', e=>{
-    // Only left button, and not on interactive elements
-    if(e.button!==0) return;
-    stopCoast();
-    mx=e.clientX; msl=_tlScroll; mdrag=true;
-    w.style.cursor='grabbing';
-    e.preventDefault();
-  });
-
-  window.addEventListener('mousemove', e=>{
-    if(!mdrag) return;
-    tlSetScroll(msl + (mx - e.clientX));
-  });
-
-  window.addEventListener('mouseup', ()=>{
-    if(!mdrag) return;
-    mdrag=false;
-    w.style.cursor='';
-  });
 })();
 
 // ═══════════════════════════════════════════════════════════
@@ -4707,14 +4629,16 @@ function scrollToCard(idx){
   setTimeout(()=>{
     const wrapper = document.getElementById('timeline-wrapper');
     if(!wrapper) return;
+    // Find the idx-th .tl-item in the track
     const items = wrapper.querySelectorAll('.tl-item');
     const target = items[idx];
     if(!target) return;
-    const wRect = wrapper.getBoundingClientRect();
-    const tRect = target.getBoundingClientRect();
-    const cardCenter = tRect.left - wRect.left + tRect.width/2;
+    const wRect  = wrapper.getBoundingClientRect();
+    const tRect  = target.getBoundingClientRect();
+    // Current scroll + offset of card centre relative to wrapper centre
+    const cardCenterInWrapper = tRect.left - wRect.left + tRect.width/2;
     const wrapperCenter = wRect.width / 2;
-    tlSmoothScrollTo(_tlScroll + (cardCenter - wrapperCenter));
+    wrapper.scrollBy({ left: cardCenterInWrapper - wrapperCenter, behavior: 'smooth' });
   }, 80);
 }
 
@@ -5034,7 +4958,10 @@ function triggerGameOver(){
   document.getElementById('current-card-container').innerHTML='';
 
   // Scroll timeline to start
-  setTimeout(()=>{ tlSmoothScrollTo(0); },200);
+  setTimeout(()=>{
+    const w=document.getElementById('timeline-wrapper');
+    if(w) w.scrollTo({left:0,behavior:'smooth'});
+  },200);
 
   // Determine run quality
   const isGood = score >= 30;
