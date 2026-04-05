@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chronology — To-Do</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0d0d; --surface: #161616; --surface2: #1e1e1e;
+    --border: #272727; --border2: #333;
+    --text: #f0ede8; --muted: #5a5650; --muted2: #888480;
+    --accent: #818CF8; --accent-dim: rgba(129,140,248,0.10); --accent-border: rgba(129,140,248,0.25);
+    --green: #4caf7a; --green-dim: rgba(76,175,122,0.10); --green-border: rgba(76,175,122,0.22);
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.10); --amber-border: rgba(245,158,11,0.25);
+    --red: #e05c4b;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; padding: 40px 20px 80px; }
+  .page { max-width: 740px; margin: 0 auto; }
+
+  .hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 36px; flex-wrap: wrap; }
+  .hdr-left .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .hdr-left h1 { font-family: 'Lora', serif; font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
+  .hdr-left .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .pdf-btn {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--surface); border: 1.5px solid var(--border2);
+    color: var(--muted2); border-radius: 10px; padding: 9px 16px;
+    font-size: 13px; font-weight: 600; font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .pdf-btn:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
+
+  .prog-wrap { margin-bottom: 28px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+  .prog-label span:last-child { color: var(--muted2); font-weight: 600; }
+  .prog-track { height: 3px; background: var(--surface2); border-radius: 2px; }
+  .prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 32px; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .leg-dot.done { background: var(--green); }
+  .leg-dot.demo { background: var(--amber); }
+  .leg-dot.todo { background: transparent; border: 1.5px solid var(--border2); }
+
+  .section { margin-bottom: 28px; }
+  .section-hdr { display: flex; align-items: center; padding-bottom: 9px; margin-bottom: 2px; border-bottom: 1px solid var(--border); }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); flex: 1; }
+  .section-count { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+  .item { border-radius: 8px; }
+  .item-row {
+    display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
+    cursor: pointer; border-radius: 8px; transition: background 0.12s;
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .item-row:hover { background: var(--surface); }
+
+  .chk {
+    width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+    border: 1.5px solid var(--border2); transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chk.done { background: var(--green-dim); border-color: var(--green-border); }
+  .chk.done::after { content:''; display:block; width:5px; height:8px; border-right:2px solid var(--green); border-bottom:2px solid var(--green); transform:rotate(45deg) translate(-1px,-1px); }
+  .chk.demo { background: var(--amber-dim); border-color: var(--amber-border); }
+  .chk.demo::after { content:'◈'; font-size:9px; color:var(--amber); line-height:1; display:block; }
+
+  .item-main { flex: 1; min-width: 0; }
+  .item-text { font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--text); transition: color 0.15s; }
+  .item-text.done { text-decoration: line-through; text-decoration-color: #2e2e2e; color: #333; font-weight: 400; }
+  .item-text.demo { color: #666; }
+
+  .badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; padding: 1px 6px; border-radius: 20px; margin-left: 6px; text-transform: uppercase; vertical-align: middle; }
+  .badge.done-b { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+  .badge.demo-b { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+  .badge.future-b { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+
+  .note-btn {
+    flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    background: none; border: 1px solid transparent; border-radius: 6px;
+    padding: 3px 8px; cursor: pointer; font-family: 'Source Sans 3', sans-serif;
+    transition: all 0.15s; white-space: nowrap; margin-top: 1px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .note-btn:hover { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+  .note-btn.has-note { color: rgba(129,140,248,0.5); }
+  .note-btn.open { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+
+  .note-area { display: none; padding: 4px 10px 8px 38px; }
+  .note-area.open { display: block; }
+  .note-area textarea {
+    width: 100%; min-height: 56px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--muted2);
+    font-family: 'Source Sans 3', sans-serif; font-size: 13px; line-height: 1.5;
+    padding: 9px 12px; resize: vertical; outline: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .note-area textarea:focus { border-color: var(--accent-border); color: var(--text); }
+  .note-area textarea::placeholder { color: var(--border2); }
+
+  .sub-list { padding: 4px 0 2px 10px; }
+  .sub-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .sub-row.done { text-decoration: line-through; text-decoration-color: #1e1e1e; color: #282828; }
+  .sub-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); flex-shrink: 0; margin-top: 7px; }
+
+  @media print {
+    body { background: #fff !important; color: #111 !important; padding: 20px !important; }
+    :root { --text:#111; --muted:#777; --muted2:#555; --surface:#f5f5f5; --surface2:#f0f0f0; --border:#ddd; --border2:#bbb; --bg:#fff; --accent:#4a47c4; --green:#2e7d32; --amber:#b45309; }
+    .pdf-btn, .note-btn { display: none !important; }
+    .note-area { display: block !important; }
+    .note-area textarea { background: #fafafa !important; border: 1px solid #ddd !important; color: #555 !important; min-height: 0 !important; resize: none !important; }
+    .item-row:hover { background: none !important; }
+    .section { break-inside: avoid; }
+    .item { break-inside: avoid; }
+    h1 { color: #333 !important; }
+    .chk.done { background: #e8f5e9 !important; border-color: #81c784 !important; }
+    .chk.demo { background: #fff8e1 !important; border-color: #ffc107 !important; }
+    .prog-track { background: #eee !important; }
+    .prog-fill { background: #555 !important; }
+    .legend { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="eyebrow">Git Gud</div>
+      <h1>Chronology</h1>
+      <div class="sub">Launch to-do — updated April 2026</div>
+    </div>
+    <button class="pdf-btn" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Save as PDF
+    </button>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Overall progress</span><span id="prog-text">— / —</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot done"></div>Done &amp; shipped</div>
+    <div class="leg"><div class="leg-dot demo"></div>Demo built, not in main</div>
+    <div class="leg"><div class="leg-dot todo"></div>Not started</div>
+  </div>
+
+  <div id="lists"></div>
+
+  <footer style="margin-top:48px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:#222;text-align:center;letter-spacing:1.5px;">
+    a <span style="color:var(--accent)">git gud</span> game &nbsp;·&nbsp; chronology
+  </footer>
+</div>
+
+<script>
+const SECTIONS = [
+  { id:'launch', title:'Launch blockers', items:[
+    { id:'lb1',  text:'Pick final color scheme and apply to full game', state:'todo', note:'' },
+    { id:'lb2',  text:'Pick final wordmark font — sans-serif or monospace', state:'todo', note:'' },
+    { id:'lb3',  text:'Bundle events.json locally — remove GitHub Pages fetch dependency', state:'todo', note:'Currently fetched at runtime from GitHub Pages. Needs to ship bundled inside the APK for offline support and faster load.' },
+    { id:'lb4',  text:'Splash screen while events load', state:'todo', note:'Currently btn-start shows "Loading…" text. Needs a proper branded splash.' },
+    { id:'lb5',  text:'App icon — 512×512, adaptive icon layers for Android', state:'todo', note:'' },
+    { id:'lb6',  text:'Privacy policy page — mandatory for Play Store', state:'todo', note:'Must be a live publicly accessible URL. Can be a simple static hosted page.' },
+    { id:'lb7',  text:'Safe area insets — env(safe-area-inset-bottom) for Android gesture bar', state:'todo', note:'Gesture navigation bar on Android overlaps the screen bottom. Fix with padding: env(safe-area-inset-bottom) on the game wrapper.' },
+    { id:'lb8',  text:'First-run detection — auto-open tutorial on fresh install', state:'done', note:'3-phase tutorial: auto-place (free point), guided prank drag (life lost), hold-to-read. localStorage key chronology-tutorial-done mirrored to Supabase players.tutorial_done. Toggle on start screen lets returning users re-enable.' },
+    { id:'lb9',  text:'Offline graceful failure screen', state:'todo', note:'Show a friendly UI if fetch fails rather than a broken/empty state.' },
+    { id:'lb10', text:'Capacitor setup — wrap HTML into Android APK', state:'todo', note:'Single index.html wraps cleanly into Capacitor. Needs Capacitor CLI setup and Android Studio build pipeline.' },
+    { id:'lb11', text:'Bump events-v4 cache key to events-v5 to push updated event labels', state:'todo', note:'Versioned cache key in events.json. Symptom of forgetting: pushed changes not visible in game. Bump the key every time events.json content changes.' },
+    { id:'lb12', text:'Update GitHub Pages share link to final Play Store URL', state:'todo', note:'Share text currently points to GitHub Pages. Replace with Play Store URL before launch.' },
+  ]},
+  { id:'sound', title:'Sound overhaul — full audio identity', items:[
+    { id:'snd1', text:'Category sounds — distinct audio cue per category on card load', state:'todo', note:'9 categories, 9 distinct sounds. Plays when a new card loads after placement.',
+      subs:['Ancient India — sitar sting or veena','Medieval India — tabla hit or dhol','Colonial India — brass / military snare','Post-Independence — modern synth pop or news jingle','World History — orchestral swell','Science & Tech — digital blip or launch sound','Personalities — spotlight fanfare','Social Reform — crowd murmur or bell','Constitutional — gavel strike'] },
+    { id:'snd2', text:'Meme-ify wrong sounds — replace current wrong SFX', state:'todo', note:'Rotate randomly or tie to score tier.',
+      subs:['Vine boom for dramatic wrong placements','FAAAH / air horn variant','Bruh sound','Sad trombone for terrible streaks','Rotate randomly or tie to score tier'] },
+    { id:'snd3', text:'Keep correct sound clean and satisfying — not meme-ified', state:'todo', note:'The contrast between clean correct and chaotic wrong is what makes the wrong sounds funnier.' },
+    { id:'snd4', text:'Milestone sounds (3×, 5×, 10× streak) — gamer-style announcer voice', state:'todo', note:'"DOUBLE KILL", "UNSTOPPABLE" energy. Keep epic — don\'t meme-ify these.' },
+    { id:'snd5', text:'Mute button in-game', state:'done', note:'Available in the in-game settings panel (gear icon top right). Persists via localStorage chronology-muted.' },
+  ]},
+  { id:'feel', title:'Game feel — polish pass', items:[
+    { id:'gf1', text:'Confetti burst on game complete or new high score', state:'todo', note:'' },
+    { id:'gf2', text:'Fake-out mechanic — cards that look like one era but belong in another', state:'demo', note:'Demo built at fakeout-demo-audio.html. Cards tagged fakeout:true get amber pulsing border + ⚠ pip, uneasy audio sting on load, trap drop zone in amber. Wrong placement = vine boom. Correct = triumphant fanfare. Not yet merged into main index.html.' },
+    { id:'gf3', text:'Extra life — earned at streak milestone, shield shatters on use', state:'demo', note:'Demo built at extra-life-demo.html. Earned at 5-streak. Shield icon absorbs one wrong hit per game. Gold flash + shatters animation + toast. Not yet merged into main index.html.' },
+    { id:'gf4', text:'Score count-up animation on game over screen', state:'todo', note:'' },
+    { id:'gf5', text:'New high score celebration — distinct from regular game over', state:'todo', note:'' },
+    { id:'gf6', text:'Timeline scroll indicator — fade edges to show it scrolls', state:'todo', note:'Left/right gradient fade on the timeline wrapper edges. Show only when content overflows.' },
+    { id:'gf7', text:'Card flip animation when date is revealed after placement', state:'todo', note:'' },
+  ]},
+  { id:'copy', title:'Copy rewrite — Git Gud voice', items:[
+    { id:'cp1', text:'Rewrite all correct quips', state:'todo', note:'"W. Carry on." energy. Currently too warm and generic.' },
+    { id:'cp2', text:'Rewrite all wrong quips', state:'todo', note:'"skill issue", "L + ratio", "touch grass" energy. Currently too encouraging.' },
+    { id:'cp3', text:'Rewrite end-screen jokes with Git Gud voice', state:'todo', note:'' },
+    { id:'cp4', text:'Update How to Play copy — shorter, more irreverent', state:'todo', note:'' },
+    { id:'cp5', text:'Start screen copy final pass — confirm tagline and hook', state:'todo', note:'Current: "360 historical events. No dates given. Place them in order or lose a life. How far can you go?"' },
+  ]},
+  { id:'retention', title:'Retention features — post-launch', items:[
+    { id:'ret1', text:'Daily Challenge — same 10 cards for everyone, one attempt, resets at midnight', state:'todo', note:'Needs server-side seed so all players receive identical cards. Can use the date string as the seed.' },
+    { id:'ret2', text:'Streak freeze — spend collected cards to save a streak', state:'todo', note:'' },
+    { id:'ret3', text:'Topics filter — let players choose which categories they get', state:'todo', note:'Filter on start screen. Persisted in localStorage. 9 categories toggleable.' },
+    { id:'ret4', text:'40 more cards — hit 400 total', state:'todo', note:'Currently 360 cards. Content rules: no em dashes, no filler words, label ≤40 chars, sublabel ≤38 chars, smart-friend tone.' },
+    { id:'ret5', text:'Complete Unacademy WebView bridge removal — clean up stub code', state:'todo', note:'Chronology is now standalone under Git Gud. All Unacademy/UnacademyX WebView integration is deprecated. Stub code still in index.html — clean before Play Store submission.' },
+  ]},
+  { id:'store', title:'Play Store prep', items:[
+    { id:'ps1', text:'Closed testing with 20 real UPSC aspirants', state:'todo', note:'' },
+    { id:'ps2', text:'App screenshots — 3–4 screen sizes', state:'todo', note:'' },
+    { id:'ps3', text:'Short description (80 chars) and full description for Play Store listing', state:'todo', note:'' },
+    { id:'ps4', text:'Category: Education or Trivia', state:'todo', note:'' },
+    { id:'ps5', text:'Content rating questionnaire', state:'todo', note:'' },
+    { id:'ps6', text:'Test on real Android device — drag, scroll, touch targets', state:'todo', note:'Hosted at https://mailmeherepeople-eng.github.io/Chronology/ for pre-APK testing.' },
+  ]},
+  { id:'gitgud', title:'Git Gud company stuff', items:[
+    { id:'gg1', text:'Logo — wordmark design, decide monospace vs sans', state:'todo', note:'' },
+    { id:'gg2', text:'Simple landing page — gitgud.in or similar', state:'todo', note:'' },
+    { id:'gg3', text:'Suite branding — "a Git Gud game" wordmark vs full logo per game', state:'todo', note:'' },
+  ]},
+  { id:'session', title:'Added in session — not in original doc', items:[
+    { id:'ses1', text:'Start screen redesign — Option A', state:'done', note:'Replaces 4-button vertical stack. Start Game is sole CTA. How to Play / Collection / Settings become compact icon chips in a row.' },
+    { id:'ses2', text:'Tutorial toggle on start screen', state:'done', note:'chronology-tutorial-enabled key. New users default to on. Auto-flips off after tutorial completes. User can re-enable to demo to others.' },
+    { id:'ses3', text:'Tap-to-continue blue flash fix', state:'done', note:'Added user-select: none, -webkit-user-select: none, -webkit-tap-highlight-color: transparent to tut-scrim, tut-tap-overlay, and tut-tap-catcher.' },
+    { id:'ses4', text:'Candy Crush-style play paywall', state:'todo', note:'plays_remaining + next_refill_at on Supabase players row. Server-enforced decrement. Requires real auth (phone/Google) to be unbypassable. Build after launch once usage data informs refill cadence.', badge:'future' },
+    { id:'ses5', text:'PvP architecture', state:'todo', note:'No specs yet. Future milestone.', badge:'future' },
+  ]},
+];
+
+const LS_KEY = 'chronology-todo-v1';
+function load() { try { return JSON.parse(localStorage.getItem(LS_KEY))||{}; } catch(e){ return {}; } }
+function save(s) { try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch(e){} }
+let S = load();
+
+function getState(id, def) { return (S[id]&&S[id].state) ? S[id].state : def; }
+function getNote(id, def) { return (S[id]&&S[id].note!==undefined) ? S[id].note : (def||''); }
+
+function toggleItem(id, def) {
+  const cur = getState(id, def);
+  if (!S[id]) S[id]={};
+  S[id].state = cur==='done' ? def : 'done';
+  save(S); render();
+}
+
+function toggleNote(id) {
+  const area = document.getElementById('na-'+id);
+  const btn  = document.getElementById('nb-'+id);
+  if (!area||!btn) return;
+  const open = area.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if (open) { const ta=area.querySelector('textarea'); if(ta) ta.focus(); }
+}
+
+function onNote(id, val) {
+  if (!S[id]) S[id]={};
+  S[id].note = val; save(S);
+  const btn = document.getElementById('nb-'+id);
+  if (btn) btn.classList.toggle('has-note', val.trim().length>0);
+}
+
+function updateProgress() {
+  const all = SECTIONS.flatMap(s=>s.items);
+  const done = all.filter(i=>getState(i.id,i.state)==='done').length;
+  const pct = all.length ? (done/all.length*100).toFixed(0) : 0;
+  document.getElementById('prog-text').textContent = done+' / '+all.length+' done';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  SECTIONS.forEach(sec=>{
+    const el=document.getElementById('sc-'+sec.id); if(!el) return;
+    const d=sec.items.filter(i=>getState(i.id,i.state)==='done').length;
+    el.textContent = d+' / '+sec.items.length;
+  });
+}
+
+function badge(type, label) {
+  const cls = {done:'done-b',demo:'demo-b',future:'future-b'}[type]||'';
+  return '<span class="badge '+cls+'">'+label+'</span>';
+}
+
+function render() {
+  const wrap = document.getElementById('lists');
+  wrap.innerHTML = '';
+  SECTIONS.forEach(sec=>{
+    const sdiv = document.createElement('div');
+    sdiv.className = 'section';
+    sdiv.innerHTML = '<div class="section-hdr"><div class="section-title">'+sec.title+'</div><div class="section-count" id="sc-'+sec.id+'"></div></div>';
+    sec.items.forEach(item=>{
+      const st    = getState(item.id, item.state);
+      const note  = getNote(item.id, item.note);
+      const isDone = st==='done';
+      const isDemo = st!=='done' && item.state==='demo';
+      const chkCls = isDone ? 'chk done' : isDemo ? 'chk demo' : 'chk';
+      const txtCls = isDone ? 'item-text done' : isDemo ? 'item-text demo' : 'item-text';
+      const hasNote = note.trim().length>0;
+
+      let autoBadge = '';
+      if (item.badge==='future') autoBadge = badge('future','post-launch');
+      else if (isDone)           autoBadge = badge('done','done');
+      else if (isDemo)           autoBadge = badge('demo','demo');
+
+      let subsHTML = '';
+      if (item.subs&&item.subs.length) {
+        subsHTML = '<div class="sub-list">'+item.subs.map(s=>'<div class="sub-row'+(isDone?' done':'')+'"><div class="sub-dot"></div><span>'+s+'</span></div>').join('')+'</div>';
+      }
+
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML =
+        '<div class="item-row" onclick="toggleItem(\''+item.id+'\',\''+item.state+'\')">'
+        +'<div class="'+chkCls+'"></div>'
+        +'<div class="item-main"><div class="'+txtCls+'">'+item.text+autoBadge+'</div>'+subsHTML+'</div>'
+        +'<button class="note-btn'+(hasNote?' has-note':'')+'" id="nb-'+item.id+'" onclick="event.stopPropagation();toggleNote(\''+item.id+'\')">'
+        +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
+        +'note</button>'
+        +'</div>'
+        +'<div class="note-area" id="na-'+item.id+'">'
+        +'<textarea placeholder="Add a note…" oninput="onNote(\''+item.id+'\',this.value)">'+note+'</textarea>'
+        +'</div>';
+
+      sdiv.appendChild(el);
+    });
+    wrap.appendChild(sdiv);
+  });
+  updateProgress();
+}
+
+render();
+</script>
+</body>
+</html>
