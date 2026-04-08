@@ -265,6 +265,112 @@
   .btn-secondary:active { transform: translateY(0); }
   .start-note { margin-top:16px; font-size:12px; color:#bbb; }
 
+  /* ── START SCREEN: CHIP ROW ── */
+  .start-chip-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .btn-chip {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 4px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    border: 1.5px solid;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .btn-chip:hover { transform: translateY(-1px); }
+  .btn-chip:active { transform: translateY(0) scale(0.97); }
+  .btn-chip-howto {
+    background: var(--accent-light);
+    color: var(--accent-text);
+    border-color: rgba(var(--accent-rgb), 0.25);
+  }
+  body.dark .btn-chip-howto {
+    background: rgba(var(--accent-rgb), 0.12);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.3);
+  }
+  .btn-chip-collection {
+    background: rgba(20,83,45,0.08);
+    color: #27613a;
+    border-color: rgba(20,83,45,0.22);
+  }
+  body.dark .btn-chip-collection {
+    background: rgba(76,175,122,0.08);
+    color: #4caf7a;
+    border-color: rgba(76,175,122,0.18);
+  }
+  .btn-chip-settings {
+    background: var(--surface);
+    color: var(--muted);
+    border-color: var(--border);
+  }
+  .btn-chip-settings:hover { border-color: var(--muted); }
+
+  /* ── START SCREEN: TUTORIAL TOGGLE ROW ── */
+  .tut-pref-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    padding: 9px 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+  .tut-pref-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    user-select: none;
+  }
+  .tut-toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tut-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .tut-toggle-switch.on { background: var(--accent); }
+  .tut-toggle-switch.on::after { transform: translateX(16px); }
+
   /* ── SETTINGS GAME BUTTON ── */
   .btn-settings-game {
     background: transparent;
@@ -2240,6 +2346,8 @@
     position: fixed; inset: 0; z-index: 100;
     background: rgba(0,0,0,0); pointer-events: none;
     transition: background 0.45s ease;
+    user-select: none; -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .tut-scrim.tut-on { background: rgba(0,0,0,0.54); pointer-events: all; }
 
@@ -2296,6 +2404,8 @@
     opacity: 0; pointer-events: none;
     transition: opacity 0.3s;
     cursor: pointer;
+    user-select: none; -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .tut-tap-overlay.tut-on { opacity: 1; pointer-events: all; }
   .tut-tap-pill {
@@ -2499,20 +2609,26 @@
   <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
   <p class="start-desc">360 historical events. No dates given. Place them in order or lose a life. How far can you go?</p>
   <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 360 cards?</p>
-  <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
-    <button class="btn-primary" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
+  <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
-    <button class="btn-collection-green" style="width:100%;position:relative;" id="btn-collection" onclick="
-      showScreen('collection');
-      _collectionSort='date';
-      _selectedEras=new Set(ERAS.map(e=>e.label));
-      _selectedCats=new Set(Object.keys(CAT));
-      document.getElementById('era-chips').innerHTML='';
-      document.getElementById('cat-chips').innerHTML='';
-      initAudio();
-      if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}
-    "><div class="btn-pattern"></div><span class="btn-label">My Collection <span class="col-notif-dot" id="col-notif-dot" style="display:none;">●</span></span></button>
-    <button class="btn-settings-start" style="width:100%;" onclick="showScreen('settings')"><div class="btn-pattern"></div><span class="btn-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</span></button>
+    <div class="tut-pref-row">
+      <span class="tut-pref-label">Show tutorial on start</span>
+      <button class="tut-toggle-switch on" id="tut-toggle-switch" onclick="toggleTutorialPref()"></button>
+    </div>
+    <div class="start-chip-row">
+      <button class="btn-chip btn-chip-howto" onclick="showScreen('tutorial')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        How to Play
+      </button>
+      <button class="btn-chip btn-chip-collection" id="btn-collection" onclick="showScreen('collection');_collectionSort='date';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="7" height="9" rx="1"/><rect x="13" y="3" width="9" height="5" rx="1"/><rect x="13" y="12" width="9" height="9" rx="1"/><rect x="2" y="16" width="7" height="5" rx="1"/></svg>
+        Collection<span class="col-notif-dot" id="col-notif-dot" style="display:none;margin-left:2px;">●</span>
+      </button>
+      <button class="btn-chip btn-chip-settings" onclick="showScreen('settings')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
   </div>
   <p class="start-note">360 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
@@ -2942,7 +3058,7 @@
 <!-- FIRST-PLAY TUTORIAL OVERLAYS (fixed, sit above game during first play) -->
 <div class="tut-sflash" id="tut-sflash"></div>
 <div class="tut-scrim"      id="tut-scrim" onclick="_tutScrimTap()"></div>
-<div id="tut-tap-catcher" style="position:fixed;inset:0;z-index:160;display:none;cursor:pointer;" onclick="_tutScrimTap()"></div>
+<div id="tut-tap-catcher" style="position:fixed;inset:0;z-index:160;display:none;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;" onclick="_tutScrimTap()"></div>
 <div class="tut-hand"       id="tut-hand">👆</div>
 <div class="tut-finger"     id="tut-finger">👆</div>
 <div class="tut-pill"       id="tut-pill">
@@ -3539,6 +3655,7 @@ function setTutFlyingCard(ev){
   ]).then(() => {
     applyDark(localStorage.getItem('chronology-dark') === '1');
     syncSettingsUI();
+    syncTutToggleUI();
     updateNotifDot();
     if(btn){ btn.textContent = 'Start Game'; btn.disabled = false; }
   });
@@ -4290,6 +4407,20 @@ const _TUT_T = {
 };
 
 const _TUT_LS_KEY = 'chronology-tutorial-done';
+const _TUT_ENABLED_KEY = 'chronology-tutorial-enabled';
+
+function getTutorialEnabled(){
+  const v = localStorage.getItem(_TUT_ENABLED_KEY);
+  return v === null ? true : v === '1';
+}
+function toggleTutorialPref(){
+  localStorage.setItem(_TUT_ENABLED_KEY, getTutorialEnabled() ? '0' : '1');
+  syncTutToggleUI();
+}
+function syncTutToggleUI(){
+  const sw = document.getElementById('tut-toggle-switch');
+  if(sw) sw.classList.toggle('on', getTutorialEnabled());
+}
 let _tutStep            = 0;    // 0=off 1=P1-autoplace 2=P2-guideddrag 3=P3-holdtoread 4=done
 let _tutFingerRAF       = null;
 let _tutTargetItem      = null; // .tl-item highlighted in phase 3
@@ -4297,11 +4428,13 @@ let _tutPlacedEvId      = null; // ev id placed in phase 2 (for phase 3 targetin
 let _tutAutoCorrectIdx  = -1;   // correct DZ index computed for auto-place
 
 function _tutIsDone(){
-  return localStorage.getItem(_TUT_LS_KEY) === '1';
+  return !getTutorialEnabled();
 }
 
 function _tutMarkDone(){
   localStorage.setItem(_TUT_LS_KEY, '1');
+  localStorage.setItem(_TUT_ENABLED_KEY, '0');
+  syncTutToggleUI();
   if(_sbReady && _playerId){
     _sbRun('tut:done', ()=>
       _sb.from('players').update({ tutorial_done: true }).eq('id', _playerId)

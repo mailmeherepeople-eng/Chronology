@@ -3528,10 +3528,10 @@ const CAT = {
 
 
 // ═══════════════════════════════════════════════════════════
-//  EVENTS — loaded from data/events_updated.json with localStorage cache
-//  v2 cache key: bump to v3 when events_updated.json content changes
+//  EVENTS — loaded from data/chronology_game.json with localStorage cache
+//  v7 cache key: bumped when switching to chronology_game.json (connections field, 351 cards)
 // ═══════════════════════════════════════════════════════════
-const EVENTS_CACHE_KEY = 'chronology-events-v6';
+const EVENTS_CACHE_KEY = 'chronology-events-v7';
 let EVENTS = [];
 
 async function loadEvents(){
@@ -3546,13 +3546,13 @@ async function loadEvents(){
 
   // Fetch from server
   try {
-    const res = await fetch('data/events_updated.json');
+    const res = await fetch('data/chronology_game.json');
     if(!res.ok) throw new Error('fetch failed');
     const data = await res.json();
     try { localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify(data)); } catch(e){}
     buildEvents(data);
   } catch(e){
-    console.warn('Chronology: could not load events_updated.json', e);
+    console.warn('Chronology: could not load chronology_game.json', e);
   }
 }
 
@@ -3564,13 +3564,13 @@ function buildEvents(data){
     sublabel: ev.sublabel,
     year:     ev.year,
     cat:      ev.cat,
-    info:     ev.what ? { what: ev.what, upsc: ev.upsc, remember: ev.remember } : null
+    info:     ev.what ? { what: ev.what, remember: ev.remember, connections: ev.connections } : null
   }));
   populateTutorial();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  TUTORIAL CARDS — randomly drawn from events_updated.json
+//  TUTORIAL CARDS — randomly drawn from chronology_game.json
 //  Picks a left + right pair, then a correct event (fits between)
 //  and a wrong event (doesn't fit between) for the two phases.
 // ═══════════════════════════════════════════════════════════
@@ -3930,9 +3930,9 @@ function openCardDetail(ev){
   const body = document.getElementById('cd-body');
   if(info){
     body.innerHTML = `
-      ${info.what     ? `<div class="cd-fact"><div class="cd-fact-label">What happened</div>${info.what}</div>` : ''}
-      ${info.upsc     ? `<div class="cd-fact"><div class="cd-fact-label">How UPSC tests this</div>${info.upsc}</div>` : ''}
-      ${info.remember ? `<div class="cd-fact"><div class="cd-fact-label">Key fact</div>${info.remember}</div>` : ''}
+      ${info.what        ? `<div class="cd-fact"><div class="cd-fact-label">What happened</div>${info.what}</div>` : ''}
+      ${info.remember    ? `<div class="cd-fact"><div class="cd-fact-label">Key fact</div>${info.remember}</div>` : ''}
+      ${info.connections ? `<div class="cd-fact cd-fact-conn" style="background:${col.bg};border-radius:8px;padding:8px 10px;"><div class="cd-fact-label" style="color:${col.text};">The connections</div>${info.connections}</div>` : ''}
     `;
   } else {
     body.innerHTML = `<div class="cd-fact" style="color:var(--muted);font-style:italic;">
