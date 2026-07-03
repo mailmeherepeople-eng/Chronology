@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Chronology: UPSC History</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Chronology</title>
+<link href="fonts/fonts.css" rel="stylesheet" />
+<script src="js/supabase.js"></script>
 <style>
   :root {
     --bg: #f7f5f0;
@@ -2605,10 +2605,10 @@
     <span id="dark-icon-start">🌙</span>
     <span id="dark-label-start">Dark</span>
   </button>
-  <div class="start-eyebrow">UPSC History &amp; Polity</div>
+  <div class="start-eyebrow">A History Card Game</div>
   <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
-  <p class="start-desc">360 historical events. No dates given. Place them in order or lose a life. How far can you go?</p>
-  <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 360 cards?</p>
+  <p class="start-desc">349 historical events, from the Indus Valley to Aditya-L1. No dates given. Place them in order or lose a life. How far can you go?</p>
+  <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 349 cards?</p>
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
     <div class="tut-pref-row">
@@ -2630,7 +2630,7 @@
       </button>
     </div>
   </div>
-  <p class="start-note">360 events · 9 categories · 3 lives</p>
+  <p class="start-note">349 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
 </div>
 
@@ -2869,7 +2869,7 @@
   <!-- Category breakdown card -->
   <div class="share-card" id="share-card">
     <div id="sc-cats"></div>
-    <div class="share-card-brand">Chronology &nbsp;·&nbsp; <strong>UPSC History</strong></div>
+    <div class="share-card-brand">Chronology &nbsp;·&nbsp; <strong>A History Card Game</strong></div>
   </div>
 
   <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
@@ -3034,19 +3034,16 @@
 <!-- WEBM DANGER - life lost effect, one per heart position, randomised source -->
 <div class="heart-burst" id="heart-burst-0">
   <video class="heart-burst-vid" muted playsinline preload="auto">
-    <source src="videos/dangerpulse.webm" type="video/webm">
     <source src="videos/dangerpulse1.webm" type="video/webm">
   </video>
 </div>
 <div class="heart-burst" id="heart-burst-1">
   <video class="heart-burst-vid" muted playsinline preload="auto">
-    <source src="videos/dangerpulse.webm" type="video/webm">
     <source src="videos/dangerpulse1.webm" type="video/webm">
   </video>
 </div>
 <div class="heart-burst" id="heart-burst-2">
   <video class="heart-burst-vid" muted playsinline preload="auto">
-    <source src="videos/dangerpulse.webm" type="video/webm">
     <source src="videos/dangerpulse1.webm" type="video/webm">
   </video>
 </div>
@@ -3109,23 +3106,40 @@ const _SB_ERR = (...args) => console.warn('[Supabase]', ...args);
 // ── Supabase initialisation ──
 // Called inside the existing loadEvents() IIFE so it runs on page load.
 // On failure the game continues 100% on localStorage — nothing breaks.
+// Identity: Supabase anonymous auth (JWT-backed, RLS scopes every table to
+// auth.uid()). The old client-generated anon_id is claimed once via RPC so
+// existing players keep their history.
 async function initSupabase() {
   try {
     if (!window.supabase) { _SB_ERR('SDK not loaded'); return; }
 
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Get or create a stable anonymous identity for this device/browser
-    let anonId = localStorage.getItem('chronology-anon-id');
-    if (!anonId) {
-      anonId = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Date.now());
-      localStorage.setItem('chronology-anon-id', anonId);
+    // Restore the persisted auth session, or mint a new anonymous user
+    let { data: { session } } = await _sb.auth.getSession();
+    if (!session) {
+      const { data, error } = await _sb.auth.signInAnonymously();
+      if (error) { _SB_ERR('anonymous sign-in failed', error.message); return; }
+      session = data.session;
+    }
+    if (!session) { _SB_ERR('no auth session'); return; }
+
+    // One-time: re-parent rows created under the legacy localStorage anon_id
+    const legacyAnonId = localStorage.getItem('chronology-anon-id');
+    if (legacyAnonId && !localStorage.getItem('chronology-legacy-claimed')) {
+      const { error } = await _sb.rpc('claim_legacy_player', { p_anon_id: legacyAnonId });
+      if (!error) {
+        localStorage.setItem('chronology-legacy-claimed', '1');
+        _SB_LOG('legacy player claimed');
+      } else {
+        _SB_ERR('legacy claim failed', error.message);
+      }
     }
 
     // Upsert player row — creates on first visit, fetches on return visits
     const { data, error } = await _sb
       .from('players')
-      .upsert({ anon_id: anonId }, { onConflict: 'anon_id' })
+      .upsert({ auth_uid: session.user.id }, { onConflict: 'auth_uid' })
       .select('id, high_score')
       .single();
 
@@ -3521,39 +3535,51 @@ const CAT = {
 };
 
 // ═══════════════════════════════════════════════════════════
-//  EVENTS - 220+ curated UPSC events
-// ═══════════════════════════════════════════════════════════
-
-
-
-
-// ═══════════════════════════════════════════════════════════
 //  EVENTS — loaded from data/chronology_game.json with localStorage cache
-//  v7 cache key: bumped when switching to chronology_game.json (connections field, 351 cards)
+//  Stale-while-revalidate: cached copy renders instantly, a background
+//  refetch updates the cache (and EVENTS, if no game is in progress) so
+//  content fixes ship without a cache-key bump.
+//  v8: dedup to 349 cards, Government of India Act sublabels distinguished
 // ═══════════════════════════════════════════════════════════
-const EVENTS_CACHE_KEY = 'chronology-events-v7';
+const EVENTS_CACHE_KEY = 'chronology-events-v8';
 let EVENTS = [];
 
+// Escape card content before innerHTML injection. The JSON is self-authored
+// today, but this keeps remote/CMS-delivered content safe later.
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 async function loadEvents(){
-  // Try cache first
+  // Drop the previous cache generation
+  try { localStorage.removeItem('chronology-events-v7'); } catch(e){}
+
+  let fromCache = false;
   try {
     const cached = localStorage.getItem(EVENTS_CACHE_KEY);
     if(cached){
       buildEvents(JSON.parse(cached));
-      return;
+      fromCache = true;
     }
   } catch(e){}
 
-  // Fetch from server
-  try {
-    const res = await fetch('data/chronology_game.json');
-    if(!res.ok) throw new Error('fetch failed');
-    const data = await res.json();
-    try { localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify(data)); } catch(e){}
-    buildEvents(data);
-  } catch(e){
-    console.warn('Chronology: could not load chronology_game.json', e);
-  }
+  // Fetch from server — awaited on first run, background refresh otherwise
+  const refresh = (async () => {
+    try {
+      const res = await fetch('data/chronology_game.json', { cache: 'no-cache' });
+      if(!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      try { localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify(data)); } catch(e){}
+      // Rebuild live data only when it can't disturb an active game
+      if(!fromCache || (!currentCard && deck.length === 0)) buildEvents(data);
+    } catch(e){
+      if(!fromCache) console.warn('Chronology: could not load chronology_game.json', e);
+    }
+  })();
+
+  if(!fromCache) await refresh;
 }
 
 function buildEvents(data){
@@ -3870,9 +3896,9 @@ function makeUnlockedCard(ev){
     </div>
     <div class="col-card-body">
       <div>
-        <div class="col-card-cat" style="color:${col.text}">${ev.cat}</div>
-        <div class="col-card-label">${ev.label}</div>
-        <div class="col-card-sub">${ev.sublabel}</div>
+        <div class="col-card-cat" style="color:${col.text}">${esc(ev.cat)}</div>
+        <div class="col-card-label">${esc(ev.label)}</div>
+        <div class="col-card-sub">${esc(ev.sublabel)}</div>
       </div>
       <div class="col-card-year">${fy(ev.year)}</div>
     </div>
@@ -3894,7 +3920,7 @@ function makeLockedCard(ev){
       <div class="col-card-lock-icon">🔒</div>
     </div>
     <div class="col-card-locked-body">
-      <div class="col-card-locked-cat" style="color:${col.text}">${ev.cat}</div>
+      <div class="col-card-locked-cat" style="color:${col.text}">${esc(ev.cat)}</div>
     </div>
   `;
   return card;
@@ -3930,13 +3956,13 @@ function openCardDetail(ev){
   const body = document.getElementById('cd-body');
   if(info){
     body.innerHTML = `
-      ${info.what        ? `<div class="cd-fact"><div class="cd-fact-label">What happened</div>${info.what}</div>` : ''}
-      ${info.remember    ? `<div class="cd-fact"><div class="cd-fact-label">Key fact</div>${info.remember}</div>` : ''}
-      ${info.connections ? `<div class="cd-fact cd-fact-conn" style="background:${col.bg};border-radius:8px;padding:8px 10px;"><div class="cd-fact-label" style="color:${col.text};">The connections</div>${info.connections}</div>` : ''}
+      ${info.what        ? `<div class="cd-fact"><div class="cd-fact-label">What happened</div>${esc(info.what)}</div>` : ''}
+      ${info.remember    ? `<div class="cd-fact"><div class="cd-fact-label">Key fact</div>${esc(info.remember)}</div>` : ''}
+      ${info.connections ? `<div class="cd-fact cd-fact-conn" style="background:${col.bg};border-radius:8px;padding:8px 10px;"><div class="cd-fact-label" style="color:${col.text};">The connections</div>${esc(info.connections)}</div>` : ''}
     `;
   } else {
     body.innerHTML = `<div class="cd-fact" style="color:var(--muted);font-style:italic;">
-      Detailed notes coming soon. For now: ${ev.sublabel}.
+      Detailed notes coming soon. For now: ${esc(ev.sublabel)}.
     </div>`;
   }
 
@@ -3953,19 +3979,19 @@ function closeCardDetail(){
 //  CORRECT QUIPS - shown in toast when user gets one right
 // ═══════════════════════════════════════════════════════════
 const CORRECT_QUIPS = [
-  "Bilkul sahi! UPSC topper energy detected.",
+  "Bilkul sahi! History nerd energy detected.",
   "Sahi jawab! Your neurons are working overtime.",
-  "Spot on! You're basically a walking NCERT now.",
-  "Correct! Topper material detected. UPSC ki date confirm karo.",
-  "Shabash! That answer just paid for one month of your prep.",
+  "Spot on! You're starting to see how it all connects.",
+  "Correct! The timeline bends to your will.",
+  "Shabash! Somewhere, an archivist just smiled.",
   "Big brain energy! Chanakya would've hired you as a minister.",
-  "Nailed it! UPSC 2025 mein naam aane wala hai.",
+  "Nailed it! That one trips up almost everyone.",
   "Sahi hai! Your history teacher would finally be happy.",
   "Excellent! Even Chandragupta is impressed from the afterlife.",
-  "Correct! Prelims clear aur mains bhi lagta hai pakka hai.",
-  "Waah! That's the kind of answer that gets you an IAS posting.",
-  "Perfect! Rank 1 se kam kuch nahi tere liye.",
-  "Ek dum sahi! Desh mein ek aur IAS officer aa raha hai.",
+  "Correct! You felt that one, didn't you?",
+  "Waah! You placed that like you were there.",
+  "Perfect! The centuries are falling in line for you.",
+  "Ek dum sahi! Time itself approves.",
   "Right answer! Now imagine knowing ALL of these.",
   "Brilliant! Nehru would've written a letter about you.",
 ];
@@ -3974,64 +4000,24 @@ const CORRECT_QUIPS = [
 //  WRONG QUIPS - shown in toast when user gets one wrong
 // ═══════════════════════════════════════════════════════════
 const WRONG_QUIPS = [
-  "Oops! Thoda aur padhai ki zaroorat hai. Keep going.",
-  "Wrong! Yeh toh syllabus mein tha yaar. Dobara dekho.",
-  "Galat! NCERT ke chapter 3 mein tha yeh. Did you skip it?",
-  "Galat! Yeh exam mein 47 baar aaya hai. We checked.",
-  "Wrong! UPSC is merciless — but you can still beat it.",
-  "Chapter 3. We forgive you. Ek baar aur padh lo.",
-  "Notification miss kar diya? Yeh last week ka topic tha.",
-  "Galat jawab! Don't worry — mistakes make memory stronger.",
-  "Toppers answer this in their sleep. You'll get there.",
-  "Wrong! Mock test Series 1 mein bhi tha yeh. Just saying.",
+  "Oops! Close, but the centuries disagree. Keep going.",
+  "Wrong! History is sneakier than it looks. Dobara dekho.",
+  "Galat! That one fools a lot of people. Now it won't fool you.",
+  "Galat! Time moves in one direction. Usually.",
+  "Wrong! Merciless, yes. Unbeatable, no.",
+  "We forgive you. Ek baar aur dekh lo.",
+  "Off by a few decades. History notices these things.",
+  "Galat jawab! Don't worry, mistakes make memory stronger.",
+  "You'll place this one in your sleep soon. You'll get there.",
+  "Wrong! The past refuses to be rearranged. Just saying.",
   "Incorrect! Your future self will remember this one.",
-  "Nahi hua! Itna toh 11th class NCERT mein tha yaar.",
+  "Nahi hua! Ab yeh wala kabhi nahi bhoologe.",
   "Galat! Ek baar aur dekh lo. Ek baar hi kaafi hai.",
-  "Wrong! Yeh recent exam mein bhi poochha gaya tha.",
+  "Wrong! Even the experts argue about this one. Probably.",
   "Humne bataya tha, tum soya the. Ab toh yaad rahega.",
 ];
 
 function getRandFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-// ═══════════════════════════════════════════════════════════
-//  END-SCREEN JOKES (tiered by score)
-// ═══════════════════════════════════════════════════════════
-const JOKES = {
-  terrible: [
-    "You placed the 1857 Revolt after Chandrayaan-3. The British would like a word.",
-    "UPSC mains mein ek essay hai: 'Describe your biggest failure.' You just got a practice run. Keep going. 🙏",
-    "History repeated itself. First as tragedy, then as your timeline. Try again — you'll get it.",
-    "Babur aur APJ Abdul Kalam ek hi zamane mein nahi the. But you'll know exactly when they were next time.",
-    "Your score suggests you may have been studying the wrong subject. UPSC covers 12. Pick one.",
-  ],
-  low: [
-    "A UPSC topper sees this timeline and has flashbacks to their 4th attempt. You're building character.",
-    "Pandit Nehru gave his 'Tryst with Destiny' speech. Your timeline gave us a 'Twist of Destiny.' Very creative.",
-    "You got some right! Prelims ke liye 33% cutoff hoti hai. Aap almost wahan hain.",
-    "The Gupta Age was India's Golden Age. Yours is still under construction. Keep digging.",
-  ],
-  medium: [
-    "Not bad! You're at the level where UPSC will reject you with a rank that's juuust out of the cut-off.",
-    "Solid effort! Chandragupta would've made you a district-level official. Aim for DM.",
-    "You clearly know your history. Now please study Polity, Economy, Environment, Ethics, and Current Affairs.",
-    "You're somewhere between 'I read NCERT once' and 'UPSC topper.' The latter is closer than you think.",
-  ],
-  high: [
-    "IAS material! Your GS-1 score would make Bipin Chandra proud. Now tackle GS-2, 3 and 4.",
-    "Outstanding! You ARE the testimonial on every topper's blog post. We're calling you.",
-    "Shabash! Even Chanakya would give you a passing grade. Now ace Ethics Paper. Chanakya didn't have ethics, you need to.",
-    "Excellent! At this rate, the only thing between you and an IAS posting is a 45-minute interview.",
-  ],
-};
-
-function getJoke(score) {
-  let pool;
-  if (score <= 3)       pool = JOKES.terrible;
-  else if (score <= 8)  pool = JOKES.low;
-  else if (score <= 15) pool = JOKES.medium;
-  else                  pool = JOKES.high;
-  return getRandFrom(pool);
-}
 
 // ═══════════════════════════════════════════════════════════
 //  STATE
@@ -4041,6 +4027,11 @@ let lives=3, score=0, locked=false, gameEnded=false;
 let streak=0, maxStreak=0;
 let _sessionStartTime = null;
 let _sessionCompleted = false;
+// Replay validation: every placement is recorded and submitted to the
+// submit_session RPC at game over. The server replays the sequence against
+// its own card years and computes the authoritative score.
+let _seedCardId = null;
+let _placements = [];
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -4051,6 +4042,45 @@ function shuffle(arr) {
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WEIGHTED DRAW — the invisible teacher (minimal version)
+//  Repeat mistakes resurface, last session's cards rest, unseen
+//  cards get a novelty nudge. Weights shift probability, never
+//  guarantee, so the deck still feels like luck.
+// ═══════════════════════════════════════════════════════════
+const LAST_SESSION_KEY = 'chronology-last-session';
+
+function getLastSessionIds(){
+  try { return new Set(JSON.parse(localStorage.getItem(LAST_SESSION_KEY) || '[]')); }
+  catch(e){ return new Set(); }
+}
+function saveLastSessionIds(ids){
+  try { localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(ids)); } catch(e){}
+}
+
+function buildWeights(events){
+  const mistakes = new Map(getMistakes().map(m => [m.id, m.count]));
+  const seen = getSeenIds();
+  const last = getLastSessionIds();
+  return events.map(ev => {
+    let w = 1.0;
+    const mc = mistakes.get(ev.id);
+    if(mc) w *= (mc >= 2 ? 2.5 : 1.5);   // card-level mistake history
+    if(last.has(ev.id)) w *= 0.3;         // seen last session — suppress
+    else if(!seen.has(ev.id)) w *= 1.2;   // never seen — novelty boost
+    return w;
+  });
+}
+
+// Weighted reservoir sampling: every card can still appear anywhere,
+// weights only bias the order.
+function weightedShuffle(cards, weights){
+  return cards
+    .map((card, i) => ({ card, key: Math.pow(Math.random(), 1 / weights[i]) }))
+    .sort((a, b) => b.key - a.key)
+    .map(x => x.card);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -5061,7 +5091,7 @@ function startGame() {
   // Clean up any active tutorial overlays from a previous run
   if(_tutStep > 0) _tutTeardown();
   initAudio();
-  const s=shuffle(EVENTS);
+  const s=weightedShuffle(EVENTS, buildWeights(EVENTS));
   timeline=[{ev:s[0],wrong:false}];
   trackSeen(s[0]);
   currentCard=s[1];
@@ -5070,6 +5100,8 @@ function startGame() {
   streak=0; maxStreak=0;
   _sessionStartTime = new Date().toISOString();
   _sessionCompleted = false;
+  _seedCardId = s[0].id;
+  _placements = [];
   // reset end-game elements
   document.getElementById('current-card-container').innerHTML='';
   document.getElementById('end-game-bar').classList.remove('show');
@@ -5272,9 +5304,9 @@ function renderCurrentCard(){
     </div>
     <div class="card-img-content">
       <div class="card-text-wrap">
-        <div class="card-img-cat">${currentCard.cat}</div>
-        <div class="card-img-label">${currentCard.label}</div>
-        <div class="card-img-sublabel">${currentCard.sublabel}</div>
+        <div class="card-img-cat">${esc(currentCard.cat)}</div>
+        <div class="card-img-label">${esc(currentCard.label)}</div>
+        <div class="card-img-sublabel">${esc(currentCard.sublabel)}</div>
       </div>
       <div class="card-img-year" style="color:transparent;user-select:none;">?</div>
     </div>
@@ -5574,9 +5606,9 @@ function makeTlCard(item, extraClass=''){
     </div>
     <div class="card-img-content">
       <div class="card-text-wrap">
-        <div class="card-img-cat">${item.ev.cat}</div>
-        <div class="card-img-label">${item.ev.label}</div>
-        <div class="card-img-sublabel">${item.ev.sublabel}</div>
+        <div class="card-img-cat">${esc(item.ev.cat)}</div>
+        <div class="card-img-label">${esc(item.ev.label)}</div>
+        <div class="card-img-sublabel">${esc(item.ev.sublabel)}</div>
       </div>
       <div class="card-img-year">${fy(item.ev.year)}</div>
     </div>
@@ -6032,6 +6064,7 @@ function handleDrop(dropIdx){
   const placed=currentCard;
   currentCard=null;
   trackSeen(placed); // mark card as seen regardless of correct/wrong
+  _placements.push({ card_id: placed.id, drop_index: dropIdx }); // for server replay
 
   if(correct){
     streak++;
@@ -6105,6 +6138,9 @@ function triggerGameOver(){
   // Capture these BEFORE prepareGameOverScreen updates localStorage
   const _prevHigh    = parseInt(localStorage.getItem('chronology-high') || '0');
   const _wrongCount  = timeline.filter(i => i.wrong).length;
+
+  // Feed next session's weighted draw: these cards rest for one game
+  saveLastSessionIds(timeline.map(i => i.ev.id));
 
   prepareGameOverScreen();
   document.getElementById('current-card-container').innerHTML='';
@@ -6230,30 +6266,21 @@ async function prepareGameOverScreen(){
   const newHigh  = Math.max(prevHigh, score);
   if(score > prevHigh) localStorage.setItem('chronology-high', String(score));
 
-  // Supabase: update high score on players row + insert game session record
-  if(_sbReady){
-    const correct_count = timeline.filter(i=>!i.wrong).length - 1;
-    const wrong_count   = timeline.filter(i=>i.wrong).length;
-    _sbRun('gameOver:session', () =>
-      _sb.from('game_sessions').insert({
-        player_id:       _playerId,
-        score,
-        correct_count,
-        wrong_count,
-        max_streak:      maxStreak,
-        ended_at:        new Date().toISOString(),
-        completed:       _sessionCompleted,
-        category_filter: 'all',
-        played_at:       _sessionStartTime || new Date().toISOString(),
-      })
-    );
-    if(score > prevHigh){
-      _sbRun('gameOver:highScore', () =>
-        _sb.from('players')
-          .update({ high_score: score })
-          .eq('id', _playerId)
-      );
-    }
+  // Supabase: submit the placement sequence for server-side replay.
+  // The server recomputes correctness/score/streak from its own card years,
+  // stores the verified session, and updates high_score itself. The client
+  // never writes a score directly.
+  if(_sbReady && _seedCardId !== null){
+    _sbRun('gameOver:submit', async () => {
+      const { data, error } = await _sb.rpc('submit_session', {
+        p_seed_card_id: _seedCardId,
+        p_placements:   _placements,
+      });
+      if(error) throw new Error(error.message);
+      if(data && typeof data.score === 'number' && data.score !== score){
+        _SB_ERR('server replay score differs | client:', score, '| server:', data.score);
+      }
+    });
   }
 
   // ── Hero score ──
@@ -6302,26 +6329,21 @@ async function prepareGameOverScreen(){
 
   if(_sbReady){
     try {
-      const { data: globalData } = await _sb.rpc('get_global_avg_score').maybeSingle
-        ? await _sb.from('game_sessions').select('score')
-        : { data: null };
-      // Fallback: compute from all game_sessions
-      const { data: allSessions } = await _sb.from('game_sessions').select('score');
-      if(allSessions && allSessions.length >= 2){
-        const globalTotal = allSessions.reduce((sum, s) => sum + s.score, 0);
-        const globalAvg = globalTotal / allSessions.length;
+      // Single aggregate via security-definer RPC — clients can't read
+      // other players' sessions directly
+      const { data: globalAvg, error } = await _sb.rpc('get_global_avg_score');
+      if(error) throw new Error(error.message);
+      if(globalAvg !== null && globalAvg > 0){
         if(score >= globalAvg){
           avgClass = 'avg-up';
           avgArrow = '<div class="chip-avg-arrow"></div>';
           // Bar: 50% = global avg. Score above avg maps 50-100%
-          const ratio = globalAvg > 0 ? score / globalAvg : 1;
-          avgBarPct = Math.min(100, Math.round(50 * ratio));
+          avgBarPct = Math.min(100, Math.round(50 * (score / globalAvg)));
         } else {
           avgClass = 'avg-down';
           avgArrow = '<div class="chip-avg-arrow"></div>';
           // Bar: score below avg maps 0-50%
-          const ratio = globalAvg > 0 ? score / globalAvg : 0;
-          avgBarPct = Math.max(5, Math.round(50 * ratio));
+          avgBarPct = Math.max(5, Math.round(50 * (score / globalAvg)));
         }
       }
     } catch(e){
@@ -6413,9 +6435,9 @@ function shareScore(){
   const tierLabel = score>=40 ? 'LEGENDARY' : score>=20 ? 'Good' : score>=8 ? 'Decent' : 'Rough';
 
   const text =
-`Chronology: UPSC History
+`Chronology
 
-${tierLabel}: ${score} pts on the UPSC timeline!
+${tierLabel}: ${score} pts on the timeline!
 Best streak: ${maxStreak} | ${correct} correct | ${wrong} wrong
 
 ${grid}
@@ -6426,7 +6448,7 @@ https://mailmeherepeople-eng.github.io/Chronology`;
   // Web Share API with clipboard fallback
   if(navigator.share){
     navigator.share({
-      title: 'Chronology: UPSC History',
+      title: 'Chronology',
       text: text,
     }).catch(()=>{});
   } else {

@@ -818,15 +818,6 @@
     "connections": "Plassey is the political start of British India. Pair with Buxar (1764): Plassey gave the EIC political authority through betrayal; Buxar gave it financial authority through actual battle. The Diwani rights that followed Buxar formalised what Plassey informally began. Both cards together tell the complete story of how a trading company became a territorial power.",
     "remember": "The 'battle' was decided before it began; Mir Jafar commanded the largest part of the Nawab's army and never fired a shot."
   },
-  "92": {
-    "label": "Battle of Plassey",
-    "sublabel": "fought",
-    "year": 1757,
-    "cat": "Colonial India",
-    "what": "Robert Clive and the EIC defeated Nawab Siraj ud-Daulah of Bengal at Plassey on 23 June 1757 through the treachery of Mir Jafar, beginning British political control over India.",
-    "connections": "Pair with Buxar (1764). Plassey gave the EIC political power through betrayal; Buxar gave it financial authority through actual battle. Students routinely mix up what each achieved. The wealth transferred from Bengal after Plassey is the context for the Industrial Revolution debate, and for the Bengal famine 186 years later.",
-    "remember": "The battle lasted barely a few hours. Mir Jafar's forces, forming the bulk of the Nawab's army, simply stood aside. Clive had negotiated the betrayal weeks in advance. The real battle was fought in letters, not on the field."
-  },
   "93": {
     "label": "Industrial Revolution in Britain",
     "sublabel": "began",
@@ -1090,7 +1081,7 @@
   },
   "122": {
     "label": "Government of India Act",
-    "sublabel": "enacted",
+    "sublabel": "Crown takes over from Company",
     "year": 1858,
     "cat": "Colonial India",
     "what": "The Government of India Act 1858 transferred all powers of the East India Company to the British Crown following the 1857 revolt. The Governor-General became the Viceroy, representing the Crown directly.",
@@ -1547,15 +1538,6 @@
     "connections": "Versailles created the conditions for WWII. Keynes's resignation and prediction that the 'Carthaginian Peace' would destroy the European economy was precisely right. The war guilt clause and reparations gave Hitler his political platform. Compare with the Peace of Westphalia (1648): both ended major European wars, but Westphalia was designed to be sustainable; Versailles was designed to punish, and punished the wrong generation.",
     "remember": "The economist J.M. Keynes resigned in protest, warning that this 'Carthaginian Peace' would destroy the European economy. He was right."
   },
-  "173": {
-    "label": "Jallianwala Bagh Massacre",
-    "sublabel": "occurred",
-    "year": 1919,
-    "cat": "Colonial India",
-    "what": "On 13 April 1919 (Baisakhi), General Dyer ordered troops to fire on a peaceful crowd at Jallianwala Bagh, Amritsar. Official count 379 dead, actual estimates exceed 1000. Dyer blocked the only exit before ordering firing.",
-    "connections": "Udham Singh witnessed the massacre as a teenager. He waited 21 years, traveled to London, and shot Michael O'Dwyer (the Lieutenant Governor who had backed Dyer) in 1940. The longest-running act of revenge in the independence movement. Dyer himself had died in 1927; O'Dwyer paid the price instead.",
-    "remember": "Dyer was not punished. The House of Lords praised him. The British public raised over 26,000 pounds for him. Rabindranath Tagore wrote to the Viceroy: I wish to stand shorn of all special distinctions, by the side of those of my countrymen who have been humiliated."
-  },
   "174": {
     "label": "Non-Cooperation Movement",
     "sublabel": "launched",
@@ -1729,7 +1711,7 @@
   },
   "193": {
     "label": "Government of India Act",
-    "sublabel": "enacted",
+    "sublabel": "provincial autonomy introduced",
     "year": 1935,
     "cat": "Colonial India",
     "what": "The Government of India Act 1935 was the longest Act ever passed by the British Parliament, introducing Provincial Autonomy and planning a federation that was never implemented.",
