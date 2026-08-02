@@ -14,7 +14,7 @@ Friend-link online play: one player creates a room and shares a 6-character code
 |---|---|
 | Matchmaking | Room codes / invite links only. No random matchmaking in Stage 1. |
 | Shuffle | True random (server-generated Fisher-Yates), stored in the match row. No history weighting. |
-| Turn timer | 30 seconds per placement. Expiry = lose a life, card revealed and discarded, turn passes. |
+| Turn timer | 30 seconds per placement (online, fixed). Expiry = lose a life, the unplaced card is revealed and joins the timeline at its correct position, no score change, turn passes. Local Pass & Play has its own optional timer (None/15/30/45s) with identical expiry behavior. |
 | Abandonment | 60 seconds without a move/heartbeat → opponent may claim victory; abandoner recorded as loser. |
 | Authority | Server-validated moves via RPC (same philosophy as existing `submit_session` replay validation). Clients never report outcomes. |
 | Auth | Anonymous Supabase sign-in (must be enabled in dashboard — currently 422s). |
@@ -50,7 +50,7 @@ RLS: `select` only where `auth.uid() in (host_id, guest_id)`. All writes go thro
 - `create_match(p_name)` → `{match_id, code}` — validates auth, generates code + shuffled deck (from the server-side cards table already used by replay validation), seeds timeline with card 1, status `waiting`.
 - `join_match(p_code, p_name)` → match row — first joiner wins the guest slot (row lock), status → `active`, `turn_started = now()`.
 - `submit_move(p_match_id, p_drop_index)` → updated match — checks: caller is a player, status active, caller's turn, within 30s + 5s network grace (late = treated as timeout expiry, not the submitted move). Validates placement against server card years, updates score/streak/lives/timeline/deck_pos, flips turn, resets `turn_started`. Ends match on 0 lives (sudden death) or deck exhaustion (score compare, tie allowed).
-- `expire_turn(p_match_id)` → updated match — either player may call when `now() - turn_started > 30s`: active player loses a life, current card revealed+discarded (recorded in timeline as `{card_id, wrong:true, expired:true}`), turn flips. Idempotent (checks turn_started unchanged).
+- `expire_turn(p_match_id)` → updated match — either player may call when `now() - turn_started > 30s`: active player loses a life, the current card is revealed and joins the timeline (recorded as `{card_id, wrong:true, expired:true}`), no score change, turn flips. Idempotent (checks turn_started unchanged).
 - `claim_timeout(p_match_id)` → finished match — callable when opponent's `last_seen_*` is > 60s old; status → `abandoned`, caller wins, `end_reason = timeout_claim`.
 - `heartbeat(p_match_id)` — updates caller's `last_seen_*`; called every ~15s and on visibility change.
 - `resign_match(p_match_id)` — quit button online: opponent wins, `end_reason = resign`.
