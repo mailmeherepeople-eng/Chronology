@@ -110,7 +110,7 @@
   /* Screens: inactive are hidden, active fills viewport */
   .screen { display: none; min-height: 100vh; min-height: 100dvh; }
   .screen.active { display: flex; }
-  #screen-start, #screen-tutorial, #screen-settings, #screen-gameover { overflow-y: auto; }
+  #screen-start, #screen-tutorial, #screen-settings, #screen-gameover, #screen-twoplayer { overflow-y: auto; }
   #screen-game { height: 100vh; height: 100dvh; }
 
   /* ── START ── */
@@ -1163,6 +1163,28 @@
   .tp-end-score { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: var(--text); }
   .tp-end-streak { font-size: 11px; color: var(--muted); }
   .tp-btn-home { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); text-shadow: none; box-shadow: none; }
+  #screen-twoplayer { align-items: center; flex-direction: column; padding: 60px 24px 32px; position: relative; }
+  .tp-choose-title { font-size: 26px; color: var(--text); margin-bottom: 28px; text-align: center; }
+  .tp-choice {
+    width: 100%; max-width: 340px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+  }
+  .tp-choice:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .tp-choice-online { cursor: default; }
+  .tp-choice-online:hover { transform: none; }
+  .tp-choice-title { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+  .tp-choice-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .tp-room-row { display: flex; gap: 8px; margin-top: 4px; align-items: stretch; }
+  .tp-room-input { flex: 1; margin-top: 8px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; text-align: center; }
+  .tp-room-join { margin-top: 8px; padding: 0 22px; }
+  .tp-room-note { font-size: 12px; color: var(--accent-text); margin-top: 10px; min-height: 16px; }
 
   /* ── streak moment — fullscreen centered overlay ── */
   .streak-overlay {
@@ -2705,7 +2727,7 @@
   <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 349 cards?</p>
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
-    <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="openTpModal()">2 Players</button>
+    <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
     <div class="tut-pref-row">
       <span class="tut-pref-label">Show tutorial on start</span>
       <button class="tut-toggle-switch on" id="tut-toggle-switch" onclick="toggleTutorialPref()"></button>
@@ -2727,6 +2749,31 @@
   </div>
   <p class="start-note">349 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
+</div>
+
+<!-- TWO PLAYER MODE CHOOSER -->
+<div id="screen-twoplayer" class="screen">
+  <button class="btn-back" onclick="goBack()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back
+  </button>
+  <div class="start-eyebrow">Two Player Mode</div>
+  <h2 class="tp-choose-title">How do you want to play?</h2>
+  <div class="tp-choice" onclick="openTpModal()">
+    <div class="tp-choice-title">Pass &amp; Play</div>
+    <div class="tp-choice-sub">Share this phone and take turns placing cards. First to lose all 3 lives loses.</div>
+  </div>
+  <div class="tp-choice tp-choice-online">
+    <div class="tp-choice-title">Play Online</div>
+    <div class="tp-choice-sub">Enter a room code from a friend to join their game.</div>
+    <div class="tp-room-row">
+      <input class="tp-name-input tp-room-input" id="tp-room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off" spellcheck="false">
+      <button class="btn-primary tp-room-join" onclick="joinRoom()">Join</button>
+    </div>
+    <div class="tp-room-note" id="tp-room-note"></div>
+  </div>
 </div>
 
 <!-- TUTORIAL -->
@@ -4212,6 +4259,23 @@ function startSolo(){
   startGame();
 }
 
+// 2P uses a plain Fisher-Yates shuffle — true random, no history weighting
+function plainShuffle(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function joinRoom(){
+  const code = document.getElementById('tp-room-code').value.trim();
+  const note = document.getElementById('tp-room-note');
+  if(!code){ note.textContent = 'Enter a room code first.'; return; }
+  note.textContent = 'Online rooms are coming soon — for now, grab a friend and Pass & Play.';
+}
+
 function openTpModal(){
   initAudio();
   document.getElementById('tp-modal').classList.add('visible');
@@ -4674,6 +4738,7 @@ const _backMap = {
   game:       'start',
   gameover:   'start',
   collection: 'start',
+  twoplayer:  'start',
 };
 
 function goBack(){
@@ -5439,7 +5504,9 @@ function startGame() {
   if(_tutStep > 0) _tutTeardown();
   _gameGen++; // invalidate all pending game-flow timers from the previous game
   initAudio();
-  const s=weightedShuffle(EVENTS, buildWeights(EVENTS));
+  const s = gameMode==='local2p'
+    ? plainShuffle(EVENTS)
+    : weightedShuffle(EVENTS, buildWeights(EVENTS));
   timeline=[{ev:s[0],wrong:false}];
   trackSeen(s[0]);
   currentCard=s[1];
