@@ -19,6 +19,10 @@
 alter table public.players
   add column if not exists auth_uid uuid unique references auth.users (id) on delete set null;
 
+-- tutorial mirror flag (client writes it on tutorial completion)
+alter table public.players
+  add column if not exists tutorial_done boolean not null default false;
+
 -- game_sessions: mark rows that came through server replay
 alter table public.game_sessions
   add column if not exists verified boolean not null default false;
@@ -64,10 +68,10 @@ drop policy if exists players_update_own on public.players;
 create policy players_update_own on public.players
   for update using (auth_uid = auth.uid()) with check (auth_uid = auth.uid());
 
--- high_score is server-owned: clients may only touch auth_uid (upsert echo)
--- and native_user_id (ChronologyBridge.setUser)
+-- high_score is server-owned: clients may only touch auth_uid (upsert echo),
+-- native_user_id (ChronologyBridge.setUser) and tutorial_done (tutorial mirror)
 revoke update on public.players from authenticated;
-grant update (auth_uid, native_user_id) on public.players to authenticated;
+grant update (auth_uid, native_user_id, tutorial_done) on public.players to authenticated;
 
 drop policy if exists player_cards_own on public.player_cards;
 create policy player_cards_own on public.player_cards
@@ -425,7 +429,7 @@ insert into public.cards (id, year, label) values
   (156, 1909, 'Morley-Minto Reforms'),
   (157, 1911, 'Capital shifted from Calcutta to Delhi'),
   (158, 1911, 'Curzon''s Bengal Partition'),
-  (159, 1913, 'Rabindranath Tagore won Nobel Prize in Literature'),
+  (159, 1913, 'Tagore''s Nobel Prize in Literature'),
   (160, 1914, 'First World War'),
   (161, 1914, 'Scramble for Africa'),
   (162, 1916, 'Lucknow Pact'),
@@ -550,7 +554,7 @@ insert into public.cards (id, year, label) values
   (282, 1980, 'India''s first SLV-3 rocket launch'),
   (283, 1980, 'Mandal Commission Report'),
   (284, 1981, 'APPLE satellite by India'),
-  (285, 1983, 'INSAT-1B, India''s first weather satellite'),
+  (285, 1983, 'INSAT-1B weather satellite'),
   (286, 1984, 'Operation Blue Star'),
   (287, 1984, 'Bhopal Gas Tragedy'),
   (288, 1984, 'Indira Gandhi'),

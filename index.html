@@ -1185,6 +1185,56 @@
   .tp-room-input { flex: 1; margin-top: 8px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; text-align: center; }
   .tp-room-join { margin-top: 8px; padding: 0 22px; }
   .tp-room-note { font-size: 12px; color: var(--accent-text); margin-top: 10px; min-height: 16px; }
+  .tp-choice-play { width: 100%; margin-top: 14px; padding: 12px; font-size: 14px; border-radius: 10px; }
+  .tp-or { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 10px 0 2px; }
+  .tp-timer-label { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; text-align: left; }
+  .tp-timer-opts { display: flex; gap: 8px; }
+  .tp-timer-opt {
+    flex: 1;
+    padding: 9px 0;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .tp-timer-opt.sel {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent-text);
+  }
+  .tp-timer-pill {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    z-index: 10;
+    min-width: 44px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent-text);
+    font-variant-numeric: tabular-nums;
+    box-shadow: var(--shadow-sm);
+  }
+  .tp-timer-pill.urgent {
+    border-color: var(--danger);
+    color: var(--danger);
+    animation: tpTimerPulse 1s ease infinite;
+  }
+  @keyframes tpTimerPulse {
+    0%,100% { transform: scale(1); }
+    50%     { transform: scale(1.12); }
+  }
 
   /* ── streak moment — fullscreen centered overlay ── */
   .streak-overlay {
@@ -2764,10 +2814,13 @@
   <div class="tp-choice" onclick="openTpModal()">
     <div class="tp-choice-title">Pass &amp; Play</div>
     <div class="tp-choice-sub">Share this phone and take turns placing cards. First to lose all 3 lives loses.</div>
+    <button class="btn-primary tp-choice-play">Play</button>
   </div>
   <div class="tp-choice tp-choice-online">
     <div class="tp-choice-title">Play Online</div>
-    <div class="tp-choice-sub">Enter a room code from a friend to join their game.</div>
+    <div class="tp-choice-sub">Create a room and share the code with a friend, or enter their code to join.</div>
+    <button class="btn-secondary tp-choice-play" onclick="createRoom()">Create Room</button>
+    <div class="tp-or">or</div>
     <div class="tp-room-row">
       <input class="tp-name-input tp-room-input" id="tp-room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off" spellcheck="false">
       <button class="btn-primary tp-room-join" onclick="joinRoom()">Join</button>
@@ -2939,6 +2992,7 @@
   <div class="card-stage" style="position:relative;">
     <div class="stage-label" id="stage-label"><strong style="font-size:11px;color:var(--text);">WHEN</strong> DOES THIS EVENT BELONG?</div>
     <div id="current-card-container"></div>
+    <div class="tp-timer-pill" id="tp-timer-pill" style="display:none;"></div>
     <!-- Dark/light toggle floats bottom-right of card stage -->
     <button class="dark-toggle-game" onclick="toggleDark()" id="dark-toggle-game">
       <span id="dark-icon-game">🌙</span>
@@ -3167,6 +3221,13 @@
     <div class="modal-body">Take turns placing cards on one timeline. First to lose all 3 lives loses.</div>
     <input class="tp-name-input" id="tp-name-0" maxlength="12" placeholder="Player 1" autocomplete="off" spellcheck="false">
     <input class="tp-name-input" id="tp-name-1" maxlength="12" placeholder="Player 2" autocomplete="off" spellcheck="false">
+    <div class="tp-timer-label">Turn timer</div>
+    <div class="tp-timer-opts">
+      <button class="tp-timer-opt sel" onclick="selTpTimer(0,this)">None</button>
+      <button class="tp-timer-opt" onclick="selTpTimer(15,this)">15s</button>
+      <button class="tp-timer-opt" onclick="selTpTimer(30,this)">30s</button>
+      <button class="tp-timer-opt" onclick="selTpTimer(45,this)">45s</button>
+    </div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="btn-secondary" onclick="closeTpModal()">Cancel</button>
       <button class="btn-primary" onclick="startTwoPlayer()">Start</button>
@@ -4256,6 +4317,7 @@ function _loadActive(){
 function startSolo(){
   gameMode = 'solo';
   players = [];
+  _tpTimerDur = 0;
   startGame();
 }
 
@@ -4275,6 +4337,65 @@ function joinRoom(){
   if(!code){ note.textContent = 'Enter a room code first.'; return; }
   note.textContent = 'Online rooms are coming soon — for now, grab a friend and Pass & Play.';
 }
+function createRoom(){
+  document.getElementById('tp-room-note').textContent =
+    'Online rooms are coming soon — for now, grab a friend and Pass & Play.';
+}
+
+// ── Pass & Play turn timer (optional: 15/30/45s, default off) ──
+let _tpTimerSel = 0, _tpTimerDur = 0, _tpTimerLeft = 0, _tpTimerInt = null;
+
+function selTpTimer(t, btn){
+  _tpTimerSel = t;
+  document.querySelectorAll('.tp-timer-opt').forEach(b => b.classList.toggle('sel', b === btn));
+}
+function _tpStopTimer(){
+  if(_tpTimerInt){ clearInterval(_tpTimerInt); _tpTimerInt = null; }
+  const p = document.getElementById('tp-timer-pill');
+  if(p) p.style.display = 'none';
+}
+function _tpStartTimer(){
+  _tpStopTimer();
+  if(gameMode !== 'local2p' || !_tpTimerDur || gameEnded) return;
+  _tpTimerLeft = _tpTimerDur;
+  const p = document.getElementById('tp-timer-pill');
+  p.style.display = 'flex';
+  p.classList.remove('urgent');
+  p.textContent = _tpTimerLeft;
+  _tpTimerInt = setInterval(() => {
+    _tpTimerLeft--;
+    if(_tpTimerLeft <= 0){ _tpTimerExpire(); return; }
+    p.textContent = _tpTimerLeft;
+    p.classList.toggle('urgent', _tpTimerLeft <= 5);
+  }, 1000);
+}
+// Expiry: lose a life, card revealed and joins the timeline, no points.
+function _tpTimerExpire(){
+  _tpStopTimer();
+  if(locked || gameEnded || !currentCard) return;
+  locked = true;
+  const placed = currentCard;
+  currentCard = null;
+  document.getElementById('current-card-container').innerHTML = '';
+  clearQuip();
+  trackSeen(placed);
+  streak = 0;
+  lives--;
+  renderLives(); renderStreak();
+  _snapshotActive(); renderTpHud();
+  playWrongSound();
+  haptic([60, 40, 60]);
+  timeline.push({ev: placed, wrong: true});
+  const ns = [...timeline].sort((a,b) => a.ev.year - b.ev.year);
+  const pi = ns.findIndex(i => i.ev.id === placed.id);
+  renderTimeline(pi, 'wrong-flash');
+  showQuip("Time's up! " + players[activeIdx].name + ' loses a life.', fy(placed.year), 'wrong');
+  scrollToCard(pi);
+  _gameTimeout(() => {
+    if(lives <= 0){ _snapshotActive(); endTwoPlayerGame(1 - activeIdx); }
+    else { renderTimeline(); endTurnAndNext(); }
+  }, 1100);
+}
 
 function openTpModal(){
   initAudio();
@@ -4293,6 +4414,7 @@ function startTwoPlayer(){
     { name: n1, lives: 3, score: 0, streak: 0, maxStreak: 0 },
   ];
   activeIdx = 0;
+  _tpTimerDur = _tpTimerSel;
   startGame();
 }
 
@@ -4348,6 +4470,7 @@ function endTurnAndNext(){
 function endTwoPlayerGame(winnerIdx){ // winnerIdx: 0 | 1 | null (tie)
   gameEnded = true;
   currentCard = null;
+  _tpStopTimer();
   clearQuip();
   saveLastSessionIds(timeline.map(i => i.ev.id));
   document.getElementById('current-card-container').innerHTML = '';
@@ -4457,6 +4580,7 @@ function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
   _gameGen++; // invalidate all pending game-flow timers
   gameEnded=true;
+  _tpStopTimer();
   _tutTeardown();
   const badge2 = document.getElementById('end-new-badge');
   if(badge2){ badge2.textContent=''; badge2.classList.remove('show'); }
@@ -5535,6 +5659,8 @@ function startGame() {
   clearQuip();
   showScreen('game');
   renderAll();
+  _tpStopTimer();
+  if(gameMode==='local2p' && _tpTimerDur) _tpStartTimer();
   // First-play tutorial: launch after a brief delay so the card slide-up animation finishes
   if(gameMode==='solo' && !_tutIsDone()){
     setTimeout(()=>_tutLaunchPhase1(), 500);
@@ -6476,6 +6602,7 @@ function clearQuip(){
 function handleDrop(dropIdx){
   if(locked||!currentCard||gameEnded)return;
   locked=true;
+  _tpStopTimer();
 
   // Immediately wipe the card from the stage - no remnant
   document.getElementById('current-card-container').innerHTML='';
@@ -6565,6 +6692,7 @@ function handleDrop(dropIdx){
 }
 
 function nextCard(){
+  _tpStopTimer();
   if(deck.length===0){
     if(gameMode==='local2p'){
       // Deck exhausted with both players alive: higher score wins, tie possible
@@ -6577,6 +6705,7 @@ function nextCard(){
   }
   currentCard=deck[0]; deck=deck.slice(1);
   renderCurrentCard(); locked=false;
+  if(gameMode==='local2p' && _tpTimerDur) _tpStartTimer();
 }
 
 // ═══════════════════════════════════════════════════════════
