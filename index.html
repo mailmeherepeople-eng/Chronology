@@ -1231,6 +1231,42 @@
     color: var(--danger);
     animation: tpTimerPulse 1s ease infinite;
   }
+  .tp-online-wait {
+    width: 100%; max-width: 340px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 20px;
+    text-align: center;
+  }
+  .tp-wait-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .tp-wait-code {
+    font-family: 'Lora', serif;
+    font-size: 40px; font-weight: 700;
+    letter-spacing: 8px;
+    color: var(--accent);
+    margin-bottom: 10px;
+    animation: tpWaitPulse 2s ease infinite;
+  }
+  @keyframes tpWaitPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+  .tp-wait-sub { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 6px; }
+  .online-claim {
+    position: absolute;
+    bottom: 16px; left: 16px; right: 16px;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--danger);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: var(--shadow-md);
+  }
+  .tp-end-reason { font-size: 12px; color: var(--muted); text-align: center; margin-top: -4px; }
   @keyframes tpTimerPulse {
     0%,100% { transform: scale(1); }
     50%     { transform: scale(1.12); }
@@ -2778,6 +2814,7 @@
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
     <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
+    <button class="btn-start btn-2p" id="btn-resume-online" style="width:100%;display:none;" onclick="resumeOnline()">Resume Online Match</button>
     <div class="tut-pref-row">
       <span class="tut-pref-label">Show tutorial on start</span>
       <button class="tut-toggle-switch on" id="tut-toggle-switch" onclick="toggleTutorialPref()"></button>
@@ -2826,6 +2863,13 @@
       <button class="btn-primary tp-room-join" onclick="joinRoom()">Join</button>
     </div>
     <div class="tp-room-note" id="tp-room-note"></div>
+  </div>
+  <div class="tp-online-wait" id="tp-online-wait" style="display:none;">
+    <div class="tp-wait-label">Room code</div>
+    <div class="tp-wait-code" id="tp-wait-code"></div>
+    <div class="tp-wait-sub">Share this code with a friend.<br>The game starts the moment they join.</div>
+    <button class="btn-primary tp-choice-play" onclick="shareRoom()">Share Invite Link</button>
+    <button class="btn-secondary tp-choice-play" onclick="cancelRoom()">Cancel</button>
   </div>
 </div>
 
@@ -3029,8 +3073,13 @@
       <button class="btn-replay" onclick="startSolo()">Play Again</button>
     </div>
   </div>
+  <div class="online-claim" id="online-claim" style="display:none;">
+    <span>Your opponent seems to have left.</span>
+    <button class="btn-primary" style="padding:8px 16px;font-size:13px;" onclick="claimVictory()">Claim victory</button>
+  </div>
   <div class="end-bar" id="tp-endbar">
     <div class="tp-end-title" id="tp-end-title"></div>
+    <div class="tp-end-reason" id="tp-end-reason" style="display:none;"></div>
     <div class="tp-end-row">
       <div class="tp-end-p" id="tp-end-p0">
         <div class="tp-end-name" id="tp-end-name0"></div>
@@ -3044,7 +3093,7 @@
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn-replay" onclick="tpRematch()">Rematch</button>
+      <button class="btn-replay" id="tp-btn-rematch" onclick="tpRematch()">Rematch</button>
       <button class="btn-replay tp-btn-home" onclick="tpBackToStart()">Back to Start</button>
     </div>
   </div>
@@ -3231,6 +3280,20 @@
     <div class="modal-actions" style="margin-top:16px;">
       <button class="btn-secondary" onclick="closeTpModal()">Cancel</button>
       <button class="btn-primary" onclick="startTwoPlayer()">Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE NAME MODAL -->
+<div class="modal-overlay" id="online-modal" onclick="if(event.target===this)closeOnlineModal()">
+  <div class="modal-box">
+    <div class="modal-icon">🌐</div>
+    <div class="modal-title" id="online-modal-title">Create Room</div>
+    <div class="modal-body">Pick a name your friend will see.</div>
+    <input class="tp-name-input" id="online-name" maxlength="12" placeholder="Your name" autocomplete="off" spellcheck="false">
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-secondary" onclick="closeOnlineModal()">Cancel</button>
+      <button class="btn-primary" id="online-modal-go" onclick="onlineModalConfirm()">Create</button>
     </div>
   </div>
 </div>
@@ -4397,6 +4460,360 @@ function _tpTimerExpire(){
   }, 1100);
 }
 
+// ═══════════════════════════════════════════════════════════
+//  ONLINE MULTIPLAYER (Stage 1: friend rooms)
+//  Server-authoritative: every move goes through submit_move();
+//  the match row is the single source of truth, synced via Realtime.
+// ═══════════════════════════════════════════════════════════
+let onlineMatch = null, onlineMyIdx = null;
+let _onlineChannel = null, _onlineHbInt = null, _onlineCdInt = null;
+let _onlineModalMode = 'create';
+
+function _evById(id){ return EVENTS.find(e => e.id === id) || null; }
+async function _authUid(){
+  const { data } = await _sb.auth.getSession();
+  return data && data.session ? data.session.user.id : null;
+}
+
+function createRoom(){
+  const note = document.getElementById('tp-room-note');
+  if(!_sbReady){ note.textContent = 'Connecting… try again in a moment.'; return; }
+  if(!EVENTS.length){ note.textContent = 'Still loading cards — one sec.'; return; }
+  _onlineModalMode = 'create';
+  document.getElementById('online-modal-title').textContent = 'Create Room';
+  document.getElementById('online-modal-go').textContent = 'Create';
+  document.getElementById('online-modal').classList.add('visible');
+}
+function joinRoom(){
+  const note = document.getElementById('tp-room-note');
+  const code = document.getElementById('tp-room-code').value.trim().toUpperCase();
+  if(!code){ note.textContent = 'Enter a room code first.'; return; }
+  if(!_sbReady){ note.textContent = 'Connecting… try again in a moment.'; return; }
+  if(!EVENTS.length){ note.textContent = 'Still loading cards — one sec.'; return; }
+  _onlineModalMode = 'join';
+  document.getElementById('online-modal-title').textContent = 'Join Room ' + code;
+  document.getElementById('online-modal-go').textContent = 'Join';
+  document.getElementById('online-modal').classList.add('visible');
+}
+function closeOnlineModal(){ document.getElementById('online-modal').classList.remove('visible'); }
+
+async function onlineModalConfirm(){
+  const name = document.getElementById('online-name').value.trim();
+  const note = document.getElementById('tp-room-note');
+  const go = document.getElementById('online-modal-go');
+  go.disabled = true;
+  try{
+    if(_onlineModalMode === 'create'){
+      const { data, error } = await _sb.rpc('create_match', { p_name: name || 'Player 1' });
+      if(error) throw new Error(error.message);
+      onlineMatch = data; onlineMyIdx = 0;
+      _onlineSubscribe(data.id);
+      _showWaiting(data.code);
+    } else {
+      const code = document.getElementById('tp-room-code').value.trim().toUpperCase();
+      const { data, error } = await _sb.rpc('join_match', { p_code: code, p_name: name || 'Player 2' });
+      if(error) throw new Error(error.message);
+      onlineMatch = data; onlineMyIdx = 1;
+      _onlineSubscribe(data.id);
+      startOnlineGame(data);
+    }
+    closeOnlineModal();
+    note.textContent = '';
+  }catch(e){
+    closeOnlineModal();
+    note.textContent = /room not found/i.test(e.message)
+      ? 'Room not found. Check the code.'
+      : ('Could not connect: ' + e.message);
+  }finally{ go.disabled = false; }
+}
+
+function _showWaiting(code){
+  document.querySelectorAll('#screen-twoplayer .tp-choice').forEach(el => el.style.display = 'none');
+  document.getElementById('tp-online-wait').style.display = 'block';
+  document.getElementById('tp-wait-code').textContent = code;
+}
+function _hideWaiting(){
+  document.querySelectorAll('#screen-twoplayer .tp-choice').forEach(el => el.style.display = '');
+  document.getElementById('tp-online-wait').style.display = 'none';
+}
+function shareRoom(){
+  if(!onlineMatch) return;
+  const link = location.origin + location.pathname + '?room=' + onlineMatch.code;
+  const text = 'Play Chronology with me! Room code: ' + onlineMatch.code;
+  if(navigator.share){
+    navigator.share({ title: 'Chronology', text, url: link }).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text + ' — ' + link);
+    const el = document.getElementById('tp-wait-code');
+    el.textContent = 'Copied!';
+    setTimeout(()=>{ if(onlineMatch) el.textContent = onlineMatch.code; }, 1200);
+  }
+}
+async function cancelRoom(){
+  if(onlineMatch){ try{ await _sb.rpc('resign_match', { p_match_id: onlineMatch.id }); }catch(e){} }
+  _onlineCleanup();
+  _hideWaiting();
+}
+
+function _onlineSubscribe(matchId){
+  _onlineUnsub();
+  _onlineChannel = _sb.channel('match-' + matchId)
+    .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'matches', filter: 'id=eq.' + matchId },
+        payload => { if(payload.new) _onApplyRemote(payload.new); })
+    .subscribe();
+}
+function _onlineUnsub(){
+  if(_onlineChannel){ try{ _sb.removeChannel(_onlineChannel); }catch(e){} _onlineChannel = null; }
+}
+function _onlineCleanup(){
+  _onlineUnsub(); _onlineStopHb(); _onlineStopCountdown();
+  onlineMatch = null; onlineMyIdx = null;
+  const c = document.getElementById('online-claim');
+  if(c) c.style.display = 'none';
+}
+
+function startOnlineGame(row){
+  if(!EVENTS.length){ loadEvents().then(()=>startOnlineGame(row)); return; }
+  onlineMatch = row;
+  gameMode = 'online';
+  _tpTimerDur = 0; _tpStopTimer();
+  _gameGen++;
+  initAudio();
+  players = row.players.map(p => ({name: p.name || '??', lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
+  activeIdx = row.turn;
+  timeline = row.timeline.map(t => ({ev: _evById(t.card_id), wrong: !!t.wrong})).filter(x => x.ev);
+  currentCard = _evById(row.current_card_id);
+  gameEnded = false;
+  locked = row.turn !== onlineMyIdx;
+  _loadActive();
+  document.getElementById('current-card-container').innerHTML = '';
+  document.getElementById('end-game-bar').classList.remove('show');
+  document.getElementById('tp-endbar').classList.remove('show');
+  document.getElementById('online-claim').style.display = 'none';
+  document.getElementById('tp-btn-rematch').textContent = 'New Room';
+  _hideStreakMoment();
+  clearQuip();
+  document.querySelector('.game-header').classList.add('two-player');
+  document.getElementById('tp-hud').style.display = 'flex';
+  _hideWaiting();
+  showScreen('game');
+  renderAll();
+  renderTpHud();
+  showTurnBanner(players[row.turn].name);
+  _onlineStartCountdown(row);
+  _onlineStartHb();
+}
+
+async function _onlineSubmitMove(dropIdx){
+  try{
+    const { data, error } = await _sb.rpc('submit_move', { p_match_id: onlineMatch.id, p_drop_index: dropIdx });
+    if(error) throw new Error(error.message);
+    if(data) _onApplyRemote(data);
+  }catch(e){
+    // out-of-sync or rejected: re-fetch authoritative state
+    try{
+      const { data } = await _sb.from('matches').select('*').eq('id', onlineMatch.id).single();
+      if(data) _onApplyRemote(data);
+    }catch(e2){}
+    locked = (onlineMatch && onlineMatch.turn !== onlineMyIdx);
+  }
+}
+
+function _onApplyRemote(row){
+  if(!onlineMatch || row.id !== onlineMatch.id) return;
+  const prev = onlineMatch;
+  onlineMatch = row;
+  if(prev.status === 'waiting' && row.status === 'active'){ startOnlineGame(row); return; }
+  if(gameMode !== 'online') return;
+  // heartbeat-only update: nothing structural changed
+  if(row.deck_pos === prev.deck_pos && row.status === prev.status && row.turn === prev.turn) return;
+
+  players = row.players.map(p => ({name: p.name || '??', lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
+  const newEntries = row.timeline.slice(timeline.length);
+  let animDelay = 0;
+  if(newEntries.length){
+    newEntries.slice(0, -1).forEach(x => {
+      const ev = _evById(x.card_id);
+      if(ev) timeline.push({ev, wrong: !!x.wrong});
+    });
+    const t = newEntries[newEntries.length - 1];
+    const ev = _evById(t.card_id);
+    if(ev){
+      timeline.push({ev, wrong: !!t.wrong});
+      const ns = [...timeline].sort((a,b) => a.ev.year - b.ev.year);
+      const pi = ns.findIndex(i => i.ev.id === ev.id);
+      document.getElementById('current-card-container').innerHTML = '';
+      clearQuip();
+      renderTimeline(pi, t.wrong ? 'wrong-flash' : 'just-correct');
+      if(t.wrong) playWrongSound(); else playCorrectSound();
+      haptic(t.wrong ? [60,40,60] : [40]);
+      const moverName = (players[t.by] && players[t.by].name) || 'Opponent';
+      if(t.expired) showQuip("Time's up! " + moverName + ' loses a life.', fy(ev.year), 'wrong');
+      else showQuip(getRandFrom(t.wrong ? WRONG_QUIPS : CORRECT_QUIPS), fy(ev.year), t.wrong ? 'wrong' : 'correct');
+      scrollToCard(pi);
+      animDelay = 1100;
+    }
+  }
+  activeIdx = row.turn;
+  _loadActive();
+  renderTpHud(); renderLives(); renderScore(); renderStreak();
+  _onlineStopCountdown();
+  if(row.status !== 'active'){
+    _gameTimeout(()=>_onlineFinish(row), animDelay);
+    return;
+  }
+  _gameTimeout(()=>{
+    renderTimeline();
+    currentCard = _evById(row.current_card_id);
+    renderCurrentCard();
+    locked = row.turn !== onlineMyIdx;
+    showTurnBanner(players[row.turn].name);
+    _onlineStartCountdown(row);
+  }, animDelay);
+}
+
+function _onlineStopCountdown(){
+  if(_onlineCdInt){ clearInterval(_onlineCdInt); _onlineCdInt = null; }
+  if(gameMode === 'online'){
+    const p = document.getElementById('tp-timer-pill');
+    if(p) p.style.display = 'none';
+  }
+}
+function _onlineStartCountdown(row){
+  _onlineStopCountdown();
+  if(row.status !== 'active' || !row.turn_started) return;
+  const started = new Date(row.turn_started).getTime();
+  const pill = document.getElementById('tp-timer-pill');
+  pill.style.display = 'flex';
+  pill.classList.remove('urgent');
+  let expiring = false;
+  const tick = () => {
+    const left = 30 - Math.floor((Date.now() - started) / 1000);
+    if(left <= 0){
+      pill.textContent = '0';
+      if(!expiring){
+        expiring = true;
+        setTimeout(()=>{ expiring = false; }, 3000);
+        _sb.rpc('expire_turn', { p_match_id: onlineMatch.id })
+          .then(({data, error}) => { if(!error && data) _onApplyRemote(data); });
+      }
+      return;
+    }
+    pill.textContent = left;
+    pill.classList.toggle('urgent', left <= 5);
+  };
+  tick();
+  _onlineCdInt = setInterval(tick, 1000);
+}
+
+function _onlineStopHb(){ if(_onlineHbInt){ clearInterval(_onlineHbInt); _onlineHbInt = null; } }
+function _onlineStartHb(){
+  _onlineStopHb();
+  const beat = async () => {
+    if(!onlineMatch || gameMode !== 'online' || gameEnded) return;
+    try{
+      const { data, error } = await _sb.rpc('heartbeat', { p_match_id: onlineMatch.id });
+      if(error) throw new Error(error.message);
+      if(data && data.status === 'active'){
+        const seen = data.opponent_last_seen ? new Date(data.opponent_last_seen).getTime() : 0;
+        const srvNow = new Date(data.now).getTime();
+        document.getElementById('online-claim').style.display =
+          (srvNow - seen > 60000) ? 'flex' : 'none';
+      }
+    }catch(e){}
+  };
+  beat();
+  _onlineHbInt = setInterval(beat, 15000);
+}
+async function claimVictory(){
+  if(!onlineMatch) return;
+  try{
+    const { data, error } = await _sb.rpc('claim_timeout', { p_match_id: onlineMatch.id });
+    if(error) throw new Error(error.message);
+    if(data) _onApplyRemote(data);
+  }catch(e){}
+}
+
+function _onlineFinish(row){
+  gameEnded = true;
+  currentCard = null;
+  _onlineStopCountdown(); _onlineStopHb();
+  document.getElementById('online-claim').style.display = 'none';
+  document.getElementById('current-card-container').innerHTML = '';
+  clearQuip();
+  _gameTimeout(()=>{ tlSmoothScrollTo(0); }, 200);
+  const w = row.winner;
+  document.getElementById('tp-end-title').textContent =
+    row.status === 'abandoned' ? 'Match cancelled'
+    : (w === null ? "It's a tie!" : players[w].name + ' wins!');
+  const reasons = {
+    deck: 'All cards placed — score decides.',
+    timeout_claim: (w === onlineMyIdx ? 'Your opponent left the match.' : 'You were away too long.'),
+    resign: (w === onlineMyIdx ? 'Your opponent resigned.' : 'You resigned.'),
+  };
+  const r = reasons[row.end_reason] || '';
+  const re = document.getElementById('tp-end-reason');
+  re.textContent = r;
+  re.style.display = r ? 'block' : 'none';
+  players.forEach((p, i) => {
+    document.getElementById('tp-end-name' + i).textContent = p.name;
+    document.getElementById('tp-end-score' + i).textContent = p.score + ' pts';
+    document.getElementById('tp-end-streak' + i).textContent = 'best streak ' + p.maxStreak;
+    document.getElementById('tp-end-p' + i).classList.toggle('winner', w === i);
+  });
+  _gameTimeout(()=>{ document.getElementById('tp-endbar').classList.add('show'); }, 400);
+}
+
+async function _onlineCheckResume(){
+  if(!_sbReady) return;
+  try{
+    const { data, error } = await _sb.rpc('my_open_match');
+    if(error || !data || data.status !== 'active') return;
+    const uid = await _authUid();
+    const btn = document.getElementById('btn-resume-online');
+    btn.dataset.match = JSON.stringify(data);
+    btn.dataset.myidx = data.host_id === uid ? '0' : '1';
+    btn.style.display = 'block';
+  }catch(e){}
+}
+function resumeOnline(){
+  const btn = document.getElementById('btn-resume-online');
+  if(!btn.dataset.match) return;
+  const row = JSON.parse(btn.dataset.match);
+  onlineMyIdx = parseInt(btn.dataset.myidx, 10);
+  btn.style.display = 'none';
+  onlineMatch = row;
+  _onlineSubscribe(row.id);
+  _sb.from('matches').select('*').eq('id', row.id).single()
+    .then(({data}) => { startOnlineGame(data || row); });
+}
+
+// self-heal after backgrounding: re-fetch authoritative state
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && gameMode === 'online' && onlineMatch){
+    _sb.from('matches').select('*').eq('id', onlineMatch.id).single()
+      .then(({data}) => { if(data) _onApplyRemote(data); });
+  }
+});
+
+// bootstrap: ?room=CODE prefill + resume check once supabase is ready
+(function _onlineBoot(){
+  try{
+    const room = new URLSearchParams(location.search).get('room');
+    if(room){
+      document.getElementById('tp-room-code').value = room.toUpperCase().slice(0, 6);
+      showScreen('twoplayer');
+    }
+  }catch(e){}
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    if(typeof _sbReady !== 'undefined' && _sbReady){ clearInterval(t); _onlineCheckResume(); }
+    else if(tries > 40) clearInterval(t);
+  }, 500);
+})();
+
 function openTpModal(){
   initAudio();
   document.getElementById('tp-modal').classList.add('visible');
@@ -4489,12 +4906,24 @@ function endTwoPlayerGame(winnerIdx){ // winnerIdx: 0 | 1 | null (tie)
 }
 
 function tpRematch(){
+  if(gameMode==='online'){
+    _onlineCleanup();
+    document.getElementById('tp-endbar').classList.remove('show');
+    document.getElementById('tp-end-reason').style.display='none';
+    document.getElementById('tp-btn-rematch').textContent='Rematch';
+    showScreen('twoplayer');
+    createRoom();
+    return;
+  }
   activeIdx = _tpLoserIdx;
   document.getElementById('tp-endbar').classList.remove('show');
   startGame();
 }
 function tpBackToStart(){
+  if(gameMode==='online') _onlineCleanup();
   document.getElementById('tp-endbar').classList.remove('show');
+  document.getElementById('tp-end-reason').style.display='none';
+  document.getElementById('tp-btn-rematch').textContent='Rematch';
   showScreen('start');
 }
 let _sessionStartTime = null;
@@ -4581,6 +5010,12 @@ function confirmQuit(){
   _gameGen++; // invalidate all pending game-flow timers
   gameEnded=true;
   _tpStopTimer();
+  if(gameMode==='online'){
+    if(onlineMatch && (onlineMatch.status==='active'||onlineMatch.status==='waiting')){
+      _sb.rpc('resign_match',{p_match_id:onlineMatch.id}).then(()=>{},()=>{});
+    }
+    _onlineCleanup();
+  }
   _tutTeardown();
   const badge2 = document.getElementById('end-new-badge');
   if(badge2){ badge2.textContent=''; badge2.classList.remove('show'); }
@@ -5644,6 +6079,8 @@ function startGame() {
   document.querySelector('.game-header').classList.toggle('two-player', gameMode==='local2p');
   document.getElementById('tp-hud').style.display = gameMode==='local2p' ? 'flex' : 'none';
   document.getElementById('tp-endbar').classList.remove('show');
+  document.getElementById('tp-end-reason').style.display='none';
+  document.getElementById('tp-btn-rematch').textContent='Rematch';
   if(gameMode==='local2p') renderTpHud();
   _sessionStartTime = new Date().toISOString();
   _sessionCompleted = false;
@@ -6603,6 +7040,15 @@ function handleDrop(dropIdx){
   if(locked||!currentCard||gameEnded)return;
   locked=true;
   _tpStopTimer();
+
+  // Online: the server judges the move; we render its verdict
+  if(gameMode==='online'){
+    _onlineStopCountdown();
+    document.getElementById('current-card-container').innerHTML='';
+    clearQuip();
+    _onlineSubmitMove(dropIdx);
+    return;
+  }
 
   // Immediately wipe the card from the stage - no remnant
   document.getElementById('current-card-container').innerHTML='';
