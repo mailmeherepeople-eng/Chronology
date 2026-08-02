@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" id="meta-theme-color" content="#f7f5f0" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛</text></svg>" />
 <title>Chronology</title>
 <link href="fonts/fonts.css" rel="stylesheet" />
 <script src="js/supabase.js"></script>
@@ -12,7 +14,7 @@
     --surface: #ffffff;
     --border: #e4e0d8;
     --text: #1c1a16;
-    --muted: #8a8478;
+    --muted: #6e6a5f;
     --accent: #4F46E5;
     --accent-rgb: 79, 70, 229;
     --accent-dark: #4338CA;
@@ -102,7 +104,8 @@
   .dark-toggle-game:active { transform: translateY(0); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); color-scheme: light; }
+  body.dark { color-scheme: dark; }
   h1,h2,h3 { font-family: 'Lora', serif; }
   /* Screens: inactive are hidden, active fills viewport */
   .screen { display: none; min-height: 100vh; min-height: 100dvh; }
@@ -393,6 +396,20 @@
   }
   .btn-settings-game:active { transform: translateY(0); }
 
+  /* Expanded touch hit areas (44px min) — invisible, no visual change */
+  .btn-quit, .btn-settings-game { position: relative; }
+  .btn-quit::after, .btn-settings-game::after,
+  .dark-toggle::after, .dark-toggle-game::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+  }
+  .tut-toggle-switch::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+  }
+
   /* ── SETTINGS SCREEN & MODAL CONTROLS ── */
   .settings-section {
     background: var(--surface);
@@ -551,6 +568,7 @@
   }
   .score-display strong {
     color: var(--text); font-size: 18px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
     transition: color 0.2s;
   }
   .score-display.glow strong {
@@ -590,7 +608,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 225px;
+    height: 244px;
     background: var(--bg);
     box-sizing: border-box;
     gap: 6px;
@@ -715,7 +733,7 @@
     min-height: 0;
   }
   .card-img-cat {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -725,11 +743,16 @@
     text-overflow: ellipsis;
     flex-shrink: 0;
     margin-bottom: 3px;
+    background: rgba(0,0,0,0.38);
+    padding: 2px 7px;
+    border-radius: 4px;
+    width: fit-content;
+    max-width: 100%;
     text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
   }
   .card-img-label {
     font-family: 'Lora', serif;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text);
     line-height: 1.3;
@@ -739,7 +762,7 @@
     text-shadow: 0 1px 4px rgba(255,255,255,0.5);
   }
   .card-img-sublabel {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--muted);
     font-style: italic;
     overflow: hidden;
@@ -750,7 +773,7 @@
     margin-top: 3px;
   }
   .card-img-year {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     font-family: 'Lora', serif;
     color: var(--text);
@@ -768,8 +791,8 @@
    * --dz-w: width of each drop zone (overlaps into adjacent cards)
    */
   :root {
-    --tl-card-w: 155px;
-    --tl-card-h: 180px;
+    --tl-card-w: 170px;
+    --tl-card-h: 196px;
     --tl-emoji-h: 52px;
     --tl-tick-h: 18px;
     --tl-line-top: 18px;
@@ -969,6 +992,7 @@
   .quip-banner.correct { background: var(--accent); color: #fff; }
   .quip-banner.wrong   { background: var(--danger);  color: #fff; }
   .quip-banner.idle    { background: transparent; }
+  .quip-banner.turn    { background: var(--accent-light); color: var(--accent-text); border: 1px solid var(--accent); }
   .quip-banner .quip-year {
     font-size: 11px;
     font-weight: 700;
@@ -1070,6 +1094,75 @@
     box-shadow: 0 6px 20px rgba(4,120,87,0.45);
   }
   .btn-replay:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(4,120,87,0.25); }
+
+  /* ── TWO-PLAYER MODE ── */
+  .btn-2p {
+    background: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    box-shadow: none;
+    text-shadow: none;
+  }
+  .btn-2p:hover { background: var(--accent-light); }
+  .game-header.two-player .streak-display,
+  .game-header.two-player .score-display,
+  .game-header.two-player .lives { display: none; }
+  .tp-hud { display: flex; gap: 8px; align-items: center; min-width: 0; flex: 1; }
+  .tp-chip {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 9px;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    font-size: 12px; color: var(--muted);
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+  }
+  .tp-chip.active {
+    border-color: var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 0 2px var(--accent-light);
+  }
+  .tp-chip .tp-name {
+    font-weight: 700; max-width: 64px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tp-chip .tp-hearts { color: #c0392b; font-size: 12px; letter-spacing: 1px; }
+  .tp-chip .tp-hearts .lost { opacity: 0.22; }
+  .tp-chip .tp-score { font-weight: 700; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .tp-chip .tp-mult { font-size: 9px; font-weight: 800; color: var(--accent); }
+  .tp-name-input {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: 'Source Sans 3', sans-serif;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .tp-name-input:focus { border-color: var(--accent); outline: none; }
+  .tp-end-title {
+    font-family: 'Lora', serif;
+    font-size: 22px; font-weight: 700;
+    text-align: center; color: var(--text);
+  }
+  .tp-end-row { display: flex; gap: 10px; }
+  .tp-end-p {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+  }
+  .tp-end-p.winner { border-color: var(--accent); background: var(--accent-light); }
+  .tp-end-name { font-size: 12px; font-weight: 700; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tp-end-p.winner .tp-end-name { color: var(--accent-text); }
+  .tp-end-score { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: var(--text); }
+  .tp-end-streak { font-size: 11px; color: var(--muted); }
+  .tp-btn-home { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); text-shadow: none; box-shadow: none; }
 
   /* ── streak moment — fullscreen centered overlay ── */
   .streak-overlay {
@@ -1478,6 +1571,7 @@
     color: var(--text);
     font-size: 18px;
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
     transition: color 0.2s, transform 0.2s;
   }
   .streak-display.bump strong {
@@ -2610,7 +2704,8 @@
   <p class="start-desc">349 historical events, from the Indus Valley to Aditya-L1. No dates given. Place them in order or lose a life. How far can you go?</p>
   <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 349 cards?</p>
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
-    <button class="btn-start" id="btn-start" style="width:100%;" onclick="startGame()">Start Game</button>
+    <button class="btn-start" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
+    <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="openTpModal()">2 Players</button>
     <div class="tut-pref-row">
       <span class="tut-pref-label">Show tutorial on start</span>
       <button class="tut-toggle-switch on" id="tut-toggle-switch" onclick="toggleTutorialPref()"></button>
@@ -2726,7 +2821,7 @@
     </div>
   </div>
 
-  <button class="btn-start" style="padding:14px 40px;font-size:15px;" onclick="_s1Active=false;startGame();">
+  <button class="btn-start" style="padding:14px 40px;font-size:15px;" onclick="_s1Active=false;startSolo();">
     Got it. Let's go
   </button>
 </div>
@@ -2782,6 +2877,10 @@
         <strong id="score-display">0</strong>
       </div>
       <div class="lives" id="lives-display"></div>
+      <div class="tp-hud" id="tp-hud" style="display:none;">
+        <div class="tp-chip" id="tp-chip0"></div>
+        <div class="tp-chip" id="tp-chip1"></div>
+      </div>
       <button class="btn-settings-game" style="margin-left:auto;" onclick="openSettingsModal()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -2826,7 +2925,26 @@
         <!-- badge floats above button -->
         <div class="new-badge" id="end-new-badge"></div>
       </div>
-      <button class="btn-replay" onclick="startGame()">Play Again</button>
+      <button class="btn-replay" onclick="startSolo()">Play Again</button>
+    </div>
+  </div>
+  <div class="end-bar" id="tp-endbar">
+    <div class="tp-end-title" id="tp-end-title"></div>
+    <div class="tp-end-row">
+      <div class="tp-end-p" id="tp-end-p0">
+        <div class="tp-end-name" id="tp-end-name0"></div>
+        <div class="tp-end-score" id="tp-end-score0"></div>
+        <div class="tp-end-streak" id="tp-end-streak0"></div>
+      </div>
+      <div class="tp-end-p" id="tp-end-p1">
+        <div class="tp-end-name" id="tp-end-name1"></div>
+        <div class="tp-end-score" id="tp-end-score1"></div>
+        <div class="tp-end-streak" id="tp-end-streak1"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-replay" onclick="tpRematch()">Rematch</button>
+      <button class="btn-replay tp-btn-home" onclick="tpBackToStart()">Back to Start</button>
     </div>
   </div>
 </div>
@@ -2990,6 +3108,21 @@
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeQuitModal()">Keep Playing</button>
       <button class="btn-primary" onclick="confirmQuit()">Yes, Quit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TWO PLAYER SETUP MODAL -->
+<div class="modal-overlay" id="tp-modal" onclick="if(event.target===this)closeTpModal()">
+  <div class="modal-box">
+    <div class="modal-icon">⚔️</div>
+    <div class="modal-title">Two Players</div>
+    <div class="modal-body">Take turns placing cards on one timeline. First to lose all 3 lives loses.</div>
+    <input class="tp-name-input" id="tp-name-0" maxlength="12" placeholder="Player 1" autocomplete="off" spellcheck="false">
+    <input class="tp-name-input" id="tp-name-1" maxlength="12" placeholder="Player 2" autocomplete="off" spellcheck="false">
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-secondary" onclick="closeTpModal()">Cancel</button>
+      <button class="btn-primary" onclick="startTwoPlayer()">Start</button>
     </div>
   </div>
 </div>
@@ -3324,6 +3457,8 @@ function trackSeen(ev){ if(ev) markSeen(ev.id); }
 // Hook: renderCollection called directly from button onclick
 function applyDark(isDark){
   document.body.classList.toggle('dark', isDark);
+  const metaTheme = document.getElementById('meta-theme-color');
+  if (metaTheme) metaTheme.setAttribute('content', isDark ? '#0f0f0f' : '#f7f5f0');
   const icon  = isDark ? '☀️' : '🌙';
   const label = isDark ? 'Light' : 'Dark';
   const s = document.getElementById('dark-icon-start');
@@ -3490,7 +3625,7 @@ function buildCategoryBreakdown(){
 
   // Pick 3 worst and 2 best: no duplicates if fewer than 5 categories
   const worst = entries.slice(0, Math.min(3, entries.length));
-  const best  = entries.slice(-Math.min(2, Math.max(0, entries.length - worst.length))).reverse();
+  const best  = entries.slice(worst.length).slice(-2).reverse();
 
   const makeRow = (e) => {
     const pct  = Math.round(e.acc * 100);
@@ -3523,15 +3658,15 @@ function buildCategoryBreakdown(){
 //  CATEGORY CONFIG
 // ═══════════════════════════════════════════════════════════
 const CAT = {
-  "Ancient India":     { text:"#7a5c2e", bg:"#f5ede0", emoji:"🏛️", img:"images/categories/ancient_india.png" },
-  "Medieval India":    { text:"#4a5e7a", bg:"#e6edf5", emoji:"⚔️", img:"images/categories/medieval_india.png" },
-  "Colonial India":    { text:"#5e4a7a", bg:"#ede6f5", emoji:"🏴", img:"images/categories/colonial_india.png" },
-  "Post-Independence": { text:"#2c6040", bg:"#e5f2ea", emoji:"🇮🇳", img:"images/categories/post_independence.png" },
-  "World History":     { text:"#7a3a3a", bg:"#f5e6e6", emoji:"🌍", img:"images/categories/world_history.png" },
-  "Science & Tech":    { text:"#2a5070", bg:"#e3eef6", emoji:"🚀", img:"images/categories/science_tech.png" },
-  "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤", img:"images/categories/personalities.png" },
-  "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊", img:"images/categories/social_reform.png" },
-  "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜", img:"images/categories/constitutional.png" },
+  "Ancient India":     { text:"#7a5c2e", bg:"#f5ede0", emoji:"🏛️", img:"images/categories/ancient_india.webp" },
+  "Medieval India":    { text:"#4a5e7a", bg:"#e6edf5", emoji:"⚔️", img:"images/categories/medieval_india.webp" },
+  "Colonial India":    { text:"#5e4a7a", bg:"#ede6f5", emoji:"🏴", img:"images/categories/colonial_india.webp" },
+  "Post-Independence": { text:"#2c6040", bg:"#e5f2ea", emoji:"🇮🇳", img:"images/categories/post_independence.webp" },
+  "World History":     { text:"#7a3a3a", bg:"#f5e6e6", emoji:"🌍", img:"images/categories/world_history.webp" },
+  "Science & Tech":    { text:"#2a5070", bg:"#e3eef6", emoji:"🚀", img:"images/categories/science_tech.webp" },
+  "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤", img:"images/categories/personalities.webp" },
+  "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊", img:"images/categories/social_reform.webp" },
+  "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜", img:"images/categories/constitutional.webp" },
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -3670,6 +3805,26 @@ function setTutFlyingCard(ev){
 }
 
 // Load events then initialise the game UI
+function _setStartBtnState(){
+  const btn = document.getElementById('btn-start');
+  if(!btn) return;
+  if(EVENTS.length){ btn.textContent = 'Start Game'; btn.disabled = false; }
+  else { btn.textContent = 'No connection. Tap to retry'; btn.disabled = false; }
+}
+
+// First run with no network and no cache: EVENTS is empty and startGame
+// would crash. The start button becomes a retry button instead.
+let _retryingLoad = false;
+async function _retryLoadEvents(){
+  if(_retryingLoad) return;
+  _retryingLoad = true;
+  const btn = document.getElementById('btn-start');
+  if(btn){ btn.textContent = 'Loading...'; btn.disabled = true; }
+  try { await loadEvents(); } catch(e){}
+  _retryingLoad = false;
+  _setStartBtnState();
+}
+
 (function(){
   const btn = document.getElementById('btn-start');
   if(btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
@@ -3683,7 +3838,7 @@ function setTutFlyingCard(ev){
     syncSettingsUI();
     syncTutToggleUI();
     updateNotifDot();
-    if(btn){ btn.textContent = 'Start Game'; btn.disabled = false; }
+    _setStartBtnState();
   });
 })();
 
@@ -3778,6 +3933,7 @@ function clearAllCats(){
 }
 
 function openFilterModal(){
+  _armHistGuard(); // back press should close the modal, not exit the app
   // Build chips if not already built
   buildEraChips();
   buildCatChips();
@@ -3927,6 +4083,7 @@ function makeLockedCard(ev){
 }
 
 function openCardDetail(ev){
+  _armHistGuard(); // back press should close the overlay, not exit the app
   const col = CAT[ev.cat] || { text:'#555', bg:'#eee', emoji:'📌', img:'' };
 
   // Clear NEW badge and update notif dot
@@ -4025,6 +4182,134 @@ function getRandFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 let deck=[], timeline=[], currentCard=null;
 let lives=3, score=0, locked=false, gameEnded=false;
 let streak=0, maxStreak=0;
+
+// ═══════════════════════════════════════════════════════════
+//  TWO-PLAYER (pass-and-play) — TurnManager
+//  The engine's globals (lives/score/streak/maxStreak) always hold the
+//  ACTIVE player's state; solo mode is one player with no turn flips.
+//  This is also the online seam: a future remote mode replaces the
+//  local flip in endTurnAndNext() with "wait for remote move".
+// ═══════════════════════════════════════════════════════════
+let gameMode = 'solo';   // 'solo' | 'local2p'
+let players  = [];       // [{name, lives, score, streak, maxStreak}]
+let activeIdx = 0;
+let _tpLoserIdx = 0;     // rematch: loser goes first
+
+function _snapshotActive(){
+  const p = players[activeIdx];
+  if(!p) return;
+  p.lives = lives; p.score = score; p.streak = streak; p.maxStreak = maxStreak;
+}
+function _loadActive(){
+  const p = players[activeIdx];
+  if(!p) return;
+  lives = p.lives; score = p.score; streak = p.streak; maxStreak = p.maxStreak;
+}
+
+function startSolo(){
+  gameMode = 'solo';
+  players = [];
+  startGame();
+}
+
+function openTpModal(){
+  initAudio();
+  document.getElementById('tp-modal').classList.add('visible');
+}
+function closeTpModal(){
+  document.getElementById('tp-modal').classList.remove('visible');
+}
+function startTwoPlayer(){
+  const n0 = document.getElementById('tp-name-0').value.trim() || 'Player 1';
+  const n1 = document.getElementById('tp-name-1').value.trim() || 'Player 2';
+  closeTpModal();
+  gameMode = 'local2p';
+  players = [
+    { name: n0, lives: 3, score: 0, streak: 0, maxStreak: 0 },
+    { name: n1, lives: 3, score: 0, streak: 0, maxStreak: 0 },
+  ];
+  activeIdx = 0;
+  startGame();
+}
+
+function renderTpHud(){
+  if(gameMode !== 'local2p') return;
+  players.forEach((p, i) => {
+    const chip = document.getElementById('tp-chip' + i);
+    chip.innerHTML = '';
+    chip.classList.toggle('active', i === activeIdx);
+    const name = document.createElement('span');
+    name.className = 'tp-name';
+    name.textContent = p.name;
+    const hearts = document.createElement('span');
+    hearts.className = 'tp-hearts';
+    for(let h = 0; h < 3; h++){
+      const s = document.createElement('span');
+      s.textContent = '♥';
+      if(h >= p.lives) s.className = 'lost';
+      hearts.appendChild(s);
+    }
+    const sc = document.createElement('span');
+    sc.className = 'tp-score';
+    sc.textContent = p.score;
+    chip.append(name, hearts, sc);
+    if(i === activeIdx && p.streak >= 2){
+      const m = document.createElement('span');
+      m.className = 'tp-mult';
+      m.textContent = getMultiplier(p.streak) + 'x';
+      chip.appendChild(m);
+    }
+  });
+}
+
+function showTurnBanner(name){
+  const banner = document.getElementById('quip-banner');
+  banner.className = 'quip-banner turn';
+  banner.textContent = name + "'s turn";
+  banner.classList.remove('visible');
+  banner.offsetHeight; // reflow to retrigger animation
+  banner.classList.add('visible');
+}
+
+function endTurnAndNext(){
+  _snapshotActive();
+  activeIdx = 1 - activeIdx;
+  _loadActive();
+  renderLives(); renderScore(); renderStreak();
+  renderTpHud();
+  showTurnBanner(players[activeIdx].name);
+  nextCard();
+}
+
+function endTwoPlayerGame(winnerIdx){ // winnerIdx: 0 | 1 | null (tie)
+  gameEnded = true;
+  currentCard = null;
+  clearQuip();
+  saveLastSessionIds(timeline.map(i => i.ev.id));
+  document.getElementById('current-card-container').innerHTML = '';
+  _gameTimeout(()=>{ tlSmoothScrollTo(0); }, 200);
+  _tpLoserIdx = winnerIdx === null ? 0 : 1 - winnerIdx;
+  renderTpHud();
+  document.getElementById('tp-end-title').textContent =
+    winnerIdx === null ? "It's a tie!" : players[winnerIdx].name + ' wins!';
+  players.forEach((p, i) => {
+    document.getElementById('tp-end-name' + i).textContent = p.name;
+    document.getElementById('tp-end-score' + i).textContent = p.score + ' pts';
+    document.getElementById('tp-end-streak' + i).textContent = 'best streak ' + p.maxStreak;
+    document.getElementById('tp-end-p' + i).classList.toggle('winner', winnerIdx === i);
+  });
+  _gameTimeout(()=>{ document.getElementById('tp-endbar').classList.add('show'); }, 400);
+}
+
+function tpRematch(){
+  activeIdx = _tpLoserIdx;
+  document.getElementById('tp-endbar').classList.remove('show');
+  startGame();
+}
+function tpBackToStart(){
+  document.getElementById('tp-endbar').classList.remove('show');
+  showScreen('start');
+}
 let _sessionStartTime = null;
 let _sessionCompleted = false;
 // Replay validation: every placement is recorded and submitted to the
@@ -4084,9 +4369,21 @@ function weightedShuffle(cards, weights){
 }
 
 // ═══════════════════════════════════════════════════════════
+//  GAME-FLOW TIMERS - generation-guarded so a quit or restart
+//  instantly invalidates every pending timeout from the old game
+//  (stale end bar, stale nextCard, stale end sounds)
+// ═══════════════════════════════════════════════════════════
+let _gameGen = 0;
+function _gameTimeout(fn, ms){
+  const g = _gameGen;
+  return setTimeout(()=>{ if(g === _gameGen) fn(); }, ms);
+}
+
+// ═══════════════════════════════════════════════════════════
 //  QUIT MODAL - in-app, no browser confirm()
 // ═══════════════════════════════════════════════════════════
 function quitGame(){
+  _armHistGuard(); // back press should close the modal, not exit the app
   document.getElementById('quit-modal').classList.add('visible');
 }
 function closeQuitModal(){
@@ -4094,6 +4391,7 @@ function closeQuitModal(){
 }
 function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
+  _gameGen++; // invalidate all pending game-flow timers
   gameEnded=true;
   _tutTeardown();
   const badge2 = document.getElementById('end-new-badge');
@@ -4379,25 +4677,72 @@ const _backMap = {
 };
 
 function goBack(){
-  const prev = _screenStack[_screenStack.length - 2];
-  if(prev){ showScreen(prev); }
-  else { showScreen('start'); }
+  const current = _screenStack[_screenStack.length - 1] || 'start';
+  showScreen(_backMap[current] || 'start');
 }
 
-// Hardware back button (Android, browser back gesture)
+// ── Hardware back button (Android, browser back gesture) ──
+// Single-guard model: one pushState entry keeps back presses inside the
+// app. Every handled press re-arms the guard; at the start screen with
+// nothing open the guard is not re-armed, so the next press exits the
+// app naturally instead of needing one press per screen ever visited.
+let _histGuard = false;
+function _armHistGuard(){
+  if(_histGuard) return;
+  history.pushState({ chronoGuard: true }, '', '');
+  _histGuard = true;
+}
+
 window.addEventListener('popstate', ()=>{
-  const current = _screenStack[_screenStack.length - 1];
-  const dest = _backMap[current] || 'start';
-  // Don't push history here — browser already popped it
-  _screenStack.pop();
-  _showScreenInternal(dest);
+  _histGuard = false; // this press consumed the guard entry
+  const current = _screenStack[_screenStack.length - 1] || 'start';
+
+  // Back closes an open overlay first, staying on the same screen
+  const cardDetail = document.getElementById('card-detail-overlay');
+  if(cardDetail && cardDetail.classList.contains('visible')){
+    closeCardDetail();
+    _armHistGuard();
+    return;
+  }
+  const openModal = document.querySelector('.modal-overlay.visible');
+  if(openModal){
+    if(openModal.id === 'quit-modal') closeQuitModal();
+    else if(openModal.id === 'settings-modal') closeSettingsModal();
+    else if(openModal.id === 'filter-modal') closeFilterModal();
+    else openModal.classList.remove('visible');
+    _armHistGuard();
+    return;
+  }
+
+  // Mid-game back (tutorial included): ask, never silently abandon the run
+  if(current === 'game' && !gameEnded){
+    quitGame();
+    _armHistGuard();
+    return;
+  }
+
+  if(current !== 'start'){
+    // Tutorial overlays must never survive a screen change
+    if(_tutStep > 0) _tutTeardown();
+    _screenStack.length = 0;
+    _screenStack.push('start');
+    _showScreenInternal('start');
+    _armHistGuard();
+    return;
+  }
+  // At the start screen with nothing open: guard stays down, the next
+  // back press leaves the app.
 });
 
 // Reset tutorial state when navigating away
 function showScreen(id){
-  // Push history entry so hardware back works
-  history.pushState({ screen: id }, '', '');
-  _screenStack.push(id);
+  if(id === 'start'){
+    _screenStack.length = 0;
+    _screenStack.push('start');
+  } else {
+    if(_screenStack[_screenStack.length - 1] !== id) _screenStack.push(id);
+    _armHistGuard(); // hardware back must come back to us, not exit
+  }
   _showScreenInternal(id);
 }
 
@@ -5088,8 +5433,11 @@ function _tutSkip(){
 //  START GAME
 // ═══════════════════════════════════════════════════════════
 function startGame() {
+  // No deck (first run offline, fetch failed): retry loading instead of crashing
+  if(!EVENTS.length){ _retryLoadEvents(); return; }
   // Clean up any active tutorial overlays from a previous run
   if(_tutStep > 0) _tutTeardown();
+  _gameGen++; // invalidate all pending game-flow timers from the previous game
   initAudio();
   const s=weightedShuffle(EVENTS, buildWeights(EVENTS));
   timeline=[{ev:s[0],wrong:false}];
@@ -5098,6 +5446,14 @@ function startGame() {
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
   streak=0; maxStreak=0;
+  if(gameMode==='local2p'){
+    players.forEach(p=>{ p.lives=3; p.score=0; p.streak=0; p.maxStreak=0; });
+    _loadActive();
+  }
+  document.querySelector('.game-header').classList.toggle('two-player', gameMode==='local2p');
+  document.getElementById('tp-hud').style.display = gameMode==='local2p' ? 'flex' : 'none';
+  document.getElementById('tp-endbar').classList.remove('show');
+  if(gameMode==='local2p') renderTpHud();
   _sessionStartTime = new Date().toISOString();
   _sessionCompleted = false;
   _seedCardId = s[0].id;
@@ -5113,7 +5469,7 @@ function startGame() {
   showScreen('game');
   renderAll();
   // First-play tutorial: launch after a brief delay so the card slide-up animation finishes
-  if(!_tutIsDone()){
+  if(gameMode==='solo' && !_tutIsDone()){
     setTimeout(()=>_tutLaunchPhase1(), 500);
   }
 }
@@ -5881,6 +6237,7 @@ function syncSettingsUI(){
 }
 
 function openSettingsModal(){
+  _armHistGuard(); // back press should close the modal, not exit the app
   syncSettingsUI();
   document.getElementById('settings-modal').classList.add('visible');
 }
@@ -5955,6 +6312,11 @@ async function initAudio(){
   _sfxSpecial.zero       = await loadSound(`sounds/special_sounds/zero.mp3?v=${_sfxV}`);
   _sfxSpecial.near_miss  = await loadSound(`sounds/special_sounds/near_miss.mp3?v=${_sfxV}`);
   _sfxSpecial.suspicious = await loadSound(`sounds/special_sounds/suspicious.mp3?v=${_sfxV}`);
+
+  // Nothing loaded (e.g. first launch offline): allow a retry on the next game
+  if(!_sfxBuffers.correct && _sfxBuffers.wrong.length === 0 && !_sfxBuffers.milestone){
+    _audioReady = false;
+  }
 
   console.log(`Chronology audio ready. Correct: ${!!_sfxBuffers.correct}, Wrong: ${_sfxBuffers.wrong.length}, Milestone: ${!!_sfxBuffers.milestone}, CatTaps: ${Object.keys(_sfxBuffers.catTap).length}`);
 }
@@ -6074,7 +6436,8 @@ function handleDrop(dropIdx){
     score += points;
     renderScore();
     renderStreak();
-    trackPlacement(placed.cat, true, placed);
+    if(gameMode==='local2p'){ _snapshotActive(); renderTpHud(); }
+    if(gameMode==='solo') trackPlacement(placed.cat, true, placed);
     playCorrectSound();
     haptic([40]);
     timeline.push({ev:placed,wrong:false});
@@ -6084,8 +6447,11 @@ function handleDrop(dropIdx){
     showQuip(getRandFrom(CORRECT_QUIPS), fy(placed.year), 'correct');
     scrollToCard(pi);
     // Trigger milestone celebration after a short delay so toast is visible first
-    if(MILESTONES[streak]) setTimeout(()=>triggerMilestoneBurst(streak), 400);
-    setTimeout(()=>{renderTimeline(); nextCard();},900);
+    if(MILESTONES[streak]) _gameTimeout(()=>triggerMilestoneBurst(streak), 400);
+    _gameTimeout(()=>{
+      renderTimeline();
+      if(gameMode==='local2p') endTurnAndNext(); else nextCard();
+    },900);
     // Tutorial phase 2: on drop, transition to phase 3
     if(_tutStep===2) _tutOnPhase2Drop(placed);
 
@@ -6095,15 +6461,19 @@ function handleDrop(dropIdx){
     lives--;
     renderLives();
     renderStreak();
-    trackPlacement(placed.cat, false, placed);
+    if(gameMode==='local2p'){ _snapshotActive(); renderTpHud(); }
+    if(gameMode==='solo') trackPlacement(placed.cat, false, placed);
     playWrongSound();
     haptic([60, 40, 60]);
 
     // Every life lost: burst from the heart that just broke
+    // (solo only — the 2P HUD has no full-size hearts to burst from)
     const brokenHeartIdx = lives;
-    setTimeout(()=>{
-      triggerDangerBurst(brokenHeartIdx);
-    }, 800);
+    if(gameMode==='solo'){
+      _gameTimeout(()=>{
+        triggerDangerBurst(brokenHeartIdx);
+      }, 800);
+    }
     timeline.push({ev:placed,wrong:true});
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
@@ -6112,9 +6482,15 @@ function handleDrop(dropIdx){
     const wrongQuip = getRandFrom(WRONG_QUIPS);
     showQuip(wrongQuip, fy(placed.year), 'wrong');
     scrollToCard(pi);
-    setTimeout(()=>{
-      if(lives<=0){ triggerGameOver(); }
-      else{ renderTimeline(); nextCard(); }
+    _gameTimeout(()=>{
+      if(lives<=0){
+        if(gameMode==='local2p'){ _snapshotActive(); endTwoPlayerGame(1 - activeIdx); }
+        else triggerGameOver();
+      }
+      else{
+        renderTimeline();
+        if(gameMode==='local2p') endTurnAndNext(); else nextCard();
+      }
     },1100);
     // Tutorial phase 2: wrong placement — show joke, then phase 3
     if(_tutStep===2) _tutOnPhase2Wrong(placed);
@@ -6122,7 +6498,16 @@ function handleDrop(dropIdx){
 }
 
 function nextCard(){
-  if(deck.length===0){ _sessionCompleted=true; triggerGameOver(); return; }
+  if(deck.length===0){
+    if(gameMode==='local2p'){
+      // Deck exhausted with both players alive: higher score wins, tie possible
+      _snapshotActive();
+      const [a,b]=players;
+      endTwoPlayerGame(a.score===b.score ? null : (a.score>b.score ? 0 : 1));
+      return;
+    }
+    _sessionCompleted=true; triggerGameOver(); return;
+  }
   currentCard=deck[0]; deck=deck.slice(1);
   renderCurrentCard(); locked=false;
 }
@@ -6146,7 +6531,7 @@ function triggerGameOver(){
   document.getElementById('current-card-container').innerHTML='';
 
   // Scroll timeline to start
-  setTimeout(()=>{ tlSmoothScrollTo(0); },200);
+  _gameTimeout(()=>{ tlSmoothScrollTo(0); },200);
 
   // Determine run quality
   const isGood = score >= 30;
@@ -6171,17 +6556,17 @@ function triggerGameOver(){
   if(maxStreak < 1){
     // no streak to show — go straight to bar
     _showEndBar(score, newCount, 300);
-    setTimeout(() => playSpecialEndSound(_prevHigh, _wrongCount), 400);
+    _gameTimeout(() => playSpecialEndSound(_prevHigh, _wrongCount), 400);
   } else {
     _showStreakMoment(maxStreak, isStreakRecord);
     // Hold for 3 seconds, then fade out and show bar
     const holdDur = 3000;
-    setTimeout(()=>{
+    _gameTimeout(()=>{
       _hideStreakMoment();
     }, holdDur);
     const barDelay = holdDur + 400;
     _showEndBar(score, newCount, barDelay);
-    setTimeout(() => playSpecialEndSound(_prevHigh, _wrongCount), barDelay + 100);
+    _gameTimeout(() => playSpecialEndSound(_prevHigh, _wrongCount), barDelay + 100);
   }
 }
 
@@ -6215,7 +6600,16 @@ function _hideStreakMoment(){
 }
 
 function _showEndBar(finalScore, newCount, delay){
-  setTimeout(()=>{
+  const _gen = _gameGen;
+  const _showNewBadge = ()=>{
+    if(newCount <= 0) return;
+    _gameTimeout(()=>{
+      const badge = document.getElementById('end-new-badge');
+      badge.textContent = newCount + ' new';
+      badge.classList.add('show');
+    }, 350);
+  };
+  _gameTimeout(()=>{
     const TOTAL_DUR = 1500; // always 1.5s
     const bar     = document.getElementById('end-game-bar');
     const counter = document.getElementById('end-score-counter');
@@ -6224,6 +6618,7 @@ function _showEndBar(finalScore, newCount, delay){
 
     if(finalScore <= 0){
       counter.textContent = '0';
+      _showNewBadge(); // a 0-point run can still unlock new cards
       return;
     }
 
@@ -6233,6 +6628,7 @@ function _showEndBar(finalScore, newCount, delay){
 
     const startTime = performance.now();
     function tick(now){
+      if(_gen !== _gameGen) return; // a new game started: stop the count-up
       const elapsed = now - startTime;
       const t = Math.min(1, elapsed / TOTAL_DUR); // 0→1 linear progress
       // ease-out power curve: fast start, slows near end
@@ -6244,13 +6640,7 @@ function _showEndBar(finalScore, newCount, delay){
         requestAnimationFrame(tick);
       } else {
         counter.textContent = finalScore;
-        if(newCount > 0){
-          setTimeout(()=>{
-            const badge = document.getElementById('end-new-badge');
-            badge.textContent = newCount + ' new';
-            badge.classList.add('show');
-          }, 350);
-        }
+        _showNewBadge();
       }
     }
     requestAnimationFrame(tick);
@@ -6429,8 +6819,9 @@ function shareScore(){
   const wrong   = timeline.filter(i=>i.wrong).length;
   const sorted  = [...timeline].sort((a,b)=>a.ev.year - b.ev.year);
 
-  // Build emoji grid string
-  const grid = sorted.slice(1).map(i => i.wrong ? '🟥' : '🟩').join('');
+  // Build emoji grid string: one square per placement, in timeline order,
+  // excluding the seed card by id (it was never placed by the player)
+  const grid = sorted.filter(i => i.ev.id !== _seedCardId).map(i => i.wrong ? '🟥' : '🟩').join('');
 
   const tierLabel = score>=40 ? 'LEGENDARY' : score>=20 ? 'Good' : score>=8 ? 'Decent' : 'Rough';
 
