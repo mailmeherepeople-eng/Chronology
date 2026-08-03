@@ -992,7 +992,22 @@
   .quip-banner.correct { background: var(--accent); color: #fff; }
   .quip-banner.wrong   { background: var(--danger);  color: #fff; }
   .quip-banner.idle    { background: transparent; }
-  .quip-banner.turn    { background: var(--accent-light); color: var(--accent-text); border: 1px solid var(--accent); }
+  /* 2P turn banner: unmissable. 20px text, per-player color, lives inline. */
+  .quip-banner.turn {
+    flex-direction: row;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .quip-banner.turn.turn-p0 { background: #C62828; color: #fff; }
+  .quip-banner.turn.turn-p1 { background: #1565C0; color: #fff; }
+  .quip-banner.turn .turn-nm {
+    max-width: 60%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .quip-banner.turn .turn-hearts { font-size: 18px; letter-spacing: 2px; line-height: 1; }
+  .quip-banner.turn .turn-hearts .lost { opacity: 0.35; }
   .quip-banner .quip-year {
     font-size: 11px;
     font-weight: 700;
@@ -1118,17 +1133,24 @@
     min-width: 0;
     transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
   }
-  .tp-chip.active {
-    border-color: var(--accent);
-    color: var(--text);
-    box-shadow: 0 0 0 2px var(--accent-light);
-  }
+  .tp-chip.active { color: var(--text); }
+  /* Active border takes the player's banner color: quiet turn reinforcement */
+  #tp-chip0.active { border-color: #C62828; box-shadow: 0 0 0 2px rgba(198,40,40,0.14); }
+  #tp-chip1.active { border-color: #1565C0; box-shadow: 0 0 0 2px rgba(21,101,192,0.14); }
   .tp-chip .tp-name {
     font-weight: 700; max-width: 64px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .tp-chip .tp-hearts { color: #c0392b; font-size: 12px; letter-spacing: 1px; }
-  .tp-chip .tp-hearts .lost { opacity: 0.22; }
+  /* Compact heart pips: lives always visible, hearts double as the player
+     color key (same hues as the turn banner) */
+  .tp-chip .tp-hearts { font-size: 10px; letter-spacing: 0.5px; line-height: 1; }
+  #tp-chip0 .tp-hearts { color: #C62828; }
+  #tp-chip1 .tp-hearts { color: #1565C0; }
+  .tp-chip .tp-hearts .lost { opacity: 0.25; }
+  body.dark #tp-chip0 .tp-hearts { color: #E57373; }
+  body.dark #tp-chip1 .tp-hearts { color: #64B5F6; }
+  body.dark #tp-chip0.active { border-color: #E57373; box-shadow: 0 0 0 2px rgba(229,115,115,0.18); }
+  body.dark #tp-chip1.active { border-color: #64B5F6; box-shadow: 0 0 0 2px rgba(100,181,246,0.18); }
   .tp-chip .tp-score { font-weight: 700; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
   .tp-chip .tp-mult { font-size: 9px; font-weight: 800; color: var(--accent); }
   .tp-name-input {
@@ -1158,6 +1180,19 @@
     background: var(--bg);
   }
   .tp-end-p.winner { border-color: var(--accent); background: var(--accent-light); }
+  /* Player colors carried through from the turn banner */
+  #tp-end-p0 { border-color: rgba(198,40,40,0.35); }
+  #tp-end-p1 { border-color: rgba(21,101,192,0.35); }
+  #tp-end-p0.winner { border-color: #C62828; background: rgba(198,40,40,0.07); }
+  #tp-end-p1.winner { border-color: #1565C0; background: rgba(21,101,192,0.07); }
+  #tp-end-p0.winner .tp-end-name { color: #C62828; }
+  #tp-end-p1.winner .tp-end-name { color: #1565C0; }
+  body.dark #tp-end-p0 { border-color: rgba(229,115,115,0.4); }
+  body.dark #tp-end-p1 { border-color: rgba(100,181,246,0.4); }
+  body.dark #tp-end-p0.winner { border-color: #E57373; background: rgba(229,115,115,0.12); }
+  body.dark #tp-end-p1.winner { border-color: #64B5F6; background: rgba(100,181,246,0.12); }
+  body.dark #tp-end-p0.winner .tp-end-name { color: #E57373; }
+  body.dark #tp-end-p1.winner .tp-end-name { color: #64B5F6; }
   .tp-end-name { font-size: 12px; font-weight: 700; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tp-end-p.winner .tp-end-name { color: var(--accent-text); }
   .tp-end-score { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: var(--text); }
@@ -1207,30 +1242,52 @@
     background: var(--accent-light);
     color: var(--accent-text);
   }
+  /* Turn timer: circular clock with a depleting ring. */
   .tp-timer-pill {
     position: absolute;
     top: 10px;
     left: 12px;
     z-index: 10;
-    min-width: 44px;
-    height: 32px;
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--surface);
-    border: 1.5px solid var(--accent);
-    border-radius: 16px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent-text);
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+  }
+  .tp-timer-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* ring drains clockwise from 12 o'clock */
+  }
+  .tp-timer-ring .ring-bg { fill: none; stroke: var(--border); stroke-width: 3.5; }
+  .tp-timer-ring .ring-fg {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 119.4;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+  }
+  .tp-timer-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
-    box-shadow: var(--shadow-sm);
+    line-height: 1;
   }
   .tp-timer-pill.urgent {
     border-color: var(--danger);
-    color: var(--danger);
     animation: tpTimerPulse 1s ease infinite;
   }
+  .tp-timer-pill.urgent .ring-fg { stroke: var(--danger); }
+  .tp-timer-pill.urgent .tp-timer-num { color: var(--danger); }
   .tp-online-wait {
     width: 100%; max-width: 340px;
     background: var(--surface);
@@ -1320,113 +1377,97 @@
 
   /* ── TOAST (year pill - sits in the gap between card stage and timeline) ── */
   /* ── GAME OVER ── */
-  #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:28px 24px 32px; text-align:center; position:relative; overflow-y:auto; }
-  .gameover-score-hero { margin-bottom:14px; width:100%; }
+  #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:20px 24px 28px; text-align:center; position:relative; overflow-y:auto; }
+  .gameover-score-hero { margin-bottom:10px; width:100%; }
   .gameover-score-num { font-family:'Lora',serif; font-size:60px; font-weight:700; color:var(--text); line-height:1; letter-spacing:-2px; }
   .gameover-score-label { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
   .gameover-score-high { font-size:12px; color:var(--muted); margin-top:4px; }
   .gameover-score-high strong { color:var(--accent); }
   .gameover-insight { font-size:13px; font-weight:600; color:var(--danger); margin-bottom:14px; line-height:1.4; max-width:260px; }
-  .gameover-chips { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; margin-bottom:16px; max-width:320px; }
+  .gameover-chips { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; margin-bottom:12px; max-width:320px; }
 
-  /* ── base chip shell ── */
-  .gameover-chip { border-radius:12px; border:1.5px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; height:88px; position:relative; }
-  .gameover-chip-val { font-size:28px; font-weight:700; font-family:'Lora',serif; line-height:1; letter-spacing:-1px; position:relative; z-index:1; }
-  .gameover-chip-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; position:relative; z-index:1; }
+  /* ── base chip shell: one quiet style, color lives in the value only ── */
+  .gameover-chip { border-radius:12px; border:1.5px solid var(--border); background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; height:72px; position:relative; }
+  .gameover-chip-val { font-size:24px; font-weight:700; font-family:'Lora',serif; line-height:1; letter-spacing:-1px; position:relative; z-index:1; color:var(--text); }
+  .gameover-chip-label { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; position:relative; z-index:1; color:var(--muted); }
 
-  /* ── correct — green radial base glow ── */
-  .chip-correct {
-    background: radial-gradient(ellipse at 50% 90%, #a8ffca 0%, #22c468 22%, #059650 45%, #024f28 72%, #011c10 100%);
-    border-color: #059650;
-  }
-  body.dark .chip-correct {
-    background: radial-gradient(ellipse at 50% 90%, #bbffd4 0%, #34d870 22%, #10a855 45%, #034428 72%, #010e08 100%);
-    border-color: #12b860;
-  }
-  .chip-correct .gameover-chip-val { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.9); }
-  .chip-correct .gameover-chip-label { color:#fff; opacity:0.9; text-shadow:0 1px 4px rgba(0,0,0,0.7); }
+  .chip-correct .gameover-chip-val { color:#059650; }
+  body.dark .chip-correct .gameover-chip-val { color:#4caf7a; }
+  .chip-streak .gameover-chip-val { color:#d96a00; }
+  body.dark .chip-streak .gameover-chip-val { color:#ff9540; }
+  .chip-highscore .gameover-chip-val { color:#a8780a; }
+  body.dark .chip-highscore .gameover-chip-val { color:#f5c242; }
 
-  /* ── streak — diagonal fire ombre ── */
-  .chip-streak {
-    background: linear-gradient(150deg, #3a0600 0%, #7a1200 18%, #cc2800 34%, #ff5500 50%, #ff8c00 66%, #ffbb00 80%, #ffdd44 100%);
-    border-color: #cc4400;
-  }
-  body.dark .chip-streak { border-color: #ff6600; }
-  .chip-streak .gameover-chip-val { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9); }
-  .chip-streak .gameover-chip-label { color:#fff; opacity:0.95; text-shadow:0 1px 4px rgba(0,0,0,0.8); }
-
-  /* ── high score — diagonal metallic gold ── */
-  .chip-highscore {
+  /* New high score this run: the one loud moment on the page */
+  .chip-highscore.chip-new-high {
     background: linear-gradient(135deg, #5a3a00 0%, #a06800 18%, #d4950c 32%, #f5c842 46%, #fef0b0 52%, #f0b829 58%, #c88208 74%, #8a5500 88%, #5a3a00 100%);
     border-color: #c8860a;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.2);
   }
-  body.dark .chip-highscore {
+  body.dark .chip-highscore.chip-new-high {
     background: linear-gradient(135deg, #2a1a00 0%, #5a3800 18%, #9a6200 32%, #d4940a 46%, #f5c230 52%, #c48808 58%, #8a5800 74%, #4a2e00 88%, #2a1a00 100%);
     border-color: #b87800;
   }
-  .chip-highscore .gameover-chip-val { color:#2a1400; text-shadow:0 1px 0 rgba(255,230,120,0.6), 0 2px 4px rgba(0,0,0,0.2); }
-  body.dark .chip-highscore .gameover-chip-val { color:#fff8e0; text-shadow:0 1px 4px rgba(0,0,0,0.7), 0 0 10px rgba(255,200,50,0.3); }
-  .chip-highscore .gameover-chip-label { color:#3a2000; opacity:0.9; }
-  body.dark .chip-highscore .gameover-chip-label { color:#ffe580; opacity:0.9; }
+  .chip-highscore.chip-new-high .gameover-chip-val { color:#2a1400; text-shadow:0 1px 0 rgba(255,230,120,0.6), 0 2px 4px rgba(0,0,0,0.2); }
+  body.dark .chip-highscore.chip-new-high .gameover-chip-val { color:#fff8e0; text-shadow:0 1px 4px rgba(0,0,0,0.7), 0 0 10px rgba(255,200,50,0.3); }
+  .chip-highscore.chip-new-high .gameover-chip-label { color:#3a2000; opacity:0.9; }
+  body.dark .chip-highscore.chip-new-high .gameover-chip-label { color:#ffe580; opacity:0.9; }
 
-  /* ── avg score — bar chip ── */
-  /* ── avg chip: tinted by outcome, no numbers ── */
+  /* ── avg chip: quiet shell, numeric anchor, tint only in the fill ── */
   .chip-avg {
     padding: 10px 12px;
     align-items: center;
     gap: 0;
     justify-content: center;
   }
-  .chip-avg-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:8px; width:100%; text-align:center; }
-  .chip-avg-arrow { width:0; height:0; margin-bottom:7px; flex-shrink:0; }
-  .chip-avg-track { width:100%; height:14px; border-radius:7px; overflow:hidden; position:relative; }
-  .chip-avg-center { position:absolute; left:50%; top:0; bottom:0; width:2px; transform:translateX(-1px); background:rgba(255,255,255,0.5); z-index:2; }
+  .chip-avg-label { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:5px; width:100%; text-align:center; color:var(--muted); }
+  .chip-avg-nums { font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text); font-variant-numeric: tabular-nums; }
+  .chip-avg-nums strong { font-weight:700; }
+  .chip-avg.avg-up .chip-avg-nums strong { color:#059650; }
+  body.dark .chip-avg.avg-up .chip-avg-nums strong { color:#4caf7a; }
+  .chip-avg.avg-down .chip-avg-nums strong { color:var(--danger); }
+  .chip-avg-track { width:100%; height:10px; border-radius:5px; overflow:hidden; position:relative; background:var(--border); }
+  .chip-avg-center { position:absolute; left:50%; top:0; bottom:0; width:2px; transform:translateX(-1px); background:rgba(255,255,255,0.55); z-index:2; }
   body.dark .chip-avg-center { background:rgba(255,255,255,0.3); }
-  .chip-avg-fill { height:100%; border-radius:7px; min-width:6px; position:relative; z-index:1; }
-
-  /* above average — green tint */
-  .chip-avg.avg-up {
-    background: #edf7ef;
-    border-color: #059650;
-  }
-  body.dark .chip-avg.avg-up { background: #0a2016; border-color: #4caf7a; }
-  .chip-avg.avg-up .chip-avg-label { color: #059650; }
-  body.dark .chip-avg.avg-up .chip-avg-label { color: #4caf7a; }
-  .chip-avg.avg-up .chip-avg-arrow { border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:11px solid #059650; }
-  body.dark .chip-avg.avg-up .chip-avg-arrow { border-bottom-color: #4caf7a; }
-  .chip-avg.avg-up .chip-avg-track { background: rgba(5,150,80,0.15); }
-  body.dark .chip-avg.avg-up .chip-avg-track { background: rgba(76,175,122,0.2); }
+  .chip-avg-fill { height:100%; border-radius:5px; min-width:6px; position:relative; z-index:1; }
   .chip-avg.avg-up .chip-avg-fill { background: linear-gradient(to right, #059650, #34d399); }
   body.dark .chip-avg.avg-up .chip-avg-fill { background: linear-gradient(to right, #4caf7a, #86efac); }
-
-  /* below average — red tint */
-  .chip-avg.avg-down {
-    background: #fdf0ee;
-    border-color: #c0392b;
-  }
-  body.dark .chip-avg.avg-down { background: #2a1210; border-color: #e05c4b; }
-  .chip-avg.avg-down .chip-avg-label { color: #c0392b; }
-  body.dark .chip-avg.avg-down .chip-avg-label { color: #e05c4b; }
-  .chip-avg.avg-down .chip-avg-arrow { border-left:7px solid transparent; border-right:7px solid transparent; border-top:11px solid #c0392b; }
-  body.dark .chip-avg.avg-down .chip-avg-arrow { border-top-color: #e05c4b; }
-  .chip-avg.avg-down .chip-avg-track { background: rgba(192,57,43,0.15); }
-  body.dark .chip-avg.avg-down .chip-avg-track { background: rgba(224,92,75,0.2); }
   .chip-avg.avg-down .chip-avg-fill { background: linear-gradient(to right, #c0392b, #f87171); }
   body.dark .chip-avg.avg-down .chip-avg-fill { background: linear-gradient(to right, #e05c4b, #fca5a5); }
-
-  /* no data yet */
-  .chip-avg.avg-none {
-    background: var(--surface);
-    border-color: var(--border);
-  }
-  .chip-avg.avg-none .chip-avg-label { color: var(--muted); }
   .gameover-stats { border:1px solid var(--border); border-radius:var(--radius); padding:14px 24px; margin-bottom:16px; font-size:13px; color:var(--muted); min-width:240px; width:100%; max-width:320px; }
   .gameover-stats .stat-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border); }
   .gameover-stats .stat-row:last-child { border-bottom:none; }
   .gameover-stats .stat-label { color:var(--muted); font-size:11px; font-weight:500; letter-spacing:0.2px; }
   .gameover-stats .stat-value { color:var(--text); font-size:12px; font-weight:700; }
   .btn-group { display:flex; flex-direction:column; gap:10px; align-items:center; }
+  /* Results screen hierarchy: one primary, one outline, one quiet exit.
+     NOTE: .btn-secondary already exists (modal/room buttons) — this is a
+     results-screen-only class, hence the distinct name. */
+  .btn-outline {
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    background: transparent;
+    color: var(--accent-text);
+    border: 1.5px solid var(--accent);
+    border-radius: 10px;
+    cursor: pointer;
+    min-height: 48px;
+  }
+  .btn-outline:hover { background: var(--accent-light); }
+  .btn-ghost {
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .btn-ghost:hover { color: var(--text); }
 
   /* ── TUTORIAL SCREEN ── */
   #screen-tutorial {
@@ -1806,8 +1847,8 @@
     background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
+    padding: 14px 20px;
+    margin-bottom: 12px;
     max-width: 360px;
     width: 100%;
     text-align: center;
@@ -3036,7 +3077,13 @@
   <div class="card-stage" style="position:relative;">
     <div class="stage-label" id="stage-label"><strong style="font-size:11px;color:var(--text);">WHEN</strong> DOES THIS EVENT BELONG?</div>
     <div id="current-card-container"></div>
-    <div class="tp-timer-pill" id="tp-timer-pill" style="display:none;"></div>
+    <div class="tp-timer-pill" id="tp-timer-pill" style="display:none;">
+      <svg class="tp-timer-ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle class="ring-bg" cx="22" cy="22" r="19"></circle>
+        <circle class="ring-fg" id="tp-timer-ring-fg" cx="22" cy="22" r="19"></circle>
+      </svg>
+      <span class="tp-timer-num" id="tp-timer-num">30</span>
+    </div>
     <!-- Dark/light toggle floats bottom-right of card stage -->
     <button class="dark-toggle-game" onclick="toggleDark()" id="dark-toggle-game">
       <span id="dark-icon-game">🌙</span>
@@ -3143,9 +3190,9 @@
   <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
 
   <div class="btn-group" style="width:100%;max-width:320px;">
-    <button class="btn-primary" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
     <button class="btn-primary" style="width:100%;" onclick="startGame()">Play Again</button>
-    <button class="btn-collection-green" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
+    <button class="btn-outline" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
+    <button class="btn-ghost" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
 </div>
 
@@ -3787,16 +3834,25 @@ function buildWeakestEras(){
 
 function buildCategoryBreakdown(){
   const stats = getCategoryStats();
-  const entries = Object.entries(stats)
-    .filter(([,d]) => d.attempts > 0)
+  // Only categories the player actually saw this run: keeps the card short
+  // and relevant (lifetime accuracy still shown for those categories)
+  const runCats = new Set(timeline.map(i => i.ev.cat));
+  let entries = Object.entries(stats)
+    .filter(([cat, d]) => d.attempts > 0 && runCats.has(cat))
     .map(([cat, d]) => ({ cat, attempts: d.attempts, correct: d.correct, acc: d.correct / d.attempts }))
     .sort((a, b) => a.acc - b.acc); // weakest first
+  if(entries.length === 0){
+    entries = Object.entries(stats)
+      .filter(([,d]) => d.attempts > 0)
+      .map(([cat, d]) => ({ cat, attempts: d.attempts, correct: d.correct, acc: d.correct / d.attempts }))
+      .sort((a, b) => a.acc - b.acc);
+  }
 
   if(entries.length === 0) return '';
 
-  // Pick 3 worst and 2 best: no duplicates if fewer than 5 categories
+  // Pick 3 worst and 1 best: no duplicates if fewer than 4 categories
   const worst = entries.slice(0, Math.min(3, entries.length));
-  const best  = entries.slice(worst.length).slice(-2).reverse();
+  const best  = entries.slice(worst.length).slice(-1);
 
   const makeRow = (e) => {
     const pct  = Math.round(e.acc * 100);
@@ -4361,7 +4417,7 @@ let streak=0, maxStreak=0;
 //  This is also the online seam: a future remote mode replaces the
 //  local flip in endTurnAndNext() with "wait for remote move".
 // ═══════════════════════════════════════════════════════════
-let gameMode = 'solo';   // 'solo' | 'local2p'
+let gameMode = 'solo';   // 'solo' | 'local2p' | 'online'
 let players  = [];       // [{name, lives, score, streak, maxStreak}]
 let activeIdx = 0;
 let _tpLoserIdx = 0;     // rematch: loser goes first
@@ -4417,19 +4473,35 @@ function _tpStopTimer(){
   const p = document.getElementById('tp-timer-pill');
   if(p) p.style.display = 'none';
 }
+// Circumference of the r=19 timer ring (2 * PI * 19)
+const _TP_RING_C = 119.4;
+// Update the clock: number + how much of the ring is left + urgency
+function _timerPillSet(left, dur){
+  document.getElementById('tp-timer-num').textContent = left;
+  const fg = document.getElementById('tp-timer-ring-fg');
+  const frac = dur > 0 ? Math.max(0, Math.min(1, left / dur)) : 0;
+  fg.style.strokeDashoffset = (_TP_RING_C * (1 - frac)).toFixed(1);
+  document.getElementById('tp-timer-pill').classList.toggle('urgent', left <= 5);
+}
+// Show the clock snapped to its start state (no refill animation from the previous turn)
+function _timerPillShow(left, dur){
+  const p = document.getElementById('tp-timer-pill');
+  const fg = document.getElementById('tp-timer-ring-fg');
+  p.style.display = 'flex';
+  fg.style.transition = 'none';
+  _timerPillSet(left, dur);
+  p.offsetHeight; // flush styles so the ring snaps before transitions resume
+  fg.style.transition = '';
+}
 function _tpStartTimer(){
   _tpStopTimer();
   if(gameMode !== 'local2p' || !_tpTimerDur || gameEnded) return;
   _tpTimerLeft = _tpTimerDur;
-  const p = document.getElementById('tp-timer-pill');
-  p.style.display = 'flex';
-  p.classList.remove('urgent');
-  p.textContent = _tpTimerLeft;
+  _timerPillShow(_tpTimerLeft, _tpTimerDur);
   _tpTimerInt = setInterval(() => {
     _tpTimerLeft--;
     if(_tpTimerLeft <= 0){ _tpTimerExpire(); return; }
-    p.textContent = _tpTimerLeft;
-    p.classList.toggle('urgent', _tpTimerLeft <= 5);
+    _timerPillSet(_tpTimerLeft, _tpTimerDur);
   }, 1000);
 }
 // Expiry: lose a life, card revealed and joins the timeline, no points.
@@ -4452,7 +4524,7 @@ function _tpTimerExpire(){
   const ns = [...timeline].sort((a,b) => a.ev.year - b.ev.year);
   const pi = ns.findIndex(i => i.ev.id === placed.id);
   renderTimeline(pi, 'wrong-flash');
-  showQuip("Time's up! " + players[activeIdx].name + ' loses a life.', fy(placed.year), 'wrong');
+  showTimeUp(players[activeIdx].name);
   scrollToCard(pi);
   _gameTimeout(() => {
     if(lives <= 0){ _snapshotActive(); endTwoPlayerGame(1 - activeIdx); }
@@ -4600,7 +4672,7 @@ function startOnlineGame(row){
   showScreen('game');
   renderAll();
   renderTpHud();
-  showTurnBanner(players[row.turn].name);
+  showTurnBanner(row.turn);
   _onlineStartCountdown(row);
   _onlineStartHb();
 }
@@ -4612,10 +4684,23 @@ async function _onlineSubmitMove(dropIdx){
     if(data) _onApplyRemote(data);
   }catch(e){
     // out-of-sync or rejected: re-fetch authoritative state
+    let applied = false;
     try{
       const { data } = await _sb.from('matches').select('*').eq('id', onlineMatch.id).single();
-      if(data) _onApplyRemote(data);
+      if(data){
+        // If nothing structurally changed, _onApplyRemote is a no-op
+        applied = data.deck_pos !== onlineMatch.deck_pos || data.status !== onlineMatch.status || data.turn !== onlineMatch.turn;
+        _onApplyRemote(data);
+      }
     }catch(e2){}
+    // The drop handler blanked the card and banner before submitting. If the
+    // move never landed, nothing re-renders them — restore from latest state.
+    if(!applied && gameMode === 'online' && onlineMatch && onlineMatch.status === 'active' && !gameEnded){
+      currentCard = _evById(onlineMatch.current_card_id);
+      if(currentCard) renderCurrentCard();
+      showTurnBanner(onlineMatch.turn);
+      _onlineStartCountdown(onlineMatch);
+    }
     locked = (onlineMatch && onlineMatch.turn !== onlineMyIdx);
   }
 }
@@ -4649,7 +4734,7 @@ function _onApplyRemote(row){
       if(t.wrong) playWrongSound(); else playCorrectSound();
       haptic(t.wrong ? [60,40,60] : [40]);
       const moverName = (players[t.by] && players[t.by].name) || 'Opponent';
-      if(t.expired) showQuip("Time's up! " + moverName + ' loses a life.', fy(ev.year), 'wrong');
+      if(t.expired) showTimeUp(moverName);
       else showQuip(getRandFrom(t.wrong ? WRONG_QUIPS : CORRECT_QUIPS), fy(ev.year), t.wrong ? 'wrong' : 'correct');
       scrollToCard(pi);
       animDelay = 1100;
@@ -4668,7 +4753,7 @@ function _onApplyRemote(row){
     currentCard = _evById(row.current_card_id);
     renderCurrentCard();
     locked = row.turn !== onlineMyIdx;
-    showTurnBanner(players[row.turn].name);
+    showTurnBanner(row.turn);
     _onlineStartCountdown(row);
   }, animDelay);
 }
@@ -4684,14 +4769,12 @@ function _onlineStartCountdown(row){
   _onlineStopCountdown();
   if(row.status !== 'active' || !row.turn_started) return;
   const started = new Date(row.turn_started).getTime();
-  const pill = document.getElementById('tp-timer-pill');
-  pill.style.display = 'flex';
-  pill.classList.remove('urgent');
+  _timerPillShow(Math.max(0, 30 - Math.floor((Date.now() - started) / 1000)), 30);
   let expiring = false;
   const tick = () => {
     const left = 30 - Math.floor((Date.now() - started) / 1000);
     if(left <= 0){
-      pill.textContent = '0';
+      _timerPillSet(0, 30);
       if(!expiring){
         expiring = true;
         setTimeout(()=>{ expiring = false; }, 3000);
@@ -4700,8 +4783,7 @@ function _onlineStartCountdown(row){
       }
       return;
     }
-    pill.textContent = left;
-    pill.classList.toggle('urgent', left <= 5);
+    _timerPillSet(Math.min(left, 30), 30);
   };
   tick();
   _onlineCdInt = setInterval(tick, 1000);
@@ -4835,8 +4917,10 @@ function startTwoPlayer(){
   startGame();
 }
 
+// Runs for both 2P modes (pass & play AND online). Lives are shown in the
+// turn banner next to the active player's name, so chips carry name + score.
 function renderTpHud(){
-  if(gameMode !== 'local2p') return;
+  if(gameMode !== 'local2p' && gameMode !== 'online') return;
   players.forEach((p, i) => {
     const chip = document.getElementById('tp-chip' + i);
     chip.innerHTML = '';
@@ -4865,10 +4949,32 @@ function renderTpHud(){
   });
 }
 
-function showTurnBanner(name){
+// Expiry notice: functional info, not a flavor quip, so it shows in 2P too.
+// Replaced ~1.1s later by the next turn banner.
+function showTimeUp(name){
   const banner = document.getElementById('quip-banner');
-  banner.className = 'quip-banner turn';
-  banner.textContent = name + "'s turn";
+  banner.className = 'quip-banner wrong';
+  banner.innerHTML = '<span class="quip-year">⏰ Time\'s up</span><span class="tu-nm"></span>';
+  banner.querySelector('.tu-nm').textContent = name + ' loses a life.';
+  banner.classList.remove('visible');
+  banner.offsetHeight; // reflow to retrigger animation
+  banner.classList.add('visible');
+}
+
+// Turn banner: takes the player INDEX (0 = red, 1 = blue) so it can color
+// itself per player and show that player's remaining lives inline.
+function showTurnBanner(idx){
+  const p = players[idx];
+  if(!p) return;
+  const banner = document.getElementById('quip-banner');
+  banner.className = 'quip-banner turn ' + (idx === 0 ? 'turn-p0' : 'turn-p1');
+  let hearts = '';
+  for(let h = 0; h < 3; h++){
+    hearts += '<span' + (h < p.lives ? '' : ' class="lost"') + '>♥</span>';
+  }
+  banner.innerHTML = '<span class="turn-nm"></span><span class="turn-hearts">' + hearts + '</span>';
+  // Names are user input: set via textContent, never innerHTML
+  banner.querySelector('.turn-nm').textContent = p.name + "'s turn";
   banner.classList.remove('visible');
   banner.offsetHeight; // reflow to retrigger animation
   banner.classList.add('visible');
@@ -4880,7 +4986,7 @@ function endTurnAndNext(){
   _loadActive();
   renderLives(); renderScore(); renderStreak();
   renderTpHud();
-  showTurnBanner(players[activeIdx].name);
+  showTurnBanner(activeIdx);
   nextCard();
 }
 
@@ -6096,6 +6202,7 @@ function startGame() {
   clearQuip();
   showScreen('game');
   renderAll();
+  if(gameMode==='local2p') showTurnBanner(activeIdx); // first turn is visible too
   _tpStopTimer();
   if(gameMode==='local2p' && _tpTimerDur) _tpStartTimer();
   // First-play tutorial: launch after a brief delay so the card slide-up animation finishes
@@ -7018,6 +7125,8 @@ function haptic(pattern){
 //  QUIP BANNER - stays until next card is placed, never auto-hides
 // ═══════════════════════════════════════════════════════════
 function showQuip(text, year, type){
+  // 2P (pass & play and online): no quips — the banner is the turn indicator
+  if(gameMode !== 'solo') return;
   const banner = document.getElementById('quip-banner');
   // Remove all state classes first
   banner.className = 'quip-banner ' + type;
@@ -7096,7 +7205,6 @@ function handleDrop(dropIdx){
     if(_tutStep===2) _tutOnPhase2Drop(placed);
 
   } else {
-    const hadStreak = streak;
     streak = 0;
     lives--;
     renderLives();
@@ -7118,9 +7226,7 @@ function handleDrop(dropIdx){
     const ns=[...timeline].sort((a,b)=>a.ev.year-b.ev.year);
     const pi=ns.findIndex(i=>i.ev.id===placed.id);
     renderTimeline(pi,'wrong-flash');
-    // Add streak-broken note to quip if streak was going
-    const wrongQuip = getRandFrom(WRONG_QUIPS);
-    showQuip(wrongQuip, fy(placed.year), 'wrong');
+    showQuip(getRandFrom(WRONG_QUIPS), fy(placed.year), 'wrong');
     scrollToCard(pi);
     _gameTimeout(()=>{
       if(lives<=0){
@@ -7291,7 +7397,7 @@ function _showEndBar(finalScore, newCount, delay){
 
 async function prepareGameOverScreen(){
   const correct = timeline.filter(i=>!i.wrong).length - 1;
-  const wrong   = timeline.filter(i=>i.wrong).length;
+  const wrong   = timeline.filter(i=>i.wrong).length; // also feeds Cards Placed chip
 
   // High score via localStorage
   const prevHigh = parseInt(localStorage.getItem('chronology-high') || '0');
@@ -7356,8 +7462,8 @@ async function prepareGameOverScreen(){
 
   // ── Fetch global average from Supabase ──
   let avgClass = 'avg-none';
-  let avgArrow = '';
   let avgBarPct = 0;
+  let avgValue = null; // the number the player is compared against
 
   if(_sbReady){
     try {
@@ -7366,14 +7472,13 @@ async function prepareGameOverScreen(){
       const { data: globalAvg, error } = await _sb.rpc('get_global_avg_score');
       if(error) throw new Error(error.message);
       if(globalAvg !== null && globalAvg > 0){
+        avgValue = Math.round(globalAvg);
         if(score >= globalAvg){
           avgClass = 'avg-up';
-          avgArrow = '<div class="chip-avg-arrow"></div>';
           // Bar: 50% = global avg. Score above avg maps 50-100%
           avgBarPct = Math.min(100, Math.round(50 * (score / globalAvg)));
         } else {
           avgClass = 'avg-down';
-          avgArrow = '<div class="chip-avg-arrow"></div>';
           // Bar: score below avg maps 0-50%
           avgBarPct = Math.max(5, Math.round(50 * (score / globalAvg)));
         }
@@ -7384,15 +7489,9 @@ async function prepareGameOverScreen(){
       const avgData  = getAvgData(AVG_SCORE_KEY);
       if(avgData.count >= 2 && avgScore !== null){
         const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
-        if(score >= prevAvg){
-          avgClass = 'avg-up';
-          avgArrow = '<div class="chip-avg-arrow"></div>';
-          avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
-        } else {
-          avgClass = 'avg-down';
-          avgArrow = '<div class="chip-avg-arrow"></div>';
-          avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
-        }
+        avgValue = prevAvg;
+        avgClass = score >= prevAvg ? 'avg-up' : 'avg-down';
+        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score, 1) * 100));
       }
     }
   } else {
@@ -7401,18 +7500,28 @@ async function prepareGameOverScreen(){
     const avgData  = getAvgData(AVG_SCORE_KEY);
     if(avgData.count >= 2 && avgScore !== null){
       const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
-      if(score >= prevAvg){
-        avgClass = 'avg-up';
-        avgArrow = '<div class="chip-avg-arrow"></div>';
-        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
-      } else {
-        avgClass = 'avg-down';
-        avgArrow = '<div class="chip-avg-arrow"></div>';
-        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score) * 100));
-      }
+      avgValue = prevAvg;
+      avgClass = score >= prevAvg ? 'avg-up' : 'avg-down';
+      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score, 1) * 100));
     }
   }
 
+  // No average data: show a real stat instead of an empty comparison
+  const avgChip = avgValue === null
+    ? `<div class="gameover-chip">
+        <div class="gameover-chip-label">Cards Placed</div>
+        <div class="gameover-chip-val">${correct + wrong}</div>
+      </div>`
+    : `<div class="gameover-chip chip-avg ${avgClass}">
+        <div class="chip-avg-label">vs Global Average</div>
+        <div class="chip-avg-nums">You <strong>${score}</strong> · Avg ${avgValue}</div>
+        <div class="chip-avg-track">
+          <div class="chip-avg-center"></div>
+          <div class="chip-avg-fill" style="width:${avgBarPct}%"></div>
+        </div>
+      </div>`;
+
+  const isNewHigh = score > prevHigh && prevHigh > 0;
   document.getElementById('go-chips').innerHTML = `
     <div class="gameover-chip chip-correct">
       <div class="gameover-chip-label">Correct</div>
@@ -7422,15 +7531,8 @@ async function prepareGameOverScreen(){
       <div class="gameover-chip-label">Best Streak</div>
       <div class="gameover-chip-val">${maxStreak}</div>
     </div>
-    <div class="gameover-chip chip-avg ${avgClass}">
-      <div class="chip-avg-label">vs Global Average</div>
-      ${avgArrow}
-      <div class="chip-avg-track">
-        <div class="chip-avg-center"></div>
-        <div class="chip-avg-fill" style="width:${avgBarPct}%"></div>
-      </div>
-    </div>
-    <div class="gameover-chip chip-highscore">
+    ${avgChip}
+    <div class="gameover-chip chip-highscore${isNewHigh ? ' chip-new-high' : ''}">
       <div class="gameover-chip-label">High Score</div>
       <div class="gameover-chip-val">${newHigh}</div>
     </div>
