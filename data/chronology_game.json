@@ -45,8 +45,8 @@
     "remember": "In the Rigvedic period, wars were fought over cattle (Gavishti). In the Later Vedic period, land became the focus, changing the entire social structure."
   },
   "6": {
-    "label": "Vedic settlements reach Ganges plain",
-    "sublabel": "migrated",
+    "label": "Vedic migration to the Ganges plain",
+    "sublabel": "began",
     "year": -900,
     "cat": "Ancient India",
     "what": "By around 900 BCE, the focus of Vedic civilisation had shifted eastward from the Indus-Saraswati region to the Gangetic plains, where iron tools enabled dense forest clearance and intensive agriculture.",
@@ -90,8 +90,8 @@
     "remember": "Jainism treats Ahimsa (non-violence) as the supreme principle. Mahavira took it so seriously he strained water to avoid harming microorganisms."
   },
   "11": {
-    "label": "Ajatashatru expanded Magadha",
-    "sublabel": "prevailed",
+    "label": "Ajatashatru's expansion of Magadha",
+    "sublabel": "began",
     "year": -492,
     "cat": "Ancient India",
     "what": "Ajatashatru (r. 492-460 BCE) expanded Magadha by defeating the Vajji confederacy (Vaishali) and Kashi. He built the fort of Rajgir and began Pataliputra, which became the Mauryan capital.",
@@ -126,8 +126,8 @@
     "remember": "Seleucus gave Chandragupta his daughter in marriage and got 500 war elephants. He then used those elephants to defeat his rivals in the west. Chandragupta turned a military defeat into a diplomatic masterpiece. The elephants went on to decide battles across the Mediterranean."
   },
   "15": {
-    "label": "Megasthenes visited Pataliputra",
-    "sublabel": "visited",
+    "label": "Megasthenes' visit to Pataliputra",
+    "sublabel": "began",
     "year": -302,
     "cat": "Ancient India",
     "what": "Megasthenes, the Greek ambassador sent by Seleucus to Chandragupta's court, lived in Pataliputra and wrote the Indica, the first detailed Western account of India. The original is lost but survives in fragments quoted by later authors.",
@@ -208,7 +208,7 @@
   },
   "24": {
     "label": "Vakataka dynasty and Gupta alliance",
-    "sublabel": "allied",
+    "sublabel": "formed",
     "year": 380,
     "cat": "Ancient India",
     "what": "The Vakataka dynasty of the Deccan formed a matrimonial alliance with the Guptas through Chandragupta II's daughter Prabhavati Gupta. This alliance extended Gupta influence into the Deccan without military conquest.",
@@ -225,8 +225,8 @@
     "remember": "When Shakuntala was first translated into German in 1791, the philosopher Goethe wrote a couplet: If you want the blossoms of spring and the fruits of autumn, If you want what delights and satisfies, I name you Shakuntala and all is said."
   },
   "26": {
-    "label": "Fa Hien visited India",
-    "sublabel": "visited",
+    "label": "Fa Hien's visit to India",
+    "sublabel": "began",
     "year": 405,
     "cat": "Ancient India",
     "what": "The Chinese Buddhist pilgrim Fa Hien (Faxian) visited India from 399-414 CE during the reign of Chandragupta II, documenting Buddhism, the Gupta administration, and daily life. His account is a primary source for the Gupta period.",
@@ -297,8 +297,8 @@
     "remember": "Hieun Tsang took 16 years to travel to India and back, bringing 657 Buddhist texts to China on 20 horses."
   },
   "34": {
-    "label": "Pallava dynasty at its peak",
-    "sublabel": "occurred",
+    "label": "Pallava dynasty",
+    "sublabel": "peaked",
     "year": 630,
     "cat": "Ancient India",
     "what": "The Pallavas rose to major prominence under rulers like Narasimhavarman I in the 7th century CE and played a big role in the development of early Dravidian temple architecture. The Shore Temple at Mahabalipuram is generally associated with Narasimhavarman II (Rajasimha), not Narasimhavarman I.",
@@ -405,8 +405,8 @@
     "remember": "It was originally a peace treaty between a hated king and rebellious barons, but it became a global symbol of liberty."
   },
   "46": {
-    "label": "Iltutmish consolidated Delhi Sultanate",
-    "sublabel": "consolidated",
+    "label": "Iltutmish's consolidation of Delhi",
+    "sublabel": "completed",
     "year": 1229,
     "cat": "Medieval India",
     "what": "Iltutmish (r. 1211-1236) secured recognition from the Caliph of Baghdad in 1229, giving the Delhi Sultanate formal Islamic legitimacy. He is considered the real founder of the Sultanate as a stable power.",
@@ -450,8 +450,8 @@
     "remember": "Alauddin fixed the salary of a soldier, then fixed the price of everything the soldier needed to buy, unprecedented in the Islamic world."
   },
   "51": {
-    "label": "Muhammad bin Tughlaq shifted capital",
-    "sublabel": "shifted",
+    "label": "Muhammad bin Tughlaq",
+    "sublabel": "shifted his capital",
     "year": 1327,
     "cat": "Medieval India",
     "what": "Sultan Muhammad bin Tughlaq ordered the entire population of Delhi to move to Daulatabad (Devagiri) in the Deccan in 1327 to create a centrally located capital. He reversed the decision two years later after widespread suffering.",
@@ -531,8 +531,8 @@
     "remember": "Guru Nanak's first words after his spiritual awakening were: there is no Hindu, there is no Muslim. He then spent 30 years travelling to Mecca, Tibet, Sri Lanka and Baghdad. He is believed to have walked over 28,000 km to spread his message."
   },
   "60": {
-    "label": "Columbus reached the Americas",
-    "sublabel": "arrived",
+    "label": "Columbus",
+    "sublabel": "reached the Americas",
     "year": 1492,
     "cat": "World History",
     "what": "Christopher Columbus reached the Americas (1492) while seeking a westward route to India, funded by the Spanish crown.",
@@ -540,8 +540,8 @@
     "remember": "Columbus died believing he had reached Asia; he called the local people 'Indians' because of this geographic error."
   },
   "61": {
-    "label": "Vasco da Gama arrived in India",
-    "sublabel": "arrived",
+    "label": "Vasco da Gama",
+    "sublabel": "arrived in India",
     "year": 1498,
     "cat": "Colonial India",
     "what": "Vasco da Gama reached Calicut (1498), opening the direct sea route from Europe to India via the Cape of Good Hope.",
@@ -550,7 +550,7 @@
   },
   "62": {
     "label": "Vasco da Gama's second voyage to India",
-    "sublabel": "arrived",
+    "sublabel": "began",
     "year": 1502,
     "cat": "World History",
     "what": "Vasco da Gama's second voyage to India in 1502 was a military expedition, not a trade mission. He bombarded Calicut, massacred Arab traders, and forced Indian rulers to accept Portuguese trading terms.",
@@ -567,8 +567,8 @@
     "remember": "Krishna Deva Raya defeated every kingdom he fought in 20 years of rule. Portuguese travellers described his court as rivalling anything in Europe. He wrote poetry in Telugu about a woman's devotion to Vishnu while running a vast empire. Hampi was then the world's second largest city after Beijing."
   },
   "64": {
-    "label": "Portuguese captured Goa",
-    "sublabel": "occurred",
+    "label": "Portuguese conquest of Goa",
+    "sublabel": "completed",
     "year": 1510,
     "cat": "Colonial India",
     "what": "Afonso de Albuquerque captured Goa (1510) from Bijapur, making it the first European territorial possession in India.",
@@ -640,7 +640,7 @@
   },
   "72": {
     "label": "Humayun",
-    "sublabel": "recaptured",
+    "sublabel": "recaptured Delhi",
     "year": 1555,
     "cat": "Medieval India",
     "what": "Humayun recaptured Delhi in July 1555 after 15 years of exile in Persia and Afghanistan, defeating Sikandar Sur. He died just 6 months later in an accident at his library.",
@@ -711,7 +711,7 @@
     "remember": "The EIC started with 125 shareholders; it ended up ruling 250 million people and possessing its own private army."
   },
   "80": {
-    "label": "Guru Arjan Dev martyrdom",
+    "label": "Guru Arjan Dev",
     "sublabel": "martyred",
     "year": 1606,
     "cat": "Medieval India",
@@ -757,7 +757,7 @@
   },
   "85": {
     "label": "Shivaji crowned Chhatrapati",
-    "sublabel": "crowned",
+    "sublabel": "at Raigad",
     "year": 1674,
     "cat": "Medieval India",
     "what": "Shivaji was crowned 'Chhatrapati' at Raigad (1674). The ceremony gave formal legitimacy to the Maratha state as a sovereign Hindu power.",
@@ -765,8 +765,8 @@
     "remember": "Shivaji had to prove his 'Kshatriya' lineage to skeptical Brahmins by tracing his ancestry to Rajputs before the coronation could proceed."
   },
   "86": {
-    "label": "Aurangzeb reimposed Jizya tax",
-    "sublabel": "occurred",
+    "label": "Jizya tax",
+    "sublabel": "reimposed by Aurangzeb",
     "year": 1679,
     "cat": "Medieval India",
     "what": "Aurangzeb reimposed the Jizya tax (1679), reversing Akbar's policy. This alienation led to uprisings by Rajputs, Marathas, and Sikhs.",
@@ -927,8 +927,8 @@
     "remember": "The Maratha chiefs Sindhia and Bhonsle were defeated, ending their hope of replacing the Mughals as masters of India."
   },
   "105": {
-    "label": "Napoleon became Emperor of France",
-    "sublabel": "crowned",
+    "label": "Napoleon",
+    "sublabel": "crowned Emperor of France",
     "year": 1804,
     "cat": "World History",
     "what": "Napoleon Bonaparte crowned himself Emperor (1804). He conquered much of Europe but was finally defeated at Waterloo (1815).",
@@ -1062,7 +1062,7 @@
     "remember": "The cartridges were allegedly greased with cow and pig fat, deeply offensive to both Hindu and Muslim sepoys."
   },
   "120": {
-    "label": "British Crown took over from EIC",
+    "label": "British Crown rule over India",
     "sublabel": "proclaimed",
     "year": 1858,
     "cat": "Colonial India",
@@ -1153,7 +1153,7 @@
   },
   "130": {
     "label": "Unification of Germany",
-    "sublabel": "unified",
+    "sublabel": "completed",
     "year": 1871,
     "cat": "World History",
     "what": "Germany was unified as the German Empire on 18 January 1871 at Versailles after Prussia's victory in the Franco-Prussian War. Otto von Bismarck became the first Chancellor of unified Germany.",
@@ -1225,7 +1225,7 @@
   },
   "138": {
     "label": "Hunter Commission on education",
-    "sublabel": "reviewed",
+    "sublabel": "appointed",
     "year": 1882,
     "cat": "Colonial India",
     "what": "The Hunter Commission of 1882 reviewed the state of education in India following Wood's Despatch of 1854. It recommended expansion of primary education and greater role for private enterprise in higher education.",
@@ -1234,7 +1234,7 @@
   },
   "139": {
     "label": "Ilbert Bill controversy",
-    "sublabel": "proposed",
+    "sublabel": "erupted",
     "year": 1883,
     "cat": "Colonial India",
     "what": "Viceroy Ripon's Ilbert Bill proposed allowing Indian judges to try European offenders in criminal cases. The European community in India launched a fierce campaign against it, forcing a diluted version.",
@@ -1242,7 +1242,7 @@
     "remember": "The European backlash against the Ilbert Bill shocked Indians. It made clear that the British in India would never accept legal equality with Indians. Surendranath Banerjee called it the turning point that made Indians realise they needed a political organisation. The INC was founded two years later."
   },
   "140": {
-    "label": "Berlin Conference: Africa partitioned",
+    "label": "Berlin Conference on Africa",
     "sublabel": "convened",
     "year": 1884,
     "cat": "World History",
@@ -1395,7 +1395,7 @@
     "remember": "Morley stated he didn't want parliamentary gov for India, yet these reforms set the stage for democratic competition along religious lines."
   },
   "157": {
-    "label": "Capital shifted from Calcutta to Delhi",
+    "label": "Capital shift from Calcutta to Delhi",
     "sublabel": "announced",
     "year": 1911,
     "cat": "Colonial India",
@@ -1575,8 +1575,8 @@
     "remember": "Periyar organised Self-Respect marriages: simple ceremonies without priests, rituals, or dowries. He also led the 1965 anti-Hindi agitation that forced the central government to keep English as an official language."
   },
   "178": {
-    "label": "Sarojini Naidu, Congress president",
-    "sublabel": "became",
+    "label": "Sarojini Naidu",
+    "sublabel": "became Congress president",
     "year": 1925,
     "cat": "Personalities",
     "what": "Sarojini Naidu became the first woman President of the Indian National Congress at the Kanpur session in 1925. Known as the Nightingale of India, she was also a poet and later became Governor of Uttar Pradesh.",
@@ -1621,7 +1621,7 @@
   },
   "183": {
     "label": "Purna Swaraj Declaration",
-    "sublabel": "declared",
+    "sublabel": "adopted",
     "year": 1929,
     "cat": "Colonial India",
     "what": "The Lahore Session (1929) under Nehru declared 'Purna Swaraj' (Complete Independence) as the goal of the INC.",
@@ -1702,7 +1702,7 @@
   },
   "192": {
     "label": "Hitler",
-    "sublabel": "appointed",
+    "sublabel": "appointed Chancellor",
     "year": 1933,
     "cat": "World History",
     "what": "Adolf Hitler became Chancellor (1933) and established a Nazi dictatorship, reclaiming German territory lost in WWI.",
@@ -1719,8 +1719,8 @@
     "remember": "Indian leaders criticised it heavily, but many of its administrative ideas quietly lived on into independent India."
   },
   "194": {
-    "label": "Congress wins provincial elections",
-    "sublabel": "occurred",
+    "label": "Congress",
+    "sublabel": "won most provincial elections",
     "year": 1937,
     "cat": "Colonial India",
     "what": "In the 1937 elections under the 1935 Act, the INC formed governments in 7 of 11 provinces, proving its mass electoral appeal.",
@@ -1836,8 +1836,8 @@
     "remember": "Gandhi spent the months leading to independence walking through riot-torn villages in Noakhali, trying to stop the bloodshed."
   },
   "207": {
-    "label": "Constituent Assembly first met",
-    "sublabel": "convened",
+    "label": "Constituent Assembly",
+    "sublabel": "first convened",
     "year": 1946,
     "cat": "Constitutional",
     "what": "The Constituent Assembly first met on 9 Dec 1946. Its strength was reduced from 389 to 299 after Partition.",
@@ -1846,7 +1846,7 @@
   },
   "208": {
     "label": "Royal Indian Navy Mutiny",
-    "sublabel": "mutinied",
+    "sublabel": "erupted",
     "year": 1946,
     "cat": "Colonial India",
     "what": "In February 1946, sailors of the Royal Indian Navy mutinied in Bombay, raising slogans of Jai Hind and flying Congress, League and Communist flags together. The mutiny spread to 78 ships and 20 shore establishments.",
@@ -1890,8 +1890,8 @@
     "remember": "The King of England remained the formal head of state of India until 26 January 1950, represented by the Governor-General."
   },
   "213": {
-    "label": "B.R. Ambedkar became Law Minister",
-    "sublabel": "appointed",
+    "label": "B.R. Ambedkar",
+    "sublabel": "became Law Minister",
     "year": 1947,
     "cat": "Constitutional",
     "what": "Dr. B.R. Ambedkar was appointed Law Minister in Nehru's first cabinet and chaired the seven-member Drafting Committee, making him the principal architect of the Constitution.",
@@ -1945,7 +1945,7 @@
   },
   "219": {
     "label": "Junagadh accession to India",
-    "sublabel": "acceded",
+    "sublabel": "completed",
     "year": 1948,
     "cat": "Post-Independence",
     "what": "The Nawab of Junagadh signed accession to Pakistan despite a Hindu-majority population. After the Nawab fled to Pakistan, India held a referendum in which 99% voted to join India.",
@@ -2007,8 +2007,8 @@
     "remember": "The Chief Guest at the first Republic Day was Indonesian President Sukarno. The tradition of inviting a foreign head of state as Chief Guest began from day one and continues today."
   },
   "226": {
-    "label": "Hindi declared official language",
-    "sublabel": "declared",
+    "label": "Hindi",
+    "sublabel": "declared official language",
     "year": 1950,
     "cat": "Post-Independence",
     "what": "When the Constitution came into force in 1950, Article 343 declared Hindi in Devanagari script as the official language of the Union, with English to continue for 15 years as a transitional measure.",
@@ -2124,7 +2124,7 @@
     "remember": "Nehru suggested the name 'Apsara' (nymph); the reactor was critical for producing medical and industrial isotopes."
   },
   "239": {
-    "label": "First Five-Year Plan completed",
+    "label": "First Five-Year Plan",
     "sublabel": "completed",
     "year": 1956,
     "cat": "Post-Independence",
@@ -2133,8 +2133,8 @@
     "remember": "Nehru called dams the temples of modern India. The Bhakra-Nangal project, inaugurated during this period, remains one of Asia's largest dams and symbolised independent India's industrial ambition."
   },
   "240": {
-    "label": "B.R. Ambedkar converted to Buddhism",
-    "sublabel": "converted",
+    "label": "B.R. Ambedkar",
+    "sublabel": "converted to Buddhism",
     "year": 1956,
     "cat": "Personalities",
     "what": "On 14 October 1956, B.R. Ambedkar converted to Buddhism at a public ceremony in Nagpur along with approximately 600,000 of his followers. He died six weeks later on 6 December 1956.",
@@ -2142,8 +2142,8 @@
     "remember": "Ambedkar had announced he would not die a Hindu 21 years before he converted. He kept his word. He chose Buddhism because it was born in India, had no caste system, and emphasised reason over revelation. He died six weeks after the conversion, having fulfilled his final vow."
   },
   "241": {
-    "label": "AIIMS established in New Delhi",
-    "sublabel": "established",
+    "label": "AIIMS",
+    "sublabel": "established in New Delhi",
     "year": 1956,
     "cat": "Science & Tech",
     "what": "All India Institute of Medical Sciences (AIIMS) was established in New Delhi in 1956 as an autonomous institution for medical education and research, created by an Act of Parliament.",
@@ -2179,7 +2179,7 @@
   },
   "245": {
     "label": "India's first computer TIFRAC",
-    "sublabel": "operational",
+    "sublabel": "became operational",
     "year": 1960,
     "cat": "Science & Tech",
     "what": "TIFRAC (Tata Institute of Fundamental Research Automatic Calculator) became operational in 1960 at TIFR Mumbai. It was one of the first computers in Asia and the first computer designed and built in India.",
@@ -2196,7 +2196,7 @@
     "remember": "Macmillan's Wind of Change speech was delivered in South Africa. He was telling the apartheid government to the face that colonialism was over. The South African PM did not clap. South Africa left the Commonwealth the following year."
   },
   "247": {
-    "label": "Maharashtra and Gujarat created",
+    "label": "Maharashtra and Gujarat",
     "sublabel": "created",
     "year": 1960,
     "cat": "Social Reform",
@@ -2214,7 +2214,7 @@
     "remember": "Non-alignment never meant sitting quietly on the fence. It meant keeping your freedom to choose."
   },
   "249": {
-    "label": "Goa liberation",
+    "label": "Goa",
     "sublabel": "liberated",
     "year": 1961,
     "cat": "Post-Independence",
@@ -2304,7 +2304,7 @@
     "remember": "It helped India escape famine-era vulnerability, but the later bill showed up in groundwater stress, chemical dependence, and regional imbalance."
   },
   "259": {
-    "label": "M.S. Swaminathan Green Revolution",
+    "label": "M.S. Swaminathan's Green Revolution",
     "sublabel": "began",
     "year": 1966,
     "cat": "Personalities",
@@ -2314,7 +2314,7 @@
   },
   "260": {
     "label": "Bank Nationalisation",
-    "sublabel": "nationalised",
+    "sublabel": "announced",
     "year": 1969,
     "cat": "Post-Independence",
     "what": "Bank Nationalisation (1969) saw Indira Gandhi take over 14 private banks to expand credit to farmers and small industries.",
@@ -2413,7 +2413,7 @@
   },
   "271": {
     "label": "India's first nuclear test (Pokhran-I)",
-    "sublabel": "tested",
+    "sublabel": "conducted",
     "year": 1974,
     "cat": "Post-Independence",
     "what": "India's first nuclear test, 'Smiling Buddha' (1974), was conducted at Pokhran. India called it a 'Peaceful Nuclear Explosion' (PNE).",
@@ -2493,8 +2493,8 @@
     "remember": "Property was the most litigated Fundamental Right in India's first 28 years. Zamindars used it to challenge land reform. The government used successive amendments to restrict it. Eventually Indira Gandhi removed it entirely. Property went from being among the most sacred rights to not being a fundamental right at all."
   },
   "280": {
-    "label": "Mother Teresa won Nobel Peace Prize",
-    "sublabel": "won",
+    "label": "Mother Teresa",
+    "sublabel": "won Nobel Peace Prize",
     "year": 1979,
     "cat": "Personalities",
     "what": "Mother Teresa (1910–1997) won the Nobel Peace Prize (1979) for her work with the poor in Calcutta via the Missionaries of Charity.",
@@ -2511,7 +2511,7 @@
     "remember": "The hostages were released on the exact minute Ronald Reagan was inaugurated as President, 20 January 1981. They had been held 444 days. Carter had spent his entire presidency trying to free them. The timing was deliberate humiliation."
   },
   "282": {
-    "label": "India's first SLV-3 rocket launch",
+    "label": "India's first SLV-3 rocket",
     "sublabel": "launched",
     "year": 1980,
     "cat": "Science & Tech",
@@ -2584,7 +2584,7 @@
   },
   "290": {
     "label": "Indian Airlines hijacking to Lahore",
-    "sublabel": "hijacked",
+    "sublabel": "occurred",
     "year": 1984,
     "cat": "Post-Independence",
     "what": "The 1984 hijacking of an Indian Airlines aircraft to Lahore was one of several incidents that accelerated India's anti-terrorism legislation, eventually leading to TADA (Terrorist and Disruptive Activities Prevention Act) in 1985.",
@@ -2655,8 +2655,8 @@
     "remember": "The bomb was concealed in a garland. Rajiv bent to receive it. The assassin hugged him. Fourteen others died with him. The photographer Haribabu, who died in the blast, captured the final moments on film. His camera was found intact."
   },
   "298": {
-    "label": "Ratan Tata modernised Tata Group",
-    "sublabel": "modernised",
+    "label": "Ratan Tata",
+    "sublabel": "modernised Tata Group",
     "year": 1991,
     "cat": "Personalities",
     "what": "Ratan Tata took over as chairman of the Tata Group in 1991 and transformed it from a domestic conglomerate into a global company, acquiring Tetley (2000), Corus Steel (2007), and Jaguar Land Rover (2008).",
@@ -2664,7 +2664,7 @@
     "remember": "Tata bought Jaguar Land Rover from Ford for 2.3 billion dollars in 2008. Ford had paid 2.5 billion for it in 1989 and was desperate to sell. The company the British created to symbolise British engineering prestige is now owned by an Indian company and makes most of its profits in China."
   },
   "299": {
-    "label": "Param supercomputer developed",
+    "label": "Param supercomputer",
     "sublabel": "developed",
     "year": 1991,
     "cat": "Science & Tech",
@@ -2700,8 +2700,8 @@
     "remember": "Like the 73rd, it ensures direct elections and fixed five-year terms for urban local governments."
   },
   "303": {
-    "label": "PSLV first successful flight",
-    "sublabel": "launched",
+    "label": "PSLV",
+    "sublabel": "made first successful flight",
     "year": 1994,
     "cat": "Science & Tech",
     "what": "The PSLV (successful since 1994) is ISRO's 'workhorse' rocket, known for its high reliability and multiple satellite launches.",
@@ -2755,7 +2755,7 @@
   },
   "309": {
     "label": "Pokhran-II (Operation Shakti)",
-    "sublabel": "tested",
+    "sublabel": "conducted",
     "year": 1998,
     "cat": "Post-Independence",
     "what": "Pokhran-II (1998) consisted of five nuclear tests under PM Vajpayee. India formally declared itself a nuclear weapons state.",
@@ -2763,8 +2763,8 @@
     "remember": "India deceived US spy satellites by having scientists wear civilian clothes, limiting movements at night, and conducting tests quickly. The CIA was embarrassed. The director of the DIA resigned. India had outmanoeuvred American intelligence."
   },
   "310": {
-    "label": "Amartya Sen won Nobel Prize in Economics",
-    "sublabel": "won",
+    "label": "Amartya Sen",
+    "sublabel": "won Nobel Prize in Economics",
     "year": 1998,
     "cat": "Personalities",
     "what": "Amartya Sen won the Nobel Prize in Economics in 1998 for contributions to welfare economics, social choice theory, and his analysis showing famines result from policy failure and inequality, not food shortage.",
@@ -2809,7 +2809,7 @@
   },
   "315": {
     "label": "Right to Food campaign and NFSA",
-    "sublabel": "ordered",
+    "sublabel": "began",
     "year": 2001,
     "cat": "Post-Independence",
     "what": "The Supreme Court's 2001 interim order in the Right to Food case directed all state governments to implement the mid-day meal scheme in primary schools, a landmark order that transformed school attendance and child nutrition.",
@@ -2916,7 +2916,7 @@
     "remember": "Aadhaar is the world's largest biometric database. It has enrolled more people than any identification system in history. The first person to be enrolled was Ranjana Sonawane from Maharashtra in 2010. The system she helped launch eventually covered all 1.3 billion Indians."
   },
   "327": {
-    "label": "Agni-V missile tested",
+    "label": "Agni-V missile",
     "sublabel": "tested",
     "year": 2012,
     "cat": "Science & Tech",
@@ -2962,7 +2962,7 @@
   },
   "332": {
     "label": "Polio eradication in India",
-    "sublabel": "eradicated",
+    "sublabel": "certified",
     "year": 2014,
     "cat": "Science & Tech",
     "what": "The World Health Organisation certified India polio-free on 27 March 2014, three years after the last reported case in 2011. The Pulse Polio immunisation programme, launched in 1995, was the world's largest public health campaign.",
@@ -3033,8 +3033,8 @@
     "remember": "The reform took 17 years to implement, requiring a constitutional amendment to allow both Center and States to tax services."
   },
   "340": {
-    "label": "GSLV Mk-III first flight",
-    "sublabel": "launched",
+    "label": "GSLV Mk-III",
+    "sublabel": "made maiden flight",
     "year": 2017,
     "cat": "Science & Tech",
     "what": "The GSLV Mk-III (now LVM3) completed its first developmental flight in June 2017. It is India's heaviest rocket, capable of placing 4-tonne satellites into geostationary orbit, ending dependence on foreign rockets for heavy payloads.",
@@ -3051,8 +3051,8 @@
     "remember": "India's 26 weeks of paid maternity leave is more than the USA (which has zero guaranteed paid leave), more than China (18 weeks), and close to Scandinavian countries. A developing country with a stronger maternity leave policy than the world's largest economy."
   },
   "342": {
-    "label": "Right to privacy declared Fundamental",
-    "sublabel": "ruled",
+    "label": "Right to Privacy",
+    "sublabel": "declared fundamental right",
     "year": 2017,
     "cat": "Constitutional",
     "what": "In Justice KS Puttaswamy vs Union of India (2017), a nine-judge Supreme Court bench unanimously held that the right to privacy is a fundamental right under Article 21. The case arose from a challenge to the Aadhaar programme.",
@@ -3060,7 +3060,7 @@
     "remember": "India spent 63 years without a constitutional right to privacy. The government had argued in court that Indians have no fundamental right to privacy and the Founding Fathers never intended one. Nine judges disagreed unanimously. The right that authoritarian governments fear most was declared fundamental."
   },
   "343": {
-    "label": "Section 377 decriminalised",
+    "label": "Section 377",
     "sublabel": "decriminalised",
     "year": 2018,
     "cat": "Social Reform",
@@ -3105,8 +3105,8 @@
     "remember": "India gave COVID vaccines to over 90 countries through the Vaccine Maitri programme before the Delta wave forced India to suspend exports. The programme was a major soft power success until domestic needs overwhelmed supply."
   },
   "348": {
-    "label": "Cyclone Amphan devastated Bengal",
-    "sublabel": "struck",
+    "label": "Cyclone Amphan",
+    "sublabel": "devastated Bengal",
     "year": 2020,
     "cat": "Science & Tech",
     "what": "Cyclone Amphan made landfall in West Bengal in May 2020 as an extremely severe storm and caused enormous damage in eastern India and Bangladesh.",
@@ -3159,8 +3159,8 @@
     "remember": "The Great Pyramid contains roughly 2.3 million stone blocks averaging 2.5 tonnes each. The four sides are aligned to true north with 0.05-degree accuracy. How they achieved this is still genuinely debated."
   },
   "354": {
-    "label": "Hammurabi",
-    "sublabel": "law written in stone",
+    "label": "Code of Hammurabi",
+    "sublabel": "carved in stone",
     "year": -1754,
     "cat": "World History",
     "what": "Babylonian king Hammurabi carved 282 laws onto a basalt stele 2.25 metres tall: wages, contracts, property rights, medical malpractice. The principle behind 'an eye for an eye' runs all the way through it.",
@@ -3204,8 +3204,8 @@
     "remember": "Athens invented ostracism: citizens could vote to exile a public figure for ten years by scratching a name on a pottery shard. Several hundred shards have been found with the same name in the same handwriting. Somebody prepared them in advance."
   },
   "359": {
-    "label": "Alexander",
-    "sublabel": "begun",
+    "label": "Alexander's conquests",
+    "sublabel": "began",
     "year": -334,
     "cat": "World History",
     "what": "Alexander of Macedon crossed into Persia at 22 and didn't stop for eleven years. He reached Egypt, Central Asia, and the Punjab before his army refused to go further. He never lost a battle. He died at 32 in Babylon, possibly of typhoid, possibly of alcohol, possibly of both.",
@@ -3214,7 +3214,7 @@
   },
   "360": {
     "label": "Qin Shi Huang",
-    "sublabel": "unified",
+    "sublabel": "unified China",
     "year": -221,
     "cat": "World History",
     "what": "The king of Qin defeated the last warring states and declared himself First Emperor. He standardised writing, weights, measures, coinage, and axle widths across China in a decade. Then he burned books he didn't like and buried scholars alive. Legacy is complicated.",
@@ -3240,8 +3240,8 @@
     "remember": "The Eastern Roman Empire, Byzantium, kept going for another 977 years, finally falling to the Ottomans in 1453. When people say Rome 'fell' in 476, they mean the western half only."
   },
   "363": {
-    "label": "Muhammad",
-    "sublabel": "begins",
+    "label": "Muhammad's Hijra to Medina",
+    "sublabel": "undertaken",
     "year": 622,
     "cat": "World History",
     "what": "Muhammad and his followers fled persecution in Mecca for Medina in 622 CE. This migration became Year 1 of the Islamic calendar. Within a decade, Arabia was unified under Islam. Within a century, Islam stretched from Spain to Central Asia.",
@@ -3268,7 +3268,7 @@
   },
   "366": {
     "label": "Genghis Khan",
-    "sublabel": "declared",
+    "sublabel": "crowned Universal Ruler",
     "year": 1206,
     "cat": "World History",
     "what": "Temujin was declared Genghis Khan, Universal Ruler, at a great assembly on the Mongolian steppe. He built the largest contiguous land empire in history through brilliant strategy, complete terror, and a military that promoted by skill rather than birth. The conquests he began killed people on a scale historians still argue about.",
@@ -3294,7 +3294,7 @@
     "remember": "Copernicus wasn't the first to suggest heliocentrism. Aristarchus of Samos proposed it in 270 BCE. Copernicus gave it mathematics. Galileo gave it a telescope. Aristarchus got almost no credit."
   },
   "369": {
-    "label": "Newton",
+    "label": "Newton's Principia",
     "sublabel": "published",
     "year": 1687,
     "cat": "Science & Tech",
@@ -3303,7 +3303,7 @@
     "remember": "Newton had worked out calculus two decades before the Principia, then wrote the book in geometry instead. He later fought a bitter priority dispute with Leibniz, who invented calculus independently. They spent decades in acrimony over something both of them discovered."
   },
   "370": {
-    "label": "Watt",
+    "label": "Watt's steam engine",
     "sublabel": "patented",
     "year": 1769,
     "cat": "Science & Tech",
@@ -3313,7 +3313,7 @@
   },
   "371": {
     "label": "Ada Lovelace",
-    "sublabel": "wrote",
+    "sublabel": "wrote the first program",
     "year": 1843,
     "cat": "Science & Tech",
     "what": "Ada Lovelace wrote what is now recognised as the first computer program in 1843, a full century before computers existed. She was annotating a description of Charles Babbage's Analytical Engine and realised the machine could do more than calculate: it could manipulate any symbols according to rules.",
@@ -3321,8 +3321,8 @@
     "remember": "Lovelace's Note G, the longest of her annotations, contains an algorithm for computing Bernoulli numbers on a machine that was never built. She also wrote that the engine could compose music if musical notes were represented symbolically. She was describing software. In 1843."
   },
   "372": {
-    "label": "Cholera Traced to Water",
-    "sublabel": "proven",
+    "label": "John Snow's cholera map",
+    "sublabel": "published",
     "year": 1854,
     "cat": "Science & Tech",
     "what": "John Snow traced a cholera outbreak in London to a single contaminated water pump on Broad Street, showing the disease spread through water, not bad air. Most doctors rejected it at the time. Louis Pasteur formalised germ theory a decade later.",
@@ -3339,7 +3339,7 @@
     "remember": "When WSPU members hunger-struck in prison, the government released them to recover, then re-arrested them. This became known as the Cat and Mouse Act. Pankhurst was arrested 12 times. She also paused the entire suffragette campaign during WWI to support the war effort, a decision that divided the movement permanently."
   },
   "374": {
-    "label": "Darwin",
+    "label": "Darwin's Origin of Species",
     "sublabel": "published",
     "year": 1859,
     "cat": "Science & Tech",
@@ -3367,7 +3367,7 @@
   },
   "377": {
     "label": "Marie Curie",
-    "sublabel": "discovered",
+    "sublabel": "discovered radium",
     "year": 1898,
     "cat": "Science & Tech",
     "what": "Marie Curie discovered polonium and radium, coined the term radioactivity, and became the first person to win Nobel Prizes in two different sciences: Physics in 1903 and Chemistry in 1911. She did this as a woman in a field that did not want her, in a country that was not hers.",
@@ -3375,8 +3375,8 @@
     "remember": "Curie's research notebooks are still radioactive. They are stored in lead-lined boxes in Paris. Researchers must sign a waiver and wear protective gear to study them. She carried test tubes of radioactive isotopes in her coat pockets. She died of aplastic anaemia from radiation exposure."
   },
   "378": {
-    "label": "Einstein",
-    "sublabel": "time is not absolute",
+    "label": "Einstein's relativity",
+    "sublabel": "published",
     "year": 1905,
     "cat": "Science & Tech",
     "what": "Albert Einstein, a patent clerk, published four papers in 1905 that changed physics permanently. Special relativity: the speed of light is constant, time is relative, mass and energy are the same thing. E=mc².",
@@ -3402,7 +3402,7 @@
     "remember": "Fleming discovered penicillin but couldn't produce it at scale. Howard Florey and Ernst Chain solved that problem 12 years later. All three shared the 1945 Nobel Prize equally. Fleming kept most of the fame."
   },
   "381": {
-    "label": "Chinese Communist Revolution",
+    "label": "People's Republic of China",
     "sublabel": "proclaimed",
     "year": 1949,
     "cat": "World History",
@@ -3412,7 +3412,7 @@
   },
   "382": {
     "label": "Rosalind Franklin",
-    "sublabel": "photographed",
+    "sublabel": "captured Photo 51",
     "year": 1952,
     "cat": "Science & Tech",
     "what": "Rosalind Franklin produced Photo 51 in 1952, the sharpest X-ray image of DNA ever taken. Her colleague Maurice Wilkins showed it to Watson and Crick without her knowledge or permission. They used it to determine DNA's double helix structure, published first, and won the Nobel Prize in 1962. She was barely mentioned.",
@@ -3430,7 +3430,7 @@
   },
   "384": {
     "label": "Rosa Parks",
-    "sublabel": "refused",
+    "sublabel": "refused to give up her seat",
     "year": 1955,
     "cat": "World History",
     "what": "Rosa Parks refused to give up her bus seat to a white passenger in Montgomery, Alabama on December 1, 1955. She was arrested. The Black community organised a boycott of the city bus system that lasted 381 days and nearly bankrupted the transit authority. The Supreme Court ruled bus segregation unconstitutional.",
@@ -3439,7 +3439,7 @@
   },
   "385": {
     "label": "Rachel Carson",
-    "sublabel": "published",
+    "sublabel": "published Silent Spring",
     "year": 1962,
     "cat": "World History",
     "what": "Marine biologist Rachel Carson published Silent Spring in 1962, documenting how pesticides like DDT moved through food chains, killed birds, and contaminated human breast milk. The chemical industry attacked her as a hysterical spinster. She was dying of cancer while writing it and testified before Congress anyway.",
@@ -3448,7 +3448,7 @@
   },
   "386": {
     "label": "Sylvia Plath",
-    "sublabel": "published",
+    "sublabel": "published The Bell Jar",
     "year": 1963,
     "cat": "World History",
     "what": "Sylvia Plath published The Bell Jar in January 1963 and died by suicide four weeks later at 30. The novel became one of the defining accounts of depression, female ambition, and the suffocating expectations placed on women in mid-20th century America. It has never gone out of print.",
@@ -3457,7 +3457,7 @@
   },
   "387": {
     "label": "Valentina Tereshkova",
-    "sublabel": "orbited",
+    "sublabel": "orbited Earth alone",
     "year": 1963,
     "cat": "Science & Tech",
     "what": "Soviet cosmonaut Valentina Tereshkova became the first woman in space on June 16, 1963, orbiting Earth 48 times over three days. She was a textile factory worker and amateur skydiver with no pilot training before selection. She flew alone. She remains the only woman to have flown a solo space mission.",
@@ -3466,7 +3466,7 @@
   },
   "388": {
     "label": "ARPANET",
-    "sublabel": "connected",
+    "sublabel": "went online",
     "year": 1969,
     "cat": "Science & Tech",
     "what": "The US Defense Department connected four university computers in a network called ARPANET. The first message sent was 'LO': it was supposed to be 'LOGIN' but the system crashed after two characters. It still worked.",
@@ -3520,7 +3520,7 @@
   },
   "394": {
     "label": "Human Genome Project",
-    "sublabel": "mapped",
+    "sublabel": "completed",
     "year": 2003,
     "cat": "Science & Tech",
     "what": "After 13 years and three billion dollars, the Human Genome Project published a complete map of human DNA: 3 billion base pairs encoding roughly 20,000 genes. It was biology's moon landing.",
@@ -3529,7 +3529,7 @@
   },
   "395": {
     "label": "Wangari Maathai",
-    "sublabel": "honoured",
+    "sublabel": "won Nobel Peace Prize",
     "year": 2004,
     "cat": "World History",
     "what": "Kenyan environmentalist Wangari Maathai won the Nobel Peace Prize in 2004, the first African woman to receive it. She founded the Green Belt Movement in 1977, mobilising rural women to plant trees across Kenya. Over 51 million trees planted, combined with campaigns against land grabbing and political repression.",
@@ -3574,7 +3574,7 @@
   },
   "400": {
     "label": "Chronology",
-    "sublabel": "Game Created",
+    "sublabel": "created",
     "year": 2025,
     "cat": "Meta",
     "what": "A history timeline game built by Kuroi (Git Gud) and Claude (Anthropic) across a series of late-night working sessions in 2024 and 2025. You place cards on a timeline. The cards argue with each other about who gets to be first. One of the cards is about the making of the deck. You found it.",
