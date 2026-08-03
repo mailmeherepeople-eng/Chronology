@@ -1067,7 +1067,7 @@
     "year": 1858,
     "cat": "Colonial India",
     "what": "After the 1857 revolt, the EIC was dissolved and India came under direct Crown Rule (1858). The Governor-General became the 'Viceroy'.",
-    "connections": "Cards 66 and 253 cover the same event from two angles. This card is the political fact (EIC dissolved, Viceroy created), Card 253 is the institutional mechanism (Secretary of State replaces Board of Control). Together they explain how British India was governed for the next 90 years. The Indian Councils Act (1861) is the next step.",
+    "connections": "This card and the Government of India Act 1858 cover the same event from two angles. This one is the political fact (EIC dissolved, Viceroy created); the Act is the institutional mechanism (Secretary of State replaces Board of Control). Together they explain how British India was governed for the next 90 years. The Indian Councils Act (1861) is the next step.",
     "remember": "Bahadur Shah Zafar was exiled to Rangoon; with his death in 1862, the 300-year-old Mughal dynasty officially ended."
   },
   "121": {
@@ -1337,7 +1337,7 @@
     "year": 1905,
     "cat": "Colonial India",
     "what": "Lord Curzon partitioned Bengal (1905) into East (Muslim majority) and West (Hindu majority), sparking massive anti-British protests.",
-    "connections": "The Partition of Bengal (1905) and its annulment (1911) are a single political story across six years. The partition triggered the Swadeshi Movement; the annulment proved mass agitation works. That lesson of 1911 directly fuelled nationalist confidence for the next decade. Pair this card with Card 257 to read the full arc.",
+    "connections": "The Partition of Bengal (1905) and its annulment (1911) are a single political story across six years. The partition triggered the Swadeshi Movement; the annulment proved mass agitation works. That lesson of 1911 directly fuelled nationalist confidence for the next decade. Pair this card with the annulment card, six years later, to read the full arc.",
     "remember": "Bengal was the heart of Indian nationalism; Curzon hoped partitioning it would shatter the unity of the independence movement."
   },
   "151": {
@@ -1409,7 +1409,7 @@
     "year": 1911,
     "cat": "Colonial India",
     "what": "King George V announced the annulment of the Bengal Partition at the Delhi Durbar of 1911, reuniting Bengal. The capital was simultaneously moved from Calcutta to Delhi. Both were presented as royal gifts.",
-    "connections": "Pair with Card 70 (Partition of Bengal, 1905). That card is the partition; this is the annulment. Together they're a six-year story of British policy reversal under mass pressure. Nationalists drew an exact lesson: sustained agitation can change British policy. That lesson directly feeds the confidence of the Non-Cooperation Movement nine years later.",
+    "connections": "Pair with the Partition of Bengal (1905). That card is the partition; this is the annulment. Together they're a six-year story of British policy reversal under mass pressure. Nationalists drew an exact lesson: sustained agitation can change British policy. That lesson directly feeds the confidence of the Non-Cooperation Movement nine years later.",
     "remember": "The partition had been announced with great fanfare in 1905. Its annulment six years later was a humiliation for the British who had insisted it was an administrative necessity. It proved that sustained mass agitation could reverse British policy."
   },
   "159": {
@@ -3139,5 +3139,446 @@
     "what": "Aditya-L1 (2023) is India's first solar mission, positioned at the Lagrange Point 1 to study the Sun continuously.",
     "connections": "Aditya-L1 studies the Sun from the L1 Lagrange point, 1.5 million km from Earth, allowing uninterrupted solar observation with no eclipses and minimal fuel. After Chandrayaan-3 (Moon, August 2023), Aditya-L1 (Sun, September 2023) continued ISRO's pattern of ambitious firsts on low budgets. The two launches within the same month are the clearest demonstration of how much ISRO's throughput has grown since the bicycle-and-church days.",
     "remember": "L1 is a 'gravitational sweet spot' 1.5 million km from Earth, allowing uninterrupted solar observation without eclipses."
+  },
+  "352": {
+    "label": "Cuneiform",
+    "sublabel": "invented",
+    "year": -3200,
+    "cat": "World History",
+    "what": "Mesopotamian scribes in Sumer pressed reed styluses into wet clay to track grain and livestock. It started as accountancy and became literature. Most of the world's writing systems trace a lineage back to this one.",
+    "connections": "Cuneiform and the Indus Valley Script were near-contemporaries. Neither could read the other. One was deciphered over a century ago. The other has not been cracked. One civilisation left us stories. The other left us silence.",
+    "remember": "The Epic of Gilgamesh, one of the oldest surviving stories, was written in cuneiform. It includes a flood narrative strikingly close to the one in Genesis, written centuries before it."
+  },
+  "353": {
+    "label": "Pyramids of Giza",
+    "sublabel": "built",
+    "year": -2560,
+    "cat": "World History",
+    "what": "Pharaoh Khufu commissioned a tomb that remained the tallest man-made structure on Earth for 3,800 years. Built by tens of thousands of skilled, paid workers: not slaves. We know this because archaeologists found their bakeries, breweries, and medical records.",
+    "connections": "The pyramids went up 740 years after the Indus Valley Civilisation began. While Egypt was stacking megaliths, Mohenjo-daro had household drains feeding covered street sewers and streets on a planned grid. Both were extraordinary. Only one gets the postcards.",
+    "remember": "The Great Pyramid contains roughly 2.3 million stone blocks averaging 2.5 tonnes each. The four sides are aligned to true north with 0.05-degree accuracy. How they achieved this is still genuinely debated."
+  },
+  "354": {
+    "label": "Hammurabi",
+    "sublabel": "law written in stone",
+    "year": -1754,
+    "cat": "World History",
+    "what": "Babylonian king Hammurabi carved 282 laws onto a basalt stele 2.25 metres tall: wages, contracts, property rights, medical malpractice. The principle behind 'an eye for an eye' runs all the way through it.",
+    "connections": "The impulse to write law in stone appears across civilisations independently. Hammurabi, Manu Smriti, Arthashastra, Ashokan edicts: every major civilisation eventually needed law to outlast the ruler who made it.",
+    "remember": "The stele was discovered in 1901 in Iran, hundreds of kilometres from where it was carved. It had been looted from Babylon by an Elamite king around 1158 BCE and sat in his capital for centuries before anyone found it."
+  },
+  "355": {
+    "label": "Trojan War",
+    "sublabel": "fought",
+    "year": -1200,
+    "cat": "World History",
+    "what": "Greek city-states besieged Troy for ten years, according to Homer. For millennia it was considered legend. Then Schliemann excavated a site in modern Turkey and found a real city matching the description, destroyed and rebuilt nine times over.",
+    "connections": "The Trojan War falls inside the Bronze Age Collapse, when Mediterranean civilisations fell one after another within a century: Mycenae, the Hittites, Ugarit. Egypt was battered but survived. Climate, famine, and systems failure did most of the work. The Sea Peoples finished the job.",
+    "remember": "Homer was probably writing 400 years after the events he described, working from oral tradition. The wooden horse is almost certainly a metaphor. For what, nobody agrees."
+  },
+  "356": {
+    "label": "Rome",
+    "sublabel": "founded",
+    "year": -753,
+    "cat": "World History",
+    "what": "Roman tradition dates the founding to 753 BCE by Romulus on the Palatine Hill. Historians are sceptical of the precision. But archaeological evidence confirms continuous settlement and fortification of the site from around this period.",
+    "connections": "Rome was founded around the same time the Later Vedic period was transitioning into the Mahajanapadas. Both cultures were building city-states and working iron. India's religious texts were being composed and memorised rather than written. Same century, opposite ends of Eurasia.",
+    "remember": "Romans counted years from this date: Anno Urbis Conditae. Julius Caesar was assassinated in 710 AUC. The calendar made Rome the centre of all time, not just all roads."
+  },
+  "357": {
+    "label": "Persian Empire",
+    "sublabel": "founded",
+    "year": -550,
+    "cat": "World History",
+    "what": "Cyrus II conquered the Medes, Lydia, and Babylon in quick succession, building the largest empire the world had seen. He freed the Jews from Babylonian captivity and let conquered peoples keep their gods, languages, and customs. It was unusual enough that people still talk about it.",
+    "connections": "The Persian Empire reached India: Cyrus and his successors controlled the northwest. Achaemenid administrative influence is visible in the Mauryan court, and the Ashokan pillar style echoes Persian stonework directly.",
+    "remember": "The Cyrus Cylinder is sometimes called the world's first human rights charter. Historians debate how much is genuine policy and how much is ancient PR. Either way, it worked as both."
+  },
+  "358": {
+    "label": "Athenian Democracy",
+    "sublabel": "born",
+    "year": -508,
+    "cat": "World History",
+    "what": "Cleisthenes restructured Athenian governance to give citizens direct power over legislation. Women, slaves, and foreigners were excluded. But the idea that ordinary people could make binding collective decisions was new enough to reshape political philosophy for 2,500 years.",
+    "connections": "Cleisthenes reshaped Athens in the same decade Bimbisara was consolidating royal power in Magadha. Athens went one direction, India another. Alexander's invasion brought them within reach of each other nearly two centuries later.",
+    "remember": "Athens invented ostracism: citizens could vote to exile a public figure for ten years by scratching a name on a pottery shard. Several hundred shards have been found with the same name in the same handwriting. Somebody prepared them in advance."
+  },
+  "359": {
+    "label": "Alexander",
+    "sublabel": "begun",
+    "year": -334,
+    "cat": "World History",
+    "what": "Alexander of Macedon crossed into Persia at 22 and didn't stop for eleven years. He reached Egypt, Central Asia, and the Punjab before his army refused to go further. He never lost a battle. He died at 32 in Babylon, possibly of typhoid, possibly of alcohol, possibly of both.",
+    "connections": "Alexander's 326 BCE invasion brought Hellenistic culture directly to India's northwest. The Indo-Greek kingdoms that followed influenced Mauryan administration, Buddhist iconography, and the Gandharan school, which produced some of the earliest human depictions of the Buddha.",
+    "remember": "Alexander founded over 20 cities named Alexandria. The most famous, in Egypt, became the intellectual capital of the ancient world. Its library was the largest collection of knowledge in history until it burned."
+  },
+  "360": {
+    "label": "Qin Shi Huang",
+    "sublabel": "unified",
+    "year": -221,
+    "cat": "World History",
+    "what": "The king of Qin defeated the last warring states and declared himself First Emperor. He standardised writing, weights, measures, coinage, and axle widths across China in a decade. Then he burned books he didn't like and buried scholars alive. Legacy is complicated.",
+    "connections": "Qin unified China in 221 BCE. Ashoka's Maurya Empire was at its peak at almost the same moment. Two vast bureaucratic empires on opposite ends of Asia, both using written law to hold enormous territories together, both destined to outlast their greatest ruler by less than a generation.",
+    "remember": "His terracotta army of over 8,000 life-sized soldiers was discovered by farmers digging a well in 1974. Each face is unique. The dynasty he founded lasted just 15 years and fell four years after his death. The monuments outlasted everything else."
+  },
+  "361": {
+    "label": "Julius Caesar",
+    "sublabel": "assassinated",
+    "year": -44,
+    "cat": "World History",
+    "what": "Roman senators stabbed Caesar 23 times on March 15, 44 BCE. They wanted to save the Republic. They triggered the civil war that ended it. Of the 23 wounds, only one was fatal. The rest missed everything vital.",
+    "connections": "Caesar's death triggered the rise of Augustus and the Pax Romana, which roughly coincided with the Satavahana and early Kushan periods in India. Roman coins and pottery have been found in Tamil Nadu. The empire that killed Caesar also traded pepper with the Chera kings.",
+    "remember": "Caesar's last words were probably not 'Et tu, Bruté?' That's Shakespeare. The historian Suetonius says Caesar pulled his toga over his face when he saw Brutus among the attackers and said nothing at all."
+  },
+  "362": {
+    "label": "Western Rome",
+    "sublabel": "fell",
+    "year": 476,
+    "cat": "World History",
+    "what": "The Germanic chieftain Odoacer deposed Romulus Augustulus on September 4, 476. Most historians now say the 'fall' was a slow transformation over centuries, not a single event. The empire didn't collapse so much as dissolve into the medieval world.",
+    "connections": "Rome's decline coincides with the Gupta Empire's deterioration. Both brought down by similar forces: Hun invasions from Central Asia, economic overextension, frontiers too long to hold. Different ends of the Silk Road, same mechanisms of collapse.",
+    "remember": "The Eastern Roman Empire, Byzantium, kept going for another 977 years, finally falling to the Ottomans in 1453. When people say Rome 'fell' in 476, they mean the western half only."
+  },
+  "363": {
+    "label": "Muhammad",
+    "sublabel": "begins",
+    "year": 622,
+    "cat": "World History",
+    "what": "Muhammad and his followers fled persecution in Mecca for Medina in 622 CE. This migration became Year 1 of the Islamic calendar. Within a decade, Arabia was unified under Islam. Within a century, Islam stretched from Spain to Central Asia.",
+    "connections": "Islam's expansion directly shaped Indian history across centuries. The Arab conquest of Sindh in 712 CE, the Delhi Sultanate, the Mughal Empire, the partition of 1947: all are a chain of consequences traceable to the Hijra.",
+    "remember": "The word 'hijra' means migration. The Islamic calendar counts from this event, not from Muhammad's birth or first revelation. The founding event is a community seeking refuge, not a miracle."
+  },
+  "364": {
+    "label": "Charlemagne",
+    "sublabel": "crowned",
+    "year": 800,
+    "cat": "World History",
+    "what": "Pope Leo III placed a crown on Charlemagne's head in Rome on Christmas Day, 800, declaring him Emperor of the Romans. Charlemagne reportedly said he would not have entered the church had he known what was coming. He may have been telling the truth.",
+    "connections": "Charlemagne's coronation is contemporary with the Gurjara-Pratihara and Pala dynasties dividing northern India between them. Europe was consolidating around a single centre; India was fragmenting into the Rajput era. Both trajectories shaped their regions for centuries.",
+    "remember": "Charlemagne could read Latin and some Greek but never mastered writing. He founded schools across his empire and kept a slate under his pillow to practise letters at night. His biographer says the writing never came."
+  },
+  "365": {
+    "label": "Islamic Golden Age",
+    "sublabel": "began",
+    "year": 830,
+    "cat": "World History",
+    "what": "Baghdad under the Abbasid Caliphate became the intellectual capital of the world. Scholars translated Greek, Persian, and Indian texts, then built on them. Algebra, optics, surgery, and the concept of the algorithm were all formalised here.",
+    "connections": "The Islamic Golden Age was the bridge that saved classical knowledge. When Western Rome fell, Greek science nearly disappeared from Europe. Arab scholars preserved it, translated it, and returned it through Spain and Sicily. The Renaissance could not have happened without Baghdad.",
+    "remember": "The word algebra comes from al-jabr, from a book title by mathematician al-Khwarizmi. The word algorithm comes from the Latinisation of his own name. His work on the decimal system, borrowed from Indian mathematicians, gave Europe the numbers it still uses today."
+  },
+  "366": {
+    "label": "Genghis Khan",
+    "sublabel": "declared",
+    "year": 1206,
+    "cat": "World History",
+    "what": "Temujin was declared Genghis Khan, Universal Ruler, at a great assembly on the Mongolian steppe. He built the largest contiguous land empire in history through brilliant strategy, complete terror, and a military that promoted by skill rather than birth. The conquests he began killed people on a scale historians still argue about.",
+    "connections": "The Mongol shockwaves reach India across centuries. Timur's 1398 raid on Delhi was a successor event. Babur, the Mughal founder, claimed descent from both Genghis Khan and Timur. The Mughal Empire is, genealogically, the Mongol Empire's Indian chapter.",
+    "remember": "The Mongol Empire at its peak covered 24 million square kilometres, roughly 16% of Earth's land area. Modern genetic research suggests roughly 0.5% of all men alive today are direct descendants of Genghis Khan. That is around 16 million people."
+  },
+  "367": {
+    "label": "Black Death",
+    "sublabel": "struck",
+    "year": 1347,
+    "cat": "World History",
+    "what": "A Genoese ship docked in Sicily carrying sailors dying of a new illness. Within five years, 30 to 60 percent of Europe's population was dead. Labour became scarce for the first time. Peasants began to have bargaining power. Feudalism's clock started ticking.",
+    "connections": "The plague swept through the Middle East and Central Asia, disrupting trade networks connecting India to the Mediterranean. The collapse of the Ilkhanate that followed reshuffled the routes along which ideas, merchants, and armies travelled toward India.",
+    "remember": "The labour shortage the plague created is one of the key economic engines that ended serfdom in Western Europe within a century. The revolution that followed was demographic, not political."
+  },
+  "368": {
+    "label": "Heliocentric Model",
+    "sublabel": "published",
+    "year": 1543,
+    "cat": "Science & Tech",
+    "what": "Nicolaus Copernicus published 'De Revolutionibus' on his deathbed, arguing the Earth orbits the Sun. He dedicated it to the Pope, possibly hoping that would help. It did not stop the Church from banning it 73 years later.",
+    "connections": "Aryabhata had argued for a rotating Earth in 499 CE, over a thousand years before Copernicus. His work likely influenced Islamic astronomers who may in turn have informed the European tradition. Whether Copernicus knew of Aryabhata is genuinely debated.",
+    "remember": "Copernicus wasn't the first to suggest heliocentrism. Aristarchus of Samos proposed it in 270 BCE. Copernicus gave it mathematics. Galileo gave it a telescope. Aristarchus got almost no credit."
+  },
+  "369": {
+    "label": "Newton",
+    "sublabel": "published",
+    "year": 1687,
+    "cat": "Science & Tech",
+    "what": "Isaac Newton published the Principia, laying out the laws of motion and universal gravitation. It described mathematically how everything from apples to planets moved. It defined physics for 200 years.",
+    "connections": "Newton's work arrived in India through British colonial education. Indian mathematicians trained in this tradition, including Ramanujan, then made contributions that astonished the European establishment. The knowledge flowed in, then flowed back.",
+    "remember": "Newton had worked out calculus two decades before the Principia, then wrote the book in geometry instead. He later fought a bitter priority dispute with Leibniz, who invented calculus independently. They spent decades in acrimony over something both of them discovered."
+  },
+  "370": {
+    "label": "Watt",
+    "sublabel": "patented",
+    "year": 1769,
+    "cat": "Science & Tech",
+    "what": "James Watt didn't invent the steam engine but he made it practical: his separate condenser cut fuel use by 75%. His engines powered mills and mines first. Railways came later, on the high-pressure steam Watt himself distrusted.",
+    "connections": "The industrial revolution Watt's engine powered is the direct cause of India's de-industrialisation. Britain's machine-made textiles destroyed Indian handloom industries. The economic logic of colonial extraction is inseparable from Watt's invention.",
+    "remember": "Watt coined the term 'horsepower' to help customers understand his engines by comparing them to what they already knew. The watt, the unit of power, is named for him."
+  },
+  "371": {
+    "label": "Ada Lovelace",
+    "sublabel": "wrote",
+    "year": 1843,
+    "cat": "Science & Tech",
+    "what": "Ada Lovelace wrote what is now recognised as the first computer program in 1843, a full century before computers existed. She was annotating a description of Charles Babbage's Analytical Engine and realised the machine could do more than calculate: it could manipulate any symbols according to rules.",
+    "connections": "Every program ever written, every app, every game including this one, is a direct descendant of the conceptual leap Lovelace made in a set of footnotes. The US Department of Defense named its programming language Ada in her honour in 1980. She died at 36.",
+    "remember": "Lovelace's Note G, the longest of her annotations, contains an algorithm for computing Bernoulli numbers on a machine that was never built. She also wrote that the engine could compose music if musical notes were represented symbolically. She was describing software. In 1843."
+  },
+  "372": {
+    "label": "Cholera Traced to Water",
+    "sublabel": "proven",
+    "year": 1854,
+    "cat": "Science & Tech",
+    "what": "John Snow traced a cholera outbreak in London to a single contaminated water pump on Broad Street, showing the disease spread through water, not bad air. Most doctors rejected it at the time. Louis Pasteur formalised germ theory a decade later.",
+    "connections": "Germ theory made modern medicine possible and directly caused the global population explosion. In 1800 the world had one billion people: all of human history to get there. Germ theory, clean water, and vaccines added the next seven billion in 200 years.",
+    "remember": "Before germ theory, doctors went from performing autopsies to delivering babies without washing their hands. Ignaz Semmelweis proved handwashing saved lives in 1847 and was ridiculed by the medical establishment. He died in a mental asylum. Joseph Lister later vindicated him completely."
+  },
+  "373": {
+    "label": "Emmeline Pankhurst",
+    "sublabel": "born",
+    "year": 1858,
+    "cat": "World History",
+    "what": "Emmeline Pankhurst was born on July 14, 1858 in Manchester into a politically charged household. Her father read Uncle Tom's Cabin aloud to her as a child. Her mother took her to her first women's suffrage meeting at age fourteen. She grew up believing injustice was something you acted on. In 1903, after concluding that 50 years of polite campaigning had achieved nothing, she founded the Women's Social and Political Union. The WSPU adopted the motto Deeds Not Words and began smashing windows, chaining to railings, and hunger-striking in prison.",
+    "connections": "British women over 30 won the vote in 1918. Full equal suffrage came in 1928, weeks after Pankhurst died that June. She had joined the Conservative Party in 1926 and been adopted as a candidate for Whitechapel in 1927. India's 1950 Constitution gave women full equal voting rights from day one, something Britain took roughly 60 years of organised campaigning to reach.",
+    "remember": "When WSPU members hunger-struck in prison, the government released them to recover, then re-arrested them. This became known as the Cat and Mouse Act. Pankhurst was arrested 12 times. She also paused the entire suffragette campaign during WWI to support the war effort, a decision that divided the movement permanently."
+  },
+  "374": {
+    "label": "Darwin",
+    "sublabel": "published",
+    "year": 1859,
+    "cat": "Science & Tech",
+    "what": "Charles Darwin published On the Origin of Species arguing all life evolved through natural selection: random variation plus survival pressure over millions of years. It changed biology, philosophy, and religion simultaneously.",
+    "connections": "Darwin's theory arrived in India at a charged moment: the year of the Great Revolt was 1857, two years earlier. British colonialists used distorted versions of evolution, 'social Darwinism', to justify empire. The theory became a weapon before the science was settled.",
+    "remember": "Darwin sat on his theory for 20 years, afraid of the reaction. He only published after Alfred Russel Wallace posted him an essay reaching the same conclusion. Their friends arranged a joint presentation in 1858. The theory had two authors; history gave it one."
+  },
+  "375": {
+    "label": "American Civil War",
+    "sublabel": "ended",
+    "year": 1865,
+    "cat": "World History",
+    "what": "Confederate General Lee surrendered to Ulysses Grant on April 9, 1865, ending four years of war that killed 620,000 people. Slavery was abolished by the 13th Amendment. Lincoln was assassinated five days after the surrender.",
+    "connections": "The end of the Civil War freed up American industrial energy. The industrialisation that followed produced the economic model that Indian reformers both studied and argued about throughout the independence movement, particularly the debate over industrialisation vs. village self-reliance.",
+    "remember": "The Reconstruction period that followed failed to deliver equality. Sharecropping and Jim Crow replaced legal slavery with a system that lasted another century. The war settled the question of union. It did not settle the question of race."
+  },
+  "376": {
+    "label": "Periodic Table",
+    "sublabel": "published",
+    "year": 1869,
+    "cat": "Science & Tech",
+    "what": "Dmitri Mendeleev arranged all known elements by atomic weight and noticed repeating patterns in their properties. He left gaps for undiscovered elements and predicted their properties in advance. When those elements were found, they matched his predictions exactly.",
+    "connections": "The periodic table is the single most information-dense object in science. Every material in every card in this game, iron in swords, uranium in nuclear bombs, silicon in the device you are playing this on, is on it. It is the index of everything physical that has ever happened.",
+    "remember": "Mendeleev reportedly saw the completed periodic table in a dream and wrote it down on waking. Three elements he predicted as missing, gallium, scandium, and germanium, were all found within twenty years with close to the properties he had described."
+  },
+  "377": {
+    "label": "Marie Curie",
+    "sublabel": "discovered",
+    "year": 1898,
+    "cat": "Science & Tech",
+    "what": "Marie Curie discovered polonium and radium, coined the term radioactivity, and became the first person to win Nobel Prizes in two different sciences: Physics in 1903 and Chemistry in 1911. She did this as a woman in a field that did not want her, in a country that was not hers.",
+    "connections": "Curie's work on radioactivity led directly to nuclear physics, nuclear weapons, nuclear power, and radiotherapy for cancer. The same discovery that built the bomb also treats tumours. The same notebooks that will kill you also changed medicine. That is the full complexity of scientific progress.",
+    "remember": "Curie's research notebooks are still radioactive. They are stored in lead-lined boxes in Paris. Researchers must sign a waiver and wear protective gear to study them. She carried test tubes of radioactive isotopes in her coat pockets. She died of aplastic anaemia from radiation exposure."
+  },
+  "378": {
+    "label": "Einstein",
+    "sublabel": "time is not absolute",
+    "year": 1905,
+    "cat": "Science & Tech",
+    "what": "Albert Einstein, a patent clerk, published four papers in 1905 that changed physics permanently. Special relativity: the speed of light is constant, time is relative, mass and energy are the same thing. E=mc².",
+    "connections": "Einstein's 1905 work built on Maxwell's equations. Nineteen years later a Dhaka physicist, Satyendra Nath Bose, posted him a paper Einstein translated and extended himself. Bose-Einstein statistics are fundamental to quantum mechanics. An Indian physicist's name sits in the foundation of modern physics.",
+    "remember": "1905 is called Einstein's Annus Mirabilis, miracle year. He was 26, had no university position, and worked at the Bern patent office. He submitted all four papers to the same journal in the same year."
+  },
+  "379": {
+    "label": "Big Bang Theory",
+    "sublabel": "proposed",
+    "year": 1927,
+    "cat": "Science & Tech",
+    "what": "Belgian physicist Georges Lemaitre derived an expanding universe from Einstein's equations, and four years later proposed it had begun as a single dense point. Einstein told him his mathematics was correct but his physics was abominable. Einstein was wrong.",
+    "connections": "The Big Bang theory gives the universe an age: 13.8 billion years. The oldest card in this game is the Indus Valley Civilisation, 3300 BCE, which is 5,300 years ago. The universe is 2.6 million times older than the earliest event in this deck. Every card happened in the last 0.00004% of time.",
+    "remember": "The term Big Bang was coined by astronomer Fred Hoyle in 1949 during a radio broadcast. He backed a steady-state universe and the name stuck to the theory that beat his. Hoyle was no crank: he worked out how stars forge the elements everything is made of."
+  },
+  "380": {
+    "label": "Penicillin",
+    "sublabel": "discovered",
+    "year": 1928,
+    "cat": "Science & Tech",
+    "what": "Alexander Fleming noticed mould had killed bacteria in a petri dish he had left uncovered by accident. The mould was Penicillium notatum. He called the substance penicillin. He nearly threw the dish away.",
+    "connections": "Penicillin arrived in India during WWII to treat wounded soldiers. Post-independence, India became one of the world's largest antibiotic producers. Today India supplies roughly 60% of the world's vaccines. The lineage from Fleming's accident to Indian pharma is direct.",
+    "remember": "Fleming discovered penicillin but couldn't produce it at scale. Howard Florey and Ernst Chain solved that problem 12 years later. All three shared the 1945 Nobel Prize equally. Fleming kept most of the fame."
+  },
+  "381": {
+    "label": "Chinese Communist Revolution",
+    "sublabel": "proclaimed",
+    "year": 1949,
+    "cat": "World History",
+    "what": "Mao Zedong proclaimed the People's Republic from Tiananmen on October 1, 1949, after defeating the Nationalists, who fled to Taiwan. The most populous country on Earth became communist.",
+    "connections": "Communist China became an immediate foreign policy crisis for India. The 1950 annexation of Tibet removed the buffer between the two countries. The 1962 war was the consequence. India's nuclear programme accelerated in the same decade.",
+    "remember": "China's civil war ended with the country split in two: the People's Republic on the mainland, the Republic of China on Taiwan. Each was founded claiming to be the legitimate government of all China."
+  },
+  "382": {
+    "label": "Rosalind Franklin",
+    "sublabel": "photographed",
+    "year": 1952,
+    "cat": "Science & Tech",
+    "what": "Rosalind Franklin produced Photo 51 in 1952, the sharpest X-ray image of DNA ever taken. Her colleague Maurice Wilkins showed it to Watson and Crick without her knowledge or permission. They used it to determine DNA's double helix structure, published first, and won the Nobel Prize in 1962. She was barely mentioned.",
+    "connections": "Franklin's story is the clearest single case in science of a woman's contribution being taken, minimised, and erased in real time. In most tellings of the double helix she appears as a footnote in Watson and Crick's story. She is not a footnote. She is the discovery.",
+    "remember": "Franklin died of ovarian cancer in 1958, likely caused by her X-ray work, four years before the Nobel was awarded. The prize cannot be given posthumously. Watson's 1968 memoir described her so dismissively that his own publisher dropped the book after Crick and Wilkins objected. The science was hers. The credit was not."
+  },
+  "383": {
+    "label": "DNA Double Helix",
+    "sublabel": "decoded",
+    "year": 1953,
+    "cat": "Science & Tech",
+    "what": "Watson and Crick published a one-page paper describing DNA's double helix structure. It explained how genetic information is stored and copied. It was one of the most important scientific papers ever written.",
+    "connections": "The double helix set off molecular biology, which reshaped medicine, forensics, and agriculture within a generation. India's Green Revolution came from conventional plant breeding rather than this discovery, but every crop science lab that followed was built on the genetics it opened up.",
+    "remember": "Rosalind Franklin's X-ray image, Photo 51, was the critical evidence. Watson and Crick accessed it without her knowledge. Franklin died before the Nobel Prize was awarded. The prize is not given posthumously."
+  },
+  "384": {
+    "label": "Rosa Parks",
+    "sublabel": "refused",
+    "year": 1955,
+    "cat": "World History",
+    "what": "Rosa Parks refused to give up her bus seat to a white passenger in Montgomery, Alabama on December 1, 1955. She was arrested. The Black community organised a boycott of the city bus system that lasted 381 days and nearly bankrupted the transit authority. The Supreme Court ruled bus segregation unconstitutional.",
+    "connections": "The Montgomery Bus Boycott launched Martin Luther King Jr. onto the national stage. The movement it catalysed produced the Civil Rights Act of 1964 and the Voting Rights Act of 1965. Parks's act of refusal is one of the clearest examples in history of how a single deliberate moment, not an army or a government, can shift the course of events.",
+    "remember": "Parks was not simply tired after a long day's work, as the popular story goes. She was a trained civil rights activist and secretary of the local NAACP. The refusal itself was hers alone, unplanned. What followed was not: the movement had been waiting for the right case, and this time they had it."
+  },
+  "385": {
+    "label": "Rachel Carson",
+    "sublabel": "published",
+    "year": 1962,
+    "cat": "World History",
+    "what": "Marine biologist Rachel Carson published Silent Spring in 1962, documenting how pesticides like DDT moved through food chains, killed birds, and contaminated human breast milk. The chemical industry attacked her as a hysterical spinster. She was dying of cancer while writing it and testified before Congress anyway.",
+    "connections": "Carson published in the same year as the Cuban Missile Crisis and John Glenn's orbit, the first by an American. In 1962 humanity simultaneously threatened to blow up the planet, looked down at it from space, and for the first time read a book arguing it was worth protecting. All three happened within months of each other.",
+    "remember": "Silent Spring directly caused the US ban on DDT in 1972, the creation of the Environmental Protection Agency in 1970, and the first Earth Day in 1970. The entire modern environmental movement traces its political birth to this one book, written by a dying woman who knew she would not live to see its impact."
+  },
+  "386": {
+    "label": "Sylvia Plath",
+    "sublabel": "published",
+    "year": 1963,
+    "cat": "World History",
+    "what": "Sylvia Plath published The Bell Jar in January 1963 and died by suicide four weeks later at 30. The novel became one of the defining accounts of depression, female ambition, and the suffocating expectations placed on women in mid-20th century America. It has never gone out of print.",
+    "connections": "The Bell Jar appeared weeks before Betty Friedan published The Feminine Mystique: two books in the same season, diagnosing the same disease from different angles. One was fiction. One was sociology. Together they helped start second-wave feminism.",
+    "remember": "The Bell Jar was rejected by major US publishers and published in Britain first under a pseudonym. Plath's mother tried to suppress it in America for years after her death. It finally appeared in the US in 1971 and became an immediate bestseller."
+  },
+  "387": {
+    "label": "Valentina Tereshkova",
+    "sublabel": "orbited",
+    "year": 1963,
+    "cat": "Science & Tech",
+    "what": "Soviet cosmonaut Valentina Tereshkova became the first woman in space on June 16, 1963, orbiting Earth 48 times over three days. She was a textile factory worker and amateur skydiver with no pilot training before selection. She flew alone. She remains the only woman to have flown a solo space mission.",
+    "connections": "Tereshkova flew the same year Sylvia Plath died and Martin Luther King gave his I Have a Dream speech. The early 1960s were a compressed hinge point: space race, civil rights, nuclear fear, and the first tremors of second-wave feminism all happening simultaneously. Several different futures were being written at once.",
+    "remember": "The US did not send a woman to space until Sally Ride in 1983, twenty years later. Tereshkova was 26 years old on her mission and is still alive. She has said she would like to go to Mars even now."
+  },
+  "388": {
+    "label": "ARPANET",
+    "sublabel": "connected",
+    "year": 1969,
+    "cat": "Science & Tech",
+    "what": "The US Defense Department connected four university computers in a network called ARPANET. The first message sent was 'LO': it was supposed to be 'LOGIN' but the system crashed after two characters. It still worked.",
+    "connections": "ARPANET and the Apollo moon landing both happened in 1969. The two most transformative technologies of the late 20th century were born in the same year, in the same country, funded by the same Cold War anxiety.",
+    "remember": "ARPANET was built so researchers could share scarce computers, not to survive a nuclear strike. That myth comes from Paul Baran's separate work on distributed networks at RAND. The architecture still ended up nearly impossible to shut down from any single point."
+  },
+  "389": {
+    "label": "Apple II",
+    "sublabel": "launched",
+    "year": 1977,
+    "cat": "Science & Tech",
+    "what": "The Apple II, released in 1977, was the first mass-market personal computer with colour graphics and an open architecture. Earlier machines like the Altair sold to hobbyists in kits. This one you could buy assembled and switch on. Before this, computers filled rooms and were operated by institutions. After this, they were in living rooms.",
+    "connections": "The personal computer revolution created the software industry, which created the conditions for Bangalore's rise as a global tech hub. The first Indian software companies emerged as subcontractors writing code for the PC ecosystem in the early 1980s.",
+    "remember": "Jobs insisted the machine have no fan, for the quiet and the look. Rod Holt solved it with a switching power supply that ran cool enough to make the fanless case possible, a design almost every computer uses some version of today."
+  },
+  "390": {
+    "label": "World Wide Web",
+    "sublabel": "invented",
+    "year": 1989,
+    "cat": "Science & Tech",
+    "what": "Tim Berners-Lee, a physicist at CERN, wrote a memo called 'Information Management: A Proposal.' His boss wrote 'Vague but exciting' on the cover and handed it back. By 1991 the first website was live. Berners-Lee deliberately did not patent it.",
+    "connections": "The internet reached India in 1995 via VSNL, within six years of Berners-Lee's memo. That connection was the foundation of the entire Indian IT industry. Infosys, Wipro, TCS: all of it runs on the infrastructure a 1989 memo at a physics lab created.",
+    "remember": "Berners-Lee gave the Web to the world for free. He has since said he regrets some of what the world did with it. The centralisation, the surveillance, the misinformation: none of it was in the memo."
+  },
+  "391": {
+    "label": "Hubble Space Telescope",
+    "sublabel": "launched",
+    "year": 1990,
+    "cat": "Science & Tech",
+    "what": "NASA launched the Hubble Space Telescope in April 1990. It immediately had a flaw in its primary mirror. After a repair mission in 1993, it became the most productive scientific instrument in history, redefining our understanding of the universe's age and expansion.",
+    "connections": "India's first multi-wavelength space observatory, AstroSat, launched in 2015. ISRO has described it in Hubble terms: same purpose, fraction of the cost. Chandrayaan and AstroSat both emerged from the same post-liberalisation era of Indian science ambition.",
+    "remember": "Hubble's 1995 Deep Field image pointed at a seemingly empty patch of sky for ten days and found 3,000 galaxies. Every point of light in that image was an entire galaxy. The universe had just got much larger."
+  },
+  "392": {
+    "label": "Dolly the Sheep",
+    "sublabel": "cloned",
+    "year": 1996,
+    "cat": "Science & Tech",
+    "what": "Scientists at the Roslin Institute in Scotland cloned a mammal from an adult cell for the first time. Dolly was genetically identical to her 'mother.' She lived for six years and had six lambs of her own, naturally.",
+    "connections": "Cloning technology directly preceded stem cell research, which preceded CRISPR. India has invested significantly in stem cell research, particularly for blood disorders common in the Indian population: thalassemia and sickle cell anaemia.",
+    "remember": "Dolly was named after Dolly Parton. The scientists had cloned her from a mammary gland cell. They named her after the most famous pair of mammary glands they could think of. The scientific paper does not explain this."
+  },
+  "393": {
+    "label": "Google",
+    "sublabel": "founded",
+    "year": 1998,
+    "cat": "Science & Tech",
+    "what": "Larry Page and Sergey Brin launched Google from a garage in Menlo Park. Their PageRank algorithm ranked websites by inbound links. It was better than everything else. Within two years it was the default way humans found information.",
+    "connections": "Google became infrastructure for the Indian internet economy within a decade of its founding. Over 95% of Indian internet searches go through Google. It is also the primary distribution channel for the app you are currently holding.",
+    "remember": "Page and Brin tried to sell Google to Excite in 1999 for one million dollars. Excite's CEO turned them down. Excite no longer exists. Google is worth over a trillion dollars."
+  },
+  "394": {
+    "label": "Human Genome Project",
+    "sublabel": "mapped",
+    "year": 2003,
+    "cat": "Science & Tech",
+    "what": "After 13 years and three billion dollars, the Human Genome Project published a complete map of human DNA: 3 billion base pairs encoding roughly 20,000 genes. It was biology's moon landing.",
+    "connections": "India contributed to the Human Genome Project and has built significant genomic research capacity since. The IndiGen programme, launched in 2019, sequenced 1,029 Indian genomes to map Indian-specific disease risk. It is a direct descendant of the global project.",
+    "remember": "The project revealed that humans share 98.7% of their DNA with chimpanzees, and that most of our genes have recognisable counterparts even in fruit flies. It also showed our species carries less genetic variation than chimpanzees do, which is why race has no clean genetic boundary."
+  },
+  "395": {
+    "label": "Wangari Maathai",
+    "sublabel": "honoured",
+    "year": 2004,
+    "cat": "World History",
+    "what": "Kenyan environmentalist Wangari Maathai won the Nobel Peace Prize in 2004, the first African woman to receive it. She founded the Green Belt Movement in 1977, mobilising rural women to plant trees across Kenya. Over 51 million trees planted, combined with campaigns against land grabbing and political repression.",
+    "connections": "The Nobel committee handed an environmentalist the Peace Prize, making a deliberate argument: environmental destruction causes conflict. That framing, that climate and security are the same issue, is now the foundation of 21st-century geopolitics. She was making that argument in rural Kenya in 1977.",
+    "remember": "Maathai was beaten, jailed, and publicly called mentally disturbed by the Kenyan government for her activism. When asked why she focused on trees, she said you cannot address hunger, poverty, or conflict without first addressing the degraded environment that makes people desperate. She connected deforestation to dictatorship and meant it literally."
+  },
+  "396": {
+    "label": "Apple iPhone",
+    "sublabel": "launched",
+    "year": 2007,
+    "cat": "Science & Tech",
+    "what": "Steve Jobs introduced the iPhone on January 9, 2007, calling it a widescreen iPod, a revolutionary mobile phone, and a breakthrough internet device. It was all three. Microsoft's Steve Ballmer laughed at the price on camera. Nokia went from 40% of the mobile market to near-zero in a decade.",
+    "connections": "India is now the world's second-largest smartphone market. The mobile internet revolution the iPhone catalysed connected 700 million Indians to the internet faster than any landline infrastructure could have managed.",
+    "remember": "The smartphone era the iPhone began is the platform on which every mobile game, including this one, exists. The entire category of games you are playing was made possible by a January 2007 keynote in San Francisco."
+  },
+  "397": {
+    "label": "CRISPR Gene Editing",
+    "sublabel": "discovered",
+    "year": 2012,
+    "cat": "Science & Tech",
+    "what": "Jennifer Doudna and Emmanuelle Charpentier published a paper showing CRISPR-Cas9 could edit DNA precisely and cheaply enough for any lab to use. They won the 2020 Nobel Prize. CRISPR was not invented: it was borrowed from bacteria, which use it as an immune system.",
+    "connections": "CRISPR is already being used to develop disease-resistant crops, which matters enormously for Indian agriculture. It is also being explored to treat inherited blood disorders like sickle cell anaemia and thalassemia, both common in India.",
+    "remember": "The repeating sequences were spotted in bacterial DNA in 1987, but nobody knew what they were for. Only in the 2000s did researchers work out that bacteria were using them to cut up viral DNA. They then repurposed that mechanism for human use."
+  },
+  "398": {
+    "label": "COVID-19 Pandemic",
+    "sublabel": "began",
+    "year": 2020,
+    "cat": "Science & Tech",
+    "what": "A novel coronavirus first identified in Wuhan spread globally in early 2020. The WHO declared a pandemic on March 11. Within weeks, most of the world was in lockdown. Over 7 million people died officially; the true excess mortality figure is much higher.",
+    "connections": "India's COVID experience produced both tragedy and achievement: the Delta wave of 2021 was catastrophic; Covaxin was the first indigenous vaccine; and India ran the world's largest vaccination drive. The pandemic also accelerated India's digital infrastructure by an estimated 5 to 7 years.",
+    "remember": "The mRNA vaccines developed against COVID-19 in under a year were the fastest vaccines in history. The same technology platform is now being tested against cancer. A global catastrophe accelerated one of the most promising medical technologies by a decade."
+  },
+  "399": {
+    "label": "ChatGPT",
+    "sublabel": "launched",
+    "year": 2022,
+    "cat": "Science & Tech",
+    "what": "OpenAI launched ChatGPT in November 2022. One million users signed up in five days. The AI could hold conversations, write code, and pass professional exams. The debate about what intelligence means became suddenly urgent for people who had never thought about it before.",
+    "connections": "This game was built with an AI assistant. Every card in this deck was written, debated, and refined in a human-AI working session. The card you are reading right now is, in a direct and literal sense, a product of the moment this card describes.",
+    "remember": "ChatGPT was not the most powerful AI at launch. What it did was make a capable AI accessible to everyone, for free, with no technical knowledge required. The barrier to using AI dropped to zero in an afternoon."
+  },
+  "400": {
+    "label": "Chronology",
+    "sublabel": "Game Created",
+    "year": 2025,
+    "cat": "Meta",
+    "what": "A history timeline game built by Kuroi (Git Gud) and Claude (Anthropic) across a series of late-night working sessions in 2024 and 2025. You place cards on a timeline. The cards argue with each other about who gets to be first. One of the cards is about the making of the deck. You found it.",
+    "connections": "Every other card in this deck. All 400 of them. Pick any two and find the thread. The game is the connections. If you got this card, drop me a mail. I would love to have a chance to chat with you. Email kuroi@playgitgudgames.com and write 35 in the subject line.",
+    "remember": "Every card in this game was written, debated, and refined in a human-AI collaboration. No card was written by only one of them. The game is, among other things, an artefact of a specific moment in how humans and machines are learning to build things together."
   }
 }

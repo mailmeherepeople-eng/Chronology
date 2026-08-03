@@ -15,11 +15,11 @@
     --border: #e4e0d8;
     --text: #1c1a16;
     --muted: #6e6a5f;
-    --accent: #4F46E5;
-    --accent-rgb: 79, 70, 229;
-    --accent-dark: #4338CA;
-    --accent-light: #EEF2FF;
-    --accent-text: #3730A3;
+    --accent: #9A6200;
+    --accent-rgb: 154, 98, 0;
+    --accent-dark: #7A4E00;
+    --accent-light: #F8ECD6;
+    --accent-text: #7A4B00;
     --danger: #c0392b;
     --danger-light: #fdf0ee;
     --success: #27613a;
@@ -37,11 +37,11 @@
     --border: #2a2a2a;
     --text: #f0ede8;
     --muted: #888480;
-    --accent: #818CF8;
-    --accent-rgb: 129, 140, 248;
-    --accent-dark: #6366F1;
-    --accent-light: #1e1b4b;
-    --accent-text: #A5B4FC;
+    --accent: #C08414;
+    --accent-rgb: 192, 132, 20;
+    --accent-dark: #9A6200;
+    --accent-light: #33240A;
+    --accent-text: #EBC078;
     --danger: #e05c4b;
     --danger-light: #2a1210;
     --success: #4caf7a;
@@ -121,7 +121,7 @@
   .start-title .ch, .start-title .rest { color: var(--accent); }
   .start-desc { font-size:16px; color:var(--muted); max-width:440px; line-height:1.75; margin-bottom:36px; }
   .btn-primary {
-    background: #4F46E5;
+    background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -132,16 +132,16 @@
     cursor: pointer;
     letter-spacing: 0.4px;
     transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
-    box-shadow: 0 4px 14px rgba(79,70,229,0.35), 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb),0.35), 0 1px 3px rgba(0,0,0,0.12);
   }
   .btn-primary:hover {
-    background: #4338CA;
+    background: var(--accent-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(79,70,229,0.4), 0 2px 6px rgba(0,0,0,0.14);
+    box-shadow: 0 6px 20px rgba(var(--accent-rgb),0.4), 0 2px 6px rgba(0,0,0,0.14);
   }
   .btn-primary:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb),0.25);
   }
 
   /* Start Game button */
@@ -157,16 +157,16 @@
     cursor: pointer;
     letter-spacing: 0.4px;
     transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
-    box-shadow: 0 4px 14px rgba(79,70,229,0.35), 0 1px 3px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb),0.35), 0 1px 3px rgba(0,0,0,0.12);
   }
   .btn-start:hover {
     background: var(--accent-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(79,70,229,0.4), 0 2px 6px rgba(0,0,0,0.14);
+    box-shadow: 0 6px 20px rgba(var(--accent-rgb),0.4), 0 2px 6px rgba(0,0,0,0.14);
   }
   .btn-start:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb),0.25);
   }
 
   .btn-collection-green {
@@ -1048,7 +1048,7 @@
   .btn-score {
     flex: 1.2;
     height: 54px;
-    background: #4F46E5;
+    background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -1057,7 +1057,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 4px 16px rgba(79,70,229,0.4);
+    box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.4);
     transition: transform 0.12s;
     position: relative;
     overflow: visible;
@@ -1457,17 +1457,18 @@
   }
   .btn-outline:hover { background: var(--accent-light); }
   .btn-ghost {
-    padding: 10px 24px;
+    padding: 12px 24px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     font-family: 'Source Sans 3', sans-serif;
-    background: transparent;
-    color: var(--muted);
-    border: none;
+    background: var(--surface);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     cursor: pointer;
-    min-height: 44px;
+    min-height: 48px;
   }
-  .btn-ghost:hover { color: var(--text); }
+  .btn-ghost:hover { border-color: var(--muted); }
 
   /* ── TUTORIAL SCREEN ── */
   #screen-tutorial {
@@ -1684,9 +1685,9 @@
   }
   /* Green ripple on correct card */
   @keyframes correctRipple {
-    0%   { box-shadow: 0 0 0 0 rgba(79,70,229,0.5); }
-    60%  { box-shadow: 0 0 0 12px rgba(79,70,229,0); }
-    100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),0.5); }
+    60%  { box-shadow: 0 0 0 12px rgba(var(--accent-rgb),0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),0); }
   }
 
   /* ── WRONG: weighted shake, heavier than before ── */
@@ -2522,8 +2523,8 @@
 
   /* New cards unlocked banner on game over */
   .go-new-cards {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
-    border: 1.5px solid #6366f1;
+    background: linear-gradient(135deg, #3A2A05 0%, #5C4208 50%, #7A5606 100%);
+    border: 1.5px solid #C08414;
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 16px;
@@ -2533,16 +2534,16 @@
     align-items: center;
     gap: 14px;
     text-align: left;
-    box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+    box-shadow: 0 4px 20px rgba(154,98,0,0.35);
     cursor: pointer;
     transition: transform 0.15s, box-shadow 0.15s;
   }
   body.dark .go-new-cards {
-    background: linear-gradient(135deg, #0f0c29 0%, #1e1b4b 50%, #2d2a7a 100%);
-    border-color: #818cf8;
-    box-shadow: 0 4px 24px rgba(129,140,248,0.3);
+    background: linear-gradient(135deg, #241A02 0%, #3A2A05 50%, #5C4208 100%);
+    border-color: #E0A33E;
+    box-shadow: 0 4px 24px rgba(224,163,62,0.3);
   }
-  .go-new-cards:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(99,102,241,0.45); }
+  .go-new-cards:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(154,98,0,0.45); }
   .go-new-cards:active { transform: translateY(0); }
   .go-new-cards-icon {
     width: 38px; height: 38px; flex-shrink: 0;
@@ -2754,7 +2755,7 @@
   .tut-pill.tut-on { opacity: 1; transform: translateY(0) scale(1); }
   .tut-pill-icon { font-size: 18px; }
   .tut-pill-text { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.1px; line-height: 1.35; font-family: 'Source Sans 3', sans-serif; }
-  .tut-pill-text em { color: #818cf8; font-style: normal; }
+  .tut-pill-text em { color: #EBC078; font-style: normal; }
 
   /* Small anchor label — points at DZ or placed card */
   .tut-anchor-lbl {
@@ -2788,7 +2789,7 @@
   .tut-dots.tut-on { opacity: 1; }
   .tut-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.28); transition: background 0.3s, width 0.25s; }
   .tut-dot.tut-active { background: #fff; width: 16px; border-radius: 3px; }
-  .tut-dot.tut-done   { background: rgba(129,140,248,0.8); }
+  .tut-dot.tut-done   { background: rgba(var(--accent-rgb),0.8); }
 
   /* Tutorial message box */
   .tut-msg-wrap {
@@ -2835,7 +2836,7 @@
   /* Screen flash on step completion */
   .tut-sflash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 50; }
   .tut-sflash.tut-flash-green { background: radial-gradient(circle at center, rgba(39,97,58,0.22) 0%, transparent 60%); animation: tutFlashPulse 0.4s ease-out forwards; }
-  .tut-sflash.tut-flash-blue  { background: radial-gradient(circle at center, rgba(79,70,229,0.18) 0%, transparent 60%); animation: tutFlashPulse 0.35s ease-out forwards; }
+  .tut-sflash.tut-flash-blue  { background: radial-gradient(circle at center, rgba(var(--accent-rgb),0.18) 0%, transparent 60%); animation: tutFlashPulse 0.35s ease-out forwards; }
   @keyframes tutFlashPulse { 0%{opacity:0} 20%{opacity:1} 100%{opacity:0} }
 
 </style>
@@ -2850,8 +2851,8 @@
   </button>
   <div class="start-eyebrow">A History Card Game</div>
   <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
-  <p class="start-desc">349 historical events, from the Indus Valley to Aditya-L1. No dates given. Place them in order or lose a life. How far can you go?</p>
-  <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 349 cards?</p>
+  <p class="start-desc">398 historical events, from the Indus Valley to ChatGPT. No dates given. Place them in order or lose a life. How far can you go?</p>
+  <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 398 cards?</p>
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
     <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
@@ -2875,7 +2876,7 @@
       </button>
     </div>
   </div>
-  <p class="start-note">349 events · 9 categories · 3 lives</p>
+  <p class="start-note">398 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
 </div>
 
@@ -3894,7 +3895,11 @@ const CAT = {
   "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤", img:"images/categories/personalities.webp" },
   "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊", img:"images/categories/social_reform.webp" },
   "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜", img:"images/categories/constitutional.webp" },
+  "Meta":              { text:"#7A4B00", bg:"#F8ECD6", emoji:"✨", img:"" },
 };
+
+// Ultra-rare Meta cards: excluded from normal decks, injected into 0.5% of games
+const META_DRAW_RATE = 0.005;
 
 // ═══════════════════════════════════════════════════════════
 //  EVENTS — loaded from data/chronology_game.json with localStorage cache
@@ -3903,7 +3908,7 @@ const CAT = {
 //  content fixes ship without a cache-key bump.
 //  v8: dedup to 349 cards, Government of India Act sublabels distinguished
 // ═══════════════════════════════════════════════════════════
-const EVENTS_CACHE_KEY = 'chronology-events-v8';
+const EVENTS_CACHE_KEY = 'chronology-events-v9'; // v9: 398 cards (world history + science expansion, meta card)
 let EVENTS = [];
 
 // Escape card content before innerHTML injection. The JSON is self-authored
@@ -6169,9 +6174,17 @@ function startGame() {
   if(_tutStep > 0) _tutTeardown();
   _gameGen++; // invalidate all pending game-flow timers from the previous game
   initAudio();
+  // Meta cards never enter the normal pool; 0.5% of games get one injected
+  const pool = EVENTS.filter(e => e.cat !== 'Meta');
   const s = gameMode==='local2p'
-    ? plainShuffle(EVENTS)
-    : weightedShuffle(EVENTS, buildWeights(EVENTS));
+    ? plainShuffle(pool)
+    : weightedShuffle(pool, buildWeights(pool));
+  const metas = EVENTS.filter(e => e.cat === 'Meta');
+  if(metas.length && Math.random() < META_DRAW_RATE){
+    const m = metas[Math.floor(Math.random() * metas.length)];
+    // never the seed or opening card: land it somewhere in the draw pile
+    s.splice(2 + Math.floor(Math.random() * Math.max(1, s.length - 2)), 0, m);
+  }
   timeline=[{ev:s[0],wrong:false}];
   trackSeen(s[0]);
   currentCard=s[1];
