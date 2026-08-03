@@ -2839,6 +2839,102 @@
   .tut-sflash.tut-flash-blue  { background: radial-gradient(circle at center, rgba(var(--accent-rgb),0.18) 0%, transparent 60%); animation: tutFlashPulse 0.35s ease-out forwards; }
   @keyframes tutFlashPulse { 0%{opacity:0} 20%{opacity:1} 100%{opacity:0} }
 
+  /* ═══ CHUNKY BUTTONS — pressable, game-feel CTAs ═══
+     Anatomy: top bevel highlight + vertical gradient + 5px extrusion ledge.
+     Press: travel 4px down, ledge collapses. Main CTAs only. */
+  .btn-start, .btn-primary, .btn-score,
+  .tp-choice-play, .tp-room-join,
+  .btn-replay, .btn-outline,
+  .btn-ghost, .tp-btn-home {
+    font-family: 'Lilita One', 'Source Sans 3', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.35), 1px -1px 0 rgba(0,0,0,0.35),
+                 -1px 1px 0 rgba(0,0,0,0.35), 1px 1px 0 rgba(0,0,0,0.35),
+                 0 3px 2px rgba(0,0,0,0.3);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.1s ease;
+  }
+  /* gold: primary actions */
+  .btn-start, .btn-primary, .btn-score {
+    background: linear-gradient(180deg, #F2B33C 0%, #DE9A18 48%, #C07F0E 100%);
+    box-shadow: 0 5px 0 #8A5A00, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start:hover, .btn-primary:hover, .btn-score:hover {
+    background: linear-gradient(180deg, #F7BE4E 0%, #E8A522 48%, #CB8712 100%);
+    transform: none;
+    box-shadow: 0 5px 0 #8A5A00, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start:active, .btn-primary:active, .btn-score:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #8A5A00, inset 0 2px 0 rgba(255,255,255,0.45);
+  }
+  /* blue: two-player and online actions */
+  .btn-start.btn-2p, .tp-choice-play, .tp-room-join {
+    background: linear-gradient(180deg, #4E9BE8 0%, #2273CE 48%, #1565C0 100%);
+    color: #fff;
+    box-shadow: 0 5px 0 #0C3F78, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start.btn-2p:hover, .tp-choice-play:hover, .tp-room-join:hover {
+    background: linear-gradient(180deg, #5FA8EE 0%, #2E7ED8 48%, #1B6FCB 100%);
+    transform: none;
+    box-shadow: 0 5px 0 #0C3F78, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start.btn-2p:active, .tp-choice-play:active, .tp-room-join:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #0C3F78, inset 0 2px 0 rgba(255,255,255,0.45);
+  }
+  /* green: replay and share actions */
+  .btn-replay, .btn-outline {
+    background: linear-gradient(180deg, #6DBE50 0%, #479A31 48%, #3B8428 100%);
+    color: #fff;
+    box-shadow: 0 5px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-replay:hover, .btn-outline:hover {
+    background: linear-gradient(180deg, #7AC95E 0%, #52A73B 48%, #449230 100%);
+    transform: none;
+    box-shadow: 0 5px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-replay:active, .btn-outline:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.45);
+  }
+  /* stone: quiet exits, still pressable */
+  .btn-ghost, .btn-replay.tp-btn-home {
+    background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
+    color: #5C5342;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    box-shadow: 0 5px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
+  }
+  .btn-ghost:hover, .btn-replay.tp-btn-home:hover {
+    color: #443C2D;
+    border-color: transparent;
+    transform: none;
+    box-shadow: 0 5px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
+  }
+  .btn-ghost:active, .btn-replay.tp-btn-home:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9);
+  }
+  body.dark .btn-ghost, body.dark .btn-replay.tp-btn-home {
+    background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
+    color: #D8D2C6;
+    text-shadow: none;
+    box-shadow: 0 5px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+  }
+  body.dark .btn-ghost:active, body.dark .btn-replay.tp-btn-home:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+  }
+  /* disabled: no press illusion */
+  .btn-primary[disabled], .btn-start[disabled] {
+    opacity: 0.55;
+    transform: none;
+  }
+  /* the See Results bar keeps its inner layout; give its pieces the outline too */
+  .btn-score .score-eyebrow, .btn-score .score-label-right { color: #fff; }
 </style>
 </head>
 <body>
@@ -7133,6 +7229,11 @@ function haptic(pattern){
   if(!getSettingVibration()) return;
   try { if(navigator.vibrate) navigator.vibrate(pattern); } catch(e){}
 }
+
+// Chunky CTAs tick on press: the visual travel gets a physical counterpart
+document.addEventListener('pointerdown', e => {
+  if(e.target.closest && e.target.closest('.btn-start,.btn-primary,.btn-score,.tp-choice-play,.tp-room-join,.btn-replay,.btn-outline,.btn-ghost,.tp-btn-home')) haptic([10]);
+}, {passive: true});
 
 // ═══════════════════════════════════════════════════════════
 //  QUIP BANNER - stays until next card is placed, never auto-hides
