@@ -2936,32 +2936,36 @@
   /* the See Results bar keeps its inner layout; give its pieces the outline too */
   .btn-score .score-eyebrow, .btn-score .score-label-right { color: #fff; }
 
-  /* How to Play: full-size CTA above Start Game, stone so gold stays the hero */
+  /* How to Play: full-size CTA above Start Game, stone so gold stays the hero.
+     Darker than the parchment bg + a real border so it doesn't blend in. */
   .btn-start.btn-howto {
-    background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
-    color: #5C5342;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-    box-shadow: 0 5px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
+    background: linear-gradient(180deg, #F3EDDF 0%, #E3DAC6 48%, #D4C9B0 100%);
+    color: #55350A;
+    border: 2px solid #A89C82;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65);
+    box-shadow: 0 5px 0 #96896C, inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -2px 0 rgba(0,0,0,0.06);
   }
   .btn-start.btn-howto:hover {
-    color: #443C2D;
+    color: #3E2706;
     transform: none;
-    background: linear-gradient(180deg, #FFFFFE 0%, #F4EFE4 48%, #E8E1D2 100%);
-    box-shadow: 0 5px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
+    border-color: #96896C;
+    background: linear-gradient(180deg, #F8F3E7 0%, #E9E1CF 48%, #DAD0B9 100%);
+    box-shadow: 0 5px 0 #96896C, inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -2px 0 rgba(0,0,0,0.06);
   }
   .btn-start.btn-howto:active {
     transform: translateY(4px);
-    box-shadow: 0 1px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9);
+    box-shadow: 0 1px 0 #96896C, inset 0 2px 0 rgba(255,255,255,0.75);
   }
   body.dark .btn-start.btn-howto {
-    background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
-    color: #D8D2C6;
+    background: linear-gradient(180deg, #444036 0%, #37332B 48%, #2E2A23 100%);
+    color: #E4DECF;
+    border: 2px solid #57503F;
     text-shadow: none;
-    box-shadow: 0 5px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+    box-shadow: 0 5px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.1);
   }
   body.dark .btn-start.btn-howto:active {
     transform: translateY(4px);
-    box-shadow: 0 1px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+    box-shadow: 0 1px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.1);
   }
 
   /* Collection + Settings chips: mini chunky treatment */
