@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<!-- CSP: locks network egress to self + our Supabase project and bans plugins/
+     framing/base-hijacking. 'unsafe-inline' is required while the game ships as
+     one file with inline handlers; the value here is the connect-src allowlist. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://scoxynaajyzpeghnpddg.supabase.co wss://scoxynaajyzpeghnpddg.supabase.co; img-src 'self' data:; media-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" id="meta-theme-color" content="#f7f5f0" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛</text></svg>" />
@@ -3023,10 +3027,6 @@
 
 <!-- START -->
 <div id="screen-start" class="screen active">
-  <button class="dark-toggle" id="dark-toggle-start" onclick="toggleDark()">
-    <span id="dark-icon-start">🌙</span>
-    <span id="dark-label-start">Dark</span>
-  </button>
   <div class="start-eyebrow">A History Card Game</div>
   <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
   <p class="start-desc">398 historical events, from the Indus Valley to ChatGPT. No dates given. Place them in order or lose a life. How far can you go?</p>
@@ -3218,6 +3218,16 @@
     <div class="settings-toggle-row">
       <span class="settings-toggle-label">Vibration</span>
       <button class="settings-toggle active" id="settings-vibration" onclick="toggleVibration()">
+        <span class="settings-toggle-knob"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-label">Theme</div>
+    <div class="settings-toggle-row">
+      <span class="settings-toggle-label">Dark mode</span>
+      <button class="settings-toggle" id="settings-dark" onclick="toggleDark()">
         <span class="settings-toggle-knob"></span>
       </button>
     </div>
@@ -3853,14 +3863,10 @@ function applyDark(isDark){
   document.body.classList.toggle('dark', isDark);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) metaTheme.setAttribute('content', isDark ? '#0f0f0f' : '#f7f5f0');
-  const icon  = isDark ? '☀️' : '🌙';
-  const label = isDark ? 'Light' : 'Dark';
-  const s = document.getElementById('dark-icon-start');
-  const l = document.getElementById('dark-label-start');
   const g = document.getElementById('dark-icon-game');
-  if(s) s.textContent = icon;
-  if(l) l.textContent = label;
-  if(g) g.textContent = icon;
+  if(g) g.textContent = isDark ? '☀️' : '🌙';
+  const t = document.getElementById('settings-dark');
+  if(t) t.classList.toggle('active', isDark);
 }
 
 function toggleDark(){
@@ -4035,7 +4041,7 @@ function buildCategoryBreakdown(){
     const tier = pct >= 75 ? 'strong' : pct >= 50 ? 'mid' : 'weak';
     return `
       <div class="cat-row">
-        <span class="cat-row-name">${e.cat}</span>
+        <span class="cat-row-name">${esc(e.cat)}</span>
         <div class="cat-row-bar-wrap">
           <div class="cat-row-bar ${tier}" style="width:${pct}%"></div>
         </div>
@@ -4130,7 +4136,7 @@ function buildEvents(data){
     id:       parseInt(id),
     label:    ev.label,
     sublabel: ev.sublabel,
-    year:     ev.year,
+    year:     Number(ev.year), // coerce: year reaches innerHTML via fy() unescaped
     cat:      ev.cat,
     info:     ev.what ? { what: ev.what, remember: ev.remember, connections: ev.connections } : null
   }));
@@ -4371,7 +4377,10 @@ function setCollectionSort(mode){
 function renderCollection(){
   const seen  = getSeenIds();
   const total = EVENTS.length;
-  const count = seen.size;
+  // Count only ids still in the deck: retired cards (and old server rows) must
+  // not inflate the total or push progress past 100%.
+  const live  = new Set(EVENTS.map(e => e.id));
+  const count = Math.min([...seen].filter(id => live.has(id)).length, total);
 
   document.getElementById('collection-count').textContent = `${count} of ${total} cards unlocked`;
   const pct = total > 0 ? Math.round(count / total * 100) : 0;
@@ -4722,6 +4731,13 @@ let _onlineChannel = null, _onlineHbInt = null, _onlineCdInt = null;
 let _onlineModalMode = 'create';
 
 function _evById(id){ return EVENTS.find(e => e.id === id) || null; }
+// Opponent names arrive from the server: clamp length and strip bidi-override
+// characters so a hostile client can't blow out or scramble our layout.
+function _safeName(n){
+  return String(n == null ? '??' : n)
+    .replace(/[\u202A-\u202E\u2066-\u2069]/g, '')
+    .slice(0, 16) || '??';
+}
 async function _authUid(){
   const { data } = await _sb.auth.getSession();
   return data && data.session ? data.session.user.id : null;
@@ -4828,11 +4844,23 @@ function _onlineCleanup(){
 function startOnlineGame(row){
   if(!EVENTS.length){ loadEvents().then(()=>startOnlineGame(row)); return; }
   onlineMatch = row;
+  // A match that ended between the resume check and the tap must not render as
+  // a live game (no realtime update is coming to rescue it) — show the result.
+  if(row.status && row.status !== 'active' && row.status !== 'waiting'){
+    gameMode = 'online';
+    players = row.players.map(p => ({name: _safeName(p.name), lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
+    timeline = row.timeline.map(t => ({ev: _evById(t.card_id), wrong: !!t.wrong})).filter(x => x.ev);
+    _hideWaiting();
+    showScreen('game');
+    renderAll();
+    _onlineFinish(row);
+    return;
+  }
   gameMode = 'online';
   _tpTimerDur = 0; _tpStopTimer();
   _gameGen++;
   initAudio();
-  players = row.players.map(p => ({name: p.name || '??', lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
+  players = row.players.map(p => ({name: _safeName(p.name), lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
   activeIdx = row.turn;
   timeline = row.timeline.map(t => ({ev: _evById(t.card_id), wrong: !!t.wrong})).filter(x => x.ev);
   currentCard = _evById(row.current_card_id);
@@ -4893,8 +4921,10 @@ function _onApplyRemote(row){
   if(gameMode !== 'online') return;
   // heartbeat-only update: nothing structural changed
   if(row.deck_pos === prev.deck_pos && row.status === prev.status && row.turn === prev.turn) return;
+  // Ignore a stale refetch that lands after a newer realtime update
+  if(row.deck_pos < prev.deck_pos && row.status === prev.status) return;
 
-  players = row.players.map(p => ({name: p.name || '??', lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
+  players = row.players.map(p => ({name: _safeName(p.name), lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
   const newEntries = row.timeline.slice(timeline.length);
   let animDelay = 0;
   if(newEntries.length){
@@ -5286,10 +5316,13 @@ function _gameTimeout(fn, ms){
 // ═══════════════════════════════════════════════════════════
 function quitGame(){
   _armHistGuard(); // back press should close the modal, not exit the app
+  _tpStopTimer(); // never let the 2P clock run out while the dialog is open
   document.getElementById('quit-modal').classList.add('visible');
 }
 function closeQuitModal(){
   document.getElementById('quit-modal').classList.remove('visible');
+  // resume the turn clock the modal paused
+  if(gameMode === 'local2p' && _tpTimerDur && !gameEnded && currentCard) _tpStartTimer();
 }
 function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
@@ -5646,6 +5679,11 @@ window.addEventListener('popstate', ()=>{
 
 // Reset tutorial state when navigating away
 function showScreen(id){
+  // Leaving the room-waiting UI abandons the room. Otherwise it stays open and
+  // a late joiner would hijack whatever game the host had since started.
+  if(id !== 'game' && onlineMatch && onlineMatch.status === 'waiting'){
+    cancelRoom();
+  }
   if(id === 'start'){
     _screenStack.length = 0;
     _screenStack.push('start');
@@ -5741,7 +5779,9 @@ function _tutTeardown(){
   document.getElementById('tut-skip').classList.remove('tut-on');
   document.getElementById('tut-continue').classList.remove('tut-on');
   document.getElementById('tut-tap-overlay').classList.remove('tut-on');
-  document.getElementById('tut-tap-catcher').style.display = 'none';
+  const _tc = document.getElementById('tut-tap-catcher');
+  _tc.style.display = 'none';
+  _tc.onclick = _tutScrimTap; // step C nulls this; always restore on teardown
   _tutTapCallback = null;
   document.getElementById('tut-msg').className = 'tut-msg';
   document.getElementById('tut-sflash').className = 'tut-sflash';
@@ -5789,7 +5829,9 @@ function _tutP1StepA(){
 
   document.getElementById('tut-pill-icon').textContent = '';
   document.getElementById('tut-pill-text').innerHTML = 'Guess the year this event happened<br><span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:4px;display:inline-block;">Tap anywhere to continue</span>';
-  document.getElementById('tut-tap-catcher').style.display = 'block';
+  const _tcA = document.getElementById('tut-tap-catcher');
+  _tcA.style.display = 'block';
+  _tcA.onclick = _tutScrimTap;
 
   // Pill over the "WHEN DOES THIS EVENT BELONG?" label
   const card = document.getElementById('active-card');
@@ -5830,7 +5872,12 @@ function _tutP1StepB2(){
 // Step C: spotlight both — "move it in the correct chronology" + auto-fly
 function _tutP1StepC(){
   _tutP1Sub = 2;
-  document.getElementById('tut-tap-catcher').style.display = 'none';
+  // Keep the tap-catcher up: step C auto-places the card, so the board must
+  // stay non-interactive. Letting the player drop here raced the auto-fly
+  // (crash on a null currentCard, or the tutorial placing a stale index).
+  const tc = document.getElementById('tut-tap-catcher');
+  tc.style.display = 'block';
+  tc.onclick = null;
   const sg = document.getElementById('screen-game');
   sg.classList.remove('tut-p1a','tut-p1b');
   sg.classList.add('tut-p1c');
@@ -5874,7 +5921,7 @@ function _tutFlyCard(){
   if(_tutStep !== 1) return;
   const card = document.getElementById('active-card');
   const hand = document.getElementById('tut-hand');
-  if(!card) return;
+  if(!card || !currentCard) return; // card already gone: nothing to fly
 
   // Pill stays visible during flight ("move the card to the correct chronology")
 
@@ -5949,6 +5996,10 @@ function _tutFlyCard(){
 
 function _tutOnAutoPlaceLand(){
   if(_tutStep !== 1) return;
+  // Board becomes interactive again for phase 2
+  const tc = document.getElementById('tut-tap-catcher');
+  tc.style.display = 'none';
+  tc.onclick = _tutScrimTap;
 
   // Remove flying card, hand, and pill
   const fc = document.getElementById('tut-fly-card');
@@ -5958,10 +6009,13 @@ function _tutOnAutoPlaceLand(){
 
   // Actually place the card via the real game logic
   // We set a flag so handleDrop knows this is an auto-place and doesn't trigger tutorial callbacks
-  locked = false; // ensure not locked
-  _tutStep = -1;  // temporary: handleDrop sees _tutStep!=2 so it won't call phase2 callback
-  handleDrop(_tutAutoCorrectIdx);
-  _tutStep = 1;   // restore
+  // (skip if the card is already gone — never advance the tutorial into a stall)
+  if(currentCard){
+    locked = false; // ensure not locked
+    _tutStep = -1;  // temporary: handleDrop sees _tutStep!=2 so it won't call phase2 callback
+    handleDrop(_tutAutoCorrectIdx);
+    _tutStep = 1;   // restore
+  }
 
   // After the handleDrop re-render settles (900ms), transition to phase 2
   setTimeout(()=>{
@@ -7379,7 +7433,7 @@ function handleDrop(dropIdx){
     renderScore();
     renderStreak();
     if(gameMode==='local2p'){ _snapshotActive(); renderTpHud(); }
-    if(gameMode==='solo') trackPlacement(placed.cat, true, placed);
+    if(gameMode==='solo' && placed.cat !== 'Meta') trackPlacement(placed.cat, true, placed);
     playCorrectSound();
     haptic([40]);
     timeline.push({ev:placed,wrong:false});
@@ -7403,7 +7457,7 @@ function handleDrop(dropIdx){
     renderLives();
     renderStreak();
     if(gameMode==='local2p'){ _snapshotActive(); renderTpHud(); }
-    if(gameMode==='solo') trackPlacement(placed.cat, false, placed);
+    if(gameMode==='solo' && placed.cat !== 'Meta') trackPlacement(placed.cat, false, placed);
     playWrongSound();
     haptic([60, 40, 60]);
 

@@ -1,1 +1,4 @@
-﻿.playwright-mcp/
+.playwright-mcp/
+social science textbooks/
+.claude/settings.local.json
+_archive/
