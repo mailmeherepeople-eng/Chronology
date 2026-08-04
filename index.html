@@ -518,7 +518,9 @@
   /* Back buttons everywhere: chunky pressable, warm rose tinge so they
      never blend into the parchment */
   .btn-back {
-    position: absolute; top: 16px; left: 16px;
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    right: 16px;
     background: linear-gradient(180deg, #F9E2DA 0%, #EFC4B6 48%, #E4AF9E 100%);
     border: none;
     border-radius: 12px;
