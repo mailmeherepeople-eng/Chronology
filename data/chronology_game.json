@@ -3575,10 +3575,10 @@
   "400": {
     "label": "Chronology",
     "sublabel": "created",
-    "year": 2025,
+    "year": 2026,
     "cat": "Meta",
-    "what": "A history timeline game built by Kuroi (Git Gud) and Claude (Anthropic) across a series of late-night working sessions in 2024 and 2025. You place cards on a timeline. The cards argue with each other about who gets to be first. One of the cards is about the making of the deck. You found it.",
+    "what": "A history timeline game built by Kuroi and Claude across a series of late-night working sessions in 2026. You place cards on a timeline. The cards argue with each other about who gets to be first. One of the cards is about the making of the deck. You found it.",
     "connections": "Every other card in this deck. All 400 of them. Pick any two and find the thread. The game is the connections. If you got this card, drop me a mail. I would love to have a chance to chat with you. Email kuroi@playgitgudgames.com and write 35 in the subject line.",
-    "remember": "Every card in this game was written, debated, and refined in a human-AI collaboration. No card was written by only one of them. The game is, among other things, an artefact of a specific moment in how humans and machines are learning to build things together."
+    "remember": "Every card in this game was written, debated, and refined in a human-AI collaboration. The game is, among other things, an artefact of a specific moment in how humans and machines are learning to build things together."
   }
 }
