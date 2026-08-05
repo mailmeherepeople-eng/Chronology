@@ -2330,6 +2330,36 @@
     flex-direction: column;
   }
 
+  /* Prev/next arrows — museum reader only, gallery style over the card
+     edges. Hidden when the reader is opened from game or stats. */
+  .cd-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(8,6,3,0.45);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    backdrop-filter: blur(6px);
+    padding: 0;
+    transition: opacity 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Small visual, honest 44px touch target */
+  .cd-nav::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; }
+  .cd-nav.cd-on { display: flex; }
+  .cd-nav:active { transform: translateY(-50%) scale(0.92); }
+  /* Hang half off the card into the overlay padding so text stays readable */
+  .cd-nav.cd-prev { left: -14px; }
+  .cd-nav.cd-next { right: -14px; }
+  .cd-nav[disabled] { opacity: 0.25; pointer-events: none; }
+
   /* Close button — absolute to wrap, always top-right */
   .card-detail-close {
     position: absolute;
@@ -4228,6 +4258,16 @@
 <div class="card-detail-overlay" id="card-detail-overlay" onclick="cdOverlayTap(event)">
   <div class="card-detail-wrap">
     <button class="card-detail-close" onclick="closeCardDetail()">✕</button>
+    <button class="cd-nav cd-prev" id="cd-prev" aria-label="Previous card" onclick="event.stopPropagation();cdNav(-1)">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="cd-nav cd-next" id="cd-next" aria-label="Next card" onclick="event.stopPropagation();cdNav(1)">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
     <div class="card-detail-box" id="card-detail-box">
       <div class="card-detail-stripe" id="cd-stripe"></div>
       <div class="card-detail-img" id="cd-img">
@@ -4420,6 +4460,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // ── Runtime state ──
 let _sb        = null;   // supabase client, null until initSupabase() succeeds
 let _playerId  = null;   // uuid from DB players.id, set after init
+let _myUid     = null;   // auth.uid() of this device's anonymous user
 let _sbReady   = false;  // true once we have a valid playerId
 
 const _SB_LOG = (...args) => console.log('[Supabase]', ...args);
@@ -4468,6 +4509,7 @@ async function initSupabase() {
     if (error) { _SB_ERR('upsert failed', error.message); return; }
 
     _playerId = data.id;
+    _myUid    = session.user.id;
     _sbReady  = true;
     _SB_LOG('ready | player:', _playerId, '| remote high score:', data.high_score);
 
@@ -5497,6 +5539,7 @@ function setCollectionSort(mode){
 }
 
 function renderCollection(){
+  _museumNavList = []; // rebuilt in render order by makeUnlockedCard
   const seen  = getSeenIds();
   const total = EVENTS.length;
   // Count only ids still in the deck: retired cards (and old server rows) must
@@ -5599,7 +5642,8 @@ function makeUnlockedCard(ev){
       <div class="col-card-year">${fy(ev.year)}</div>
     </div>
   `;
-  card.addEventListener('click', () => openCardDetail(ev));
+  _museumNavList.push(ev);
+  card.addEventListener('click', () => openCardDetail(ev, _museumNavList));
   return card;
 }
 
@@ -5643,7 +5687,35 @@ function makeSecretCard(){
   return card;
 }
 
-function openCardDetail(ev){
+// Museum cards in the order they are rendered (current sort + filters);
+// the reader's prev/next arrows walk this list. Game/stats readers pass
+// no list and get no arrows.
+let _museumNavList = [];
+let _cdNavList = null;
+let _cdNavIdx  = -1;
+
+function cdNav(dir){
+  if(!_cdNavList) return;
+  const next = _cdNavList[_cdNavIdx + dir];
+  if(next) openCardDetail(next, _cdNavList);
+}
+
+function _cdUpdateNav(){
+  const prev = document.getElementById('cd-prev');
+  const next = document.getElementById('cd-next');
+  const on = !!_cdNavList && _cdNavList.length > 1;
+  prev.classList.toggle('cd-on', on);
+  next.classList.toggle('cd-on', on);
+  if(on){
+    prev.disabled = _cdNavIdx <= 0;
+    next.disabled = _cdNavIdx >= _cdNavList.length - 1;
+  }
+}
+
+function openCardDetail(ev, navList){
+  _cdNavList = (Array.isArray(navList) && navList.length) ? navList : null;
+  _cdNavIdx  = _cdNavList ? _cdNavList.findIndex(x => x.id === ev.id) : -1;
+  _cdUpdateNav();
   _armHistGuard(); // back press should close the overlay, not exit the app
   _cdOpenedAt = performance.now(); // swallow the ghost click a hold-release fires
   const col = CAT[ev.cat] || { text:'#555', bg:'#eee', emoji:'📌', img:'' };
@@ -5696,6 +5768,7 @@ function cdOverlayTap(e){
   closeCardDetail();
 }
 function closeCardDetail(){
+  _cdNavList = null; _cdNavIdx = -1;
   document.getElementById('card-detail-overlay').classList.remove('visible');
   // Tutorial phase 3: show final message after user closes the modal
   if(_tutStep === 4) _tutOnModalClosed();
@@ -6030,7 +6103,8 @@ function startOnlineGame(row){
   document.getElementById('end-game-bar').classList.remove('show');
   document.getElementById('tp-endbar').classList.remove('show');
   document.getElementById('online-claim').style.display = 'none';
-  document.getElementById('tp-btn-rematch').textContent = 'New Room';
+  const _rbtn = document.getElementById('tp-btn-rematch');
+  _rbtn.textContent = 'Rematch'; _rbtn.disabled = false;
   _hideStreakMoment();
   clearQuip();
   document.querySelector('.game-header').classList.add('two-player');
@@ -6077,6 +6151,12 @@ function _onApplyRemote(row){
   const prev = onlineMatch;
   onlineMatch = row;
   if(prev.status === 'waiting' && row.status === 'active'){ startOnlineGame(row); return; }
+  // Rematch offer: the finished row updated with rematch_id means the
+  // opponent tapped Rematch; accepting routes through the same RPC.
+  if(row.status === 'finished' && row.rematch_id){
+    if(row.rematch_by && row.rematch_by !== _myUid) _showRematchOffer();
+    return;
+  }
   if(gameMode !== 'online') return;
   // heartbeat-only update: nothing structural changed
   if(row.deck_pos === prev.deck_pos && row.status === prev.status && row.turn === prev.turn) return;
@@ -6380,14 +6460,53 @@ function endTwoPlayerGame(winnerIdx){ // winnerIdx: 0 | 1 | null (tie)
   _gameTimeout(()=>{ document.getElementById('tp-endbar').classList.add('show'); }, 400);
 }
 
-function tpRematch(){
+function _showRematchOffer(){
+  const btn = document.getElementById('tp-btn-rematch');
+  if(!btn) return;
+  btn.disabled = false;
+  btn.textContent = 'Accept Rematch';
+}
+
+// Online: same room-less rematch for both players. The first tap creates a
+// linked room server-side, the second tap joins it; nobody types a code.
+async function tpRematch(){
   if(gameMode==='online'){
-    _onlineCleanup();
-    document.getElementById('tp-endbar').classList.remove('show');
-    document.getElementById('tp-end-reason').style.display='none';
-    document.getElementById('tp-btn-rematch').textContent='Rematch';
-    showScreen('twoplayer');
-    createRoom();
+    if(!onlineMatch) return;
+    const btn = document.getElementById('tp-btn-rematch');
+    if(btn.disabled) return;
+    btn.disabled = true;
+    try{
+      const { data, error } = await _sb.rpc('rematch_match', { p_match_id: onlineMatch.id });
+      if(error) throw new Error(error.message);
+      document.getElementById('tp-end-reason').style.display='none';
+      if(data.status === 'active'){
+        // Opponent had already created the room: we just joined. Play.
+        btn.disabled = false; btn.textContent = 'Rematch';
+        onlineMyIdx = (data.host_id === _myUid) ? 0 : 1;
+        _onlineSubscribe(data.id);
+        startOnlineGame(data);
+      } else {
+        // We created it: wait on the end bar; activation arrives via realtime
+        onlineMyIdx = 0;
+        onlineMatch = data;
+        _onlineSubscribe(data.id);
+        btn.textContent = 'Waiting for opponent...';
+        // Covers the race where the opponent joined before we subscribed
+        const { data: fresh } = await _sb.from('matches').select('*').eq('id', data.id).maybeSingle();
+        if(fresh && fresh.status === 'active' && onlineMatch && onlineMatch.id === fresh.id){
+          btn.disabled = false; btn.textContent = 'Rematch';
+          _onApplyRemote(fresh);
+        }
+      }
+    }catch(e){
+      // Rematch expired or gone: fall back to the classic new-room flow
+      btn.disabled = false; btn.textContent = 'Rematch';
+      _onlineCleanup();
+      document.getElementById('tp-endbar').classList.remove('show');
+      document.getElementById('tp-end-reason').style.display='none';
+      showScreen('twoplayer');
+      createRoom();
+    }
     return;
   }
   activeIdx = _tpLoserIdx;
@@ -6395,10 +6514,16 @@ function tpRematch(){
   startGame();
 }
 function tpBackToStart(){
-  if(gameMode==='online') _onlineCleanup();
+  if(gameMode==='online'){
+    // Never leave a waiting rematch room open behind us
+    if(onlineMatch && onlineMatch.status === 'waiting') cancelRoom();
+    else _onlineCleanup();
+  }
+  const btn = document.getElementById('tp-btn-rematch');
+  btn.disabled = false;
+  btn.textContent='Rematch';
   document.getElementById('tp-endbar').classList.remove('show');
   document.getElementById('tp-end-reason').style.display='none';
-  document.getElementById('tp-btn-rematch').textContent='Rematch';
   showScreen('start');
 }
 let _sessionStartTime = null;
@@ -6854,11 +6979,6 @@ if (window.Capacitor?.Plugins?.App) {
 
 // Reset tutorial state when navigating away
 function showScreen(id){
-  // Leaving the room-waiting UI abandons the room. Otherwise it stays open and
-  // a late joiner would hijack whatever game the host had since started.
-  if(id !== 'game' && onlineMatch && onlineMatch.status === 'waiting'){
-    cancelRoom();
-  }
   if(id === 'start'){
     _screenStack.length = 0;
     _screenStack.push('start');
@@ -6870,6 +6990,12 @@ function showScreen(id){
 }
 
 function _showScreenInternal(id){
+  // Leaving the room-waiting UI abandons the room. Otherwise it stays open
+  // and a late joiner would hijack whatever game the host had since started.
+  // Lives here (not showScreen) so the hardware back path honors it too.
+  if(id !== 'game' && onlineMatch && onlineMatch.status === 'waiting'){
+    cancelRoom();
+  }
   // Game-scoped audio dies with the screen it belongs to. Entering
   // 'gameover' is exempt: the fatal wrong sound and the end special must
   // survive the game -> end screen transition.
@@ -8531,8 +8657,15 @@ function _vibrate(pattern){
     for (let i = 0; i < segs.length; i++) {
       if (i % 2 === 0) {
         const dur = segs[i];
-        if (at === 0) H.vibrate({ duration: dur }).catch(()=>{});
-        else setTimeout(()=>{ H.vibrate({ duration: dur }).catch(()=>{}); }, at);
+        // Sub-20ms one-shots render as nothing on ERM (rotary) motors -
+        // only quality LRA motors can play them. Tiny ticks use the
+        // plugin's OEM-tuned LIGHT impact (50ms @ 43% amplitude);
+        // longer pulses get a 20ms floor so crescendos stay ordered.
+        const fire = (dur <= 15 && H.impact)
+          ? ()=>{ H.impact({ style: 'LIGHT' }).catch(()=>{}); }
+          : ()=>{ H.vibrate({ duration: Math.max(20, dur) }).catch(()=>{}); };
+        if (at === 0) fire();
+        else setTimeout(fire, at);
       }
       at += segs[i];
     }
