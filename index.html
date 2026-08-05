@@ -639,6 +639,24 @@
     flex-shrink: 0;
     margin-bottom: 15px;
   }
+  /* Permanent footer hint under the timeline, same voice as .stage-label */
+  .timeline-hint {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg);
+    user-select: none;
+    pointer-events: none;
+  }
+  .timeline-hint svg { flex-shrink: 0; opacity: .75; }
 
   /* Row 4: (toast row removed) */
 
@@ -3001,6 +3019,9 @@
   }
   .btn-start.btn-2p:hover, .tp-choice-play:hover, .tp-room-join:hover {
     background: linear-gradient(180deg, #7AC95E 0%, #52A73B 48%, #449230 100%);
+    /* Explicit: .btn-secondary:hover would otherwise win on specificity and
+       repaint the label near-black (Create Room / Cancel carry both classes) */
+    color: #fff;
     transform: none;
     box-shadow: 0 5px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12);
   }
@@ -3336,15 +3357,24 @@
     position: relative;
   }
   body.dark .go-rank-strip { border-top-color: rgba(192,132,20,.25); }
-  .go-rank-strip img { width: 34px; height: 38px; object-fit: contain; flex-shrink: 0; }
+  /* Badge + its rank name at each end, progress between them */
+  .go-rank-end {
+    flex-shrink: 0; width: 52px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .go-rank-end img { width: 34px; height: 34px; object-fit: contain; }
+  .go-rank-cap {
+    font-size: 9px; font-weight: 700; letter-spacing: .3px;
+    color: #8a7040; text-align: center; line-height: 1.15;
+  }
+  body.dark .go-rank-cap { color: #A08850; }
+  .go-rank-mid { flex: 1; min-width: 0; padding-bottom: 12px; }
   .go-bar-meta {
-    display: flex; justify-content: space-between; align-items: baseline;
+    display: flex; justify-content: center; align-items: baseline;
     margin-top: 5px; font-size: 10.5px;
   }
-  .go-bar-meta span:first-child { color: #55350A; }
-  body.dark .go-bar-meta span:first-child { color: #C9B080; }
-  .go-bar-meta span:last-child { font-weight: 700; letter-spacing: .8px; color: #8a7040; }
-  body.dark .go-bar-meta span:last-child { color: #A08850; }
+  .go-bar-meta span { color: #55350A; }
+  body.dark .go-bar-meta span { color: #C9B080; }
   /* end-screen bar animates slower than the stats page so the gain reads */
   .go-bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
   .go-bar-tip  { transition: left  1.2s cubic-bezier(0.4,0,0.2,1); }
@@ -3486,14 +3516,18 @@
   .btn-chip-settings {
     background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
     color: #5C5342;
+    /* Same outlined stone treatment as the How to Play button */
+    border: 2px solid #A89C82;
+    box-sizing: border-box;
     text-shadow: 0 1px 0 rgba(255,255,255,0.8);
     box-shadow: 0 4px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
   }
-  .btn-chip-settings:hover { border-color: transparent; color: #443C2D; }
+  .btn-chip-settings:hover { border-color: #96896C; color: #443C2D; }
   .btn-chip-settings:active { box-shadow: 0 1px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9); }
   body.dark .btn-chip-settings {
     background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
     color: #D8D2C6;
+    border: 2px solid #57503F;
     text-shadow: none;
     box-shadow: 0 4px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
   }
@@ -3533,11 +3567,11 @@
   <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 398 cards?</p>
   <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
     <button class="btn-start btn-howto" id="btn-howto" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
-    <button class="btn-start" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
-    <button class="btn-start btn-2p" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
+    <button class="btn-start btn-2p" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
+    <button class="btn-start" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
     <button class="btn-start btn-2p" id="btn-resume-online" style="width:100%;display:none;" onclick="resumeOnline()">Resume Online Match</button>
     <div class="start-chip-row">
-      <button class="btn-chip btn-chip-collection" id="btn-collection" onclick="showScreen('collection');_collectionSort='date';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">
+      <button class="btn-chip btn-chip-collection" id="btn-collection" onclick="showScreen('collection');_collectionSort='unlocked';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="7" height="9" rx="1"/><rect x="13" y="3" width="9" height="5" rx="1"/><rect x="13" y="12" width="9" height="9" rx="1"/><rect x="2" y="16" width="7" height="5" rx="1"/></svg>
         Museum<span class="col-notif-dot" id="col-notif-dot" style="display:none;margin-left:2px;">●</span>
       </button>
@@ -3770,6 +3804,15 @@
       <div class="timeline-line"></div>
     </div>
   </div>
+  <div class="timeline-hint">
+    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Scroll through the timeline to view
+    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <!-- Streak moment — fullscreen centered with dimming overlay -->
   <div class="streak-overlay" id="streak-overlay"></div>
@@ -3971,16 +4014,20 @@
 
     <!-- Rank strip: bar animates up by the cards unlocked this game -->
     <div class="go-rank-strip" id="go-rank-strip">
-      <img id="go-rank-badge" src="" alt="">
-      <div style="flex:1;min-width:0;">
+      <div class="go-rank-end">
+        <img id="go-rank-badge" src="" alt="">
+        <div class="go-rank-cap" id="go-rank-name"></div>
+      </div>
+      <div class="go-rank-mid">
         <div class="stats-bar-track">
           <div class="stats-bar-fill go-bar-fill" id="go-bar-fill" style="width:0%"></div>
           <div class="stats-bar-tip go-bar-tip" id="go-bar-tip" style="left:0%"></div>
         </div>
-        <div class="go-bar-meta">
-          <span id="go-bar-count"></span>
-          <span id="go-bar-next"></span>
-        </div>
+        <div class="go-bar-meta"><span id="go-bar-count"></span></div>
+      </div>
+      <div class="go-rank-end" id="go-rank-next-end">
+        <img id="go-rank-next-badge" src="" alt="">
+        <div class="go-rank-cap" id="go-bar-next"></div>
       </div>
     </div>
 
@@ -4028,7 +4075,8 @@
   <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
 
   <div class="btn-group" style="width:100%;max-width:320px;">
-    <button class="btn-start btn-2p" style="width:100%;" onclick="
+    <button class="btn-start btn-2p" style="width:100%;" onclick="startGame()">Play Again</button>
+    <button class="btn-start" style="width:100%;" onclick="
       showScreen('collection');
       _collectionSort='recent';
       _selectedEras=new Set(ERAS.map(e=>e.label));
@@ -4038,7 +4086,6 @@
       initAudio();
       if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
     ">Museum</button>
-    <button class="btn-start" style="width:100%;" onclick="startGame()">Play Again</button>
     <button class="btn-start btn-2p" id="share-btn" style="width:100%;" onclick="openChallengeModal()">Challenge a Friend</button>
     <button class="btn-start" style="width:100%;" onclick="openStats()">View Stats</button>
     <button class="btn-start btn-rose" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
@@ -4105,9 +4152,9 @@
     <div class="filter-section">
       <div class="filter-section-title">Sort by</div>
       <div class="filter-chip-row">
-        <div class="col-filter-chip selected" id="sort-date" onclick="setCollectionSort('date')">By Date</div>
+        <div class="col-filter-chip" id="sort-date" onclick="setCollectionSort('date')">By Date</div>
         <div class="col-filter-chip" id="sort-cat" onclick="setCollectionSort('category')">By Category</div>
-        <div class="col-filter-chip" id="sort-unlocked" onclick="setCollectionSort('unlocked')">Unlocked First</div>
+        <div class="col-filter-chip selected" id="sort-unlocked" onclick="setCollectionSort('unlocked')">Unlocked First</div>
         <div class="col-filter-chip" id="sort-recent" onclick="setCollectionSort('recent')">Recently Unlocked</div>
       </div>
     </div>
@@ -5258,7 +5305,7 @@ async function _retryLoadEvents(){
 // ═══════════════════════════════════════════════════════════
 //  COLLECTION RENDER - needs EVENTS and CAT
 // ═══════════════════════════════════════════════════════════
-let _collectionSort = 'date';
+let _collectionSort = 'unlocked'; // Museum opens on what you have earned
 
 const ERAS = [
   { label: 'Ancient (pre-CE)', fn: y => y < 0 },
@@ -5362,9 +5409,11 @@ function closeFilterModal(){
 
 function setCollectionSort(mode){
   _collectionSort = mode;
+  // The category chip's id says 'cat' while its mode says 'category';
+  // translate so the highlight lands on it too.
   ['date','cat','unlocked','recent'].forEach(m => {
     const el = document.getElementById('sort-' + m);
-    if(el) el.classList.toggle('selected', m === mode);
+    if(el) el.classList.toggle('selected', (m === 'cat' ? 'category' : m) === mode);
   });
   const dateFilter = document.getElementById('subfilter-date');
   const catFilter  = document.getElementById('subfilter-cat');
@@ -8862,10 +8911,23 @@ function _prepareGoRank(newThisRun){
     const badge = document.getElementById('go-rank-badge');
     badge.src = chosen ? CHOSEN_RANK_IMG : (idxNow >= 0 ? RANKS[idxNow].img : RANKS[0].img);
     badge.style.filter = (idxNow >= 0 || chosen) ? '' : 'grayscale(1) opacity(0.45)';
+    document.getElementById('go-rank-name').textContent =
+      chosen ? 'Chosen One' : (idxNow >= 0 ? RANKS[idxNow].name : 'Unranked');
+
     const next = RANKS[idxNow + 1] || null;
     document.getElementById('go-bar-count').innerHTML = `<strong>${count}</strong> of ${total} cards`;
-    document.getElementById('go-bar-next').textContent =
-      chosen ? '' : (next ? next.name.toUpperCase() : 'COMPLETE');
+    // Next rank: its badge, dimmed until earned, with the name beneath
+    const nextEnd = document.getElementById('go-rank-next-end');
+    const nextImg = document.getElementById('go-rank-next-badge');
+    if(chosen || !next){
+      nextEnd.style.visibility = 'hidden';
+      document.getElementById('go-bar-next').textContent = '';
+    } else {
+      nextEnd.style.visibility = '';
+      nextImg.src = next.img;
+      nextImg.style.filter = 'grayscale(0.85) opacity(0.5)';
+      document.getElementById('go-bar-next').textContent = next.name;
+    }
     // park the bar at the pre-game position without animating
     const fromPct = Math.min(100, prev / total * 100);
     const fill = document.getElementById('go-bar-fill');
