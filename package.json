@@ -1,0 +1,33 @@
+{
+  "name": "upsc-timeline-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "node scripts/sync-www.mjs && npx cap sync",
+    "build:www": "node scripts/sync-www.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mailmeherepeople-eng/Chronology.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mailmeherepeople-eng/Chronology/issues"
+  },
+  "homepage": "https://github.com/mailmeherepeople-eng/Chronology#readme",
+  "dependencies": {
+    "@capacitor-community/safe-area": "^8.0.1",
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  }
+}

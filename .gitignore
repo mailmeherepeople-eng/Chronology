@@ -2,3 +2,17 @@
 social science textbooks/
 .claude/settings.local.json
 _archive/
+
+# Capacitor / Android
+node_modules/
+www/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+
+# Signing secrets: never commit. Back these up somewhere safe instead.
+android/keystore.properties
+*.keystore
+*.jks

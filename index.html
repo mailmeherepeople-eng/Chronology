@@ -14,6 +14,11 @@
 <script src="js/supabase.js"></script>
 <style>
   :root {
+    /* Safe-area insets. Native shell: the SafeArea plugin sets
+       --safe-area-inset-* to real pixel values (Android WebView reports
+       env() as 0 under edge-to-edge). Web: falls back to env(). */
+    --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
     --bg: #f7f5f0;
     --surface: #ffffff;
     --border: #e4e0d8;
@@ -118,8 +123,8 @@
   #screen-game { height: 100vh; height: 100dvh; }
 
   /* ── START ── */
-  #screen-start { align-items:center; justify-content:center; flex-direction:column; padding:48px 24px; text-align:center; position:relative; }
-  #screen-settings { align-items:center; flex-direction:column; padding:60px 24px 32px; position:relative; }
+  #screen-start { align-items:center; justify-content:center; flex-direction:column; padding:calc(48px + var(--sat)) 24px calc(48px + var(--sab)); text-align:center; position:relative; }
+  #screen-settings { align-items:center; flex-direction:column; padding:calc(60px + var(--sat)) 24px calc(32px + var(--sab)); position:relative; }
   .start-eyebrow { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
   .start-title { font-size:clamp(36px,6vw,56px); font-weight:700; color:var(--text); letter-spacing:-1px; line-height:1.1; margin-bottom:16px; font-family:'Lora',serif; }
   .start-title .ch, .start-title .rest { color: var(--accent); }
@@ -526,7 +531,7 @@
      never blend into the parchment */
   .btn-back {
     position: fixed;
-    top: calc(12px + env(safe-area-inset-top, 0px));
+    top: calc(12px + var(--sat));
     right: 16px;
     background: linear-gradient(180deg, #F9E2DA 0%, #EFC4B6 48%, #E4AF9E 100%);
     border: none;
@@ -565,12 +570,12 @@
   .game-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
+    padding: calc(10px + var(--sat)) 20px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
-    height: 52px;
+    height: calc(52px + var(--sat));
     box-sizing: border-box;
   }
   .game-logo { font-family: 'Source Sans 3', sans-serif; font-size:17px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
@@ -651,7 +656,7 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--muted);
-    padding: 6px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 12px calc(10px + var(--sab));
     background: var(--bg);
     user-select: none;
     pointer-events: none;
@@ -1064,7 +1069,7 @@
     background: var(--surface);
     border-top: 1px solid var(--border);
     padding: 14px 16px;
-    padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+    padding-bottom: max(14px, var(--sab));
     z-index: 30;
     transform: translateY(100%);
     transition: transform 0.45s cubic-bezier(0.34,1.08,0.64,1);
@@ -1233,7 +1238,7 @@
   .tp-end-score { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: var(--text); }
   .tp-end-streak { font-size: 11px; color: var(--muted); }
   .tp-btn-home { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); text-shadow: none; box-shadow: none; }
-  #screen-twoplayer { align-items: center; flex-direction: column; padding: 60px 24px 32px; position: relative; }
+  #screen-twoplayer { align-items: center; flex-direction: column; padding: calc(60px + var(--sat)) 24px calc(32px + var(--sab)); position: relative; }
   .tp-choose-title { font-size: 26px; color: var(--text); margin-bottom: 28px; text-align: center; }
   .tp-choice {
     width: 100%; max-width: 340px;
@@ -1412,7 +1417,7 @@
 
   /* ── TOAST (year pill - sits in the gap between card stage and timeline) ── */
   /* ── GAME OVER ── */
-  #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:20px 24px 28px; text-align:center; position:relative; overflow-y:auto; }
+  #screen-gameover { align-items:center; justify-content:flex-start; flex-direction:column; padding:calc(20px + var(--sat)) 24px calc(28px + var(--sab)); text-align:center; position:relative; overflow-y:auto; }
   .gameover-score-hero { margin-bottom:10px; width:100%; }
   .gameover-score-num { font-family:'Lora',serif; font-size:60px; font-weight:700; color:var(--text); line-height:1; letter-spacing:-2px; }
   .gameover-score-label { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
@@ -1508,7 +1513,7 @@
   /* ── TUTORIAL SCREEN ── */
   #screen-tutorial {
     align-items:center; justify-content:center;
-    flex-direction:column; padding:40px 24px; text-align:center;
+    flex-direction:column; padding:calc(40px + var(--sat)) 24px calc(40px + var(--sab)); text-align:center;
     background: var(--bg); position:relative;
   }
   .tut-eyebrow { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
@@ -1929,7 +1934,7 @@
   /* Fixed back button — always visible at bottom-left, overlays everything */
   .col-back-bar {
     position: fixed;
-    top: calc(12px + env(safe-area-inset-top, 0px));
+    top: calc(12px + var(--sat));
     right: 16px;
     z-index: 50;
     padding: 0;
@@ -1967,7 +1972,7 @@
   .col-content {
     width: 100%;
     max-width: 600px;
-    padding: 16px 16px 0;
+    padding: calc(16px + var(--sat)) 16px 0;
     align-self: center;
   }
 
@@ -2783,7 +2788,9 @@
   /* Tap-to-dismiss overlay (for joke + final messages) */
   .tut-tap-overlay {
     position: fixed; inset: 0; z-index: 300;
-    display: flex; align-items: center; justify-content: center;
+    /* Same slot as .tut-pill so instruction bubbles never jump around */
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: calc(112px + var(--sat));
     background: rgba(0,0,0,0.54);
     opacity: 0; pointer-events: none;
     transition: opacity 0.3s;
@@ -2881,6 +2888,10 @@
   /* Instruction pill */
   .tut-pill {
     position: fixed; z-index: 210;
+    /* One fixed slot for every instruction bubble: centered, just below the
+       header + feedback-banner band. JS never positions this element. */
+    top: calc(118px + var(--sat));
+    left: 12px; right: 12px; margin: 0 auto; width: max-content;
     background: rgba(8,6,3,0.93);
     border: 1.5px solid rgba(var(--accent-rgb),0.55);
     border-radius: 24px; padding: 11px 20px;
@@ -2890,7 +2901,7 @@
     transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.3,0.64,1);
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    white-space: normal; max-width: 300px; text-align: center;
+    white-space: normal; max-width: min(300px, calc(100vw - 24px)); text-align: center;
   }
   .tut-pill.tut-on { opacity: 1; transform: translateY(0) scale(1); }
   .tut-pill-icon { font-size: 18px; }
@@ -2922,7 +2933,7 @@
 
   /* Step dots */
   .tut-dots {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    position: fixed; bottom: calc(24px + var(--sab)); left: 50%; transform: translateX(-50%);
     z-index: 210; display: flex; gap: 6px; align-items: center;
     pointer-events: none; opacity: 0; transition: opacity 0.3s;
   }
@@ -2957,7 +2968,7 @@
 
   /* Skip tutorial button — prominent, premium */
   .tut-skip {
-    position: fixed; bottom: 20px; right: 16px; z-index: 215;
+    position: fixed; bottom: calc(20px + var(--sab)); right: 16px; z-index: 215;
     background: rgba(30,28,24,0.85);
     border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 24px; padding: 9px 20px;
@@ -3115,7 +3126,7 @@
   #screen-stats { flex-direction: column; padding: 0; }
   .stats-content {
     width: 100%; max-width: 520px; margin: 0 auto;
-    padding: calc(56px + env(safe-area-inset-top, 0px)) 20px 40px; flex: 1;
+    padding: calc(56px + var(--sat)) 20px 40px; flex: 1;
   }
 
   /* ── Guild hero plate ── */
@@ -4880,6 +4891,15 @@ function applyDark(isDark){
   document.body.classList.toggle('dark', isDark);
   const metaTheme = document.getElementById('meta-theme-color');
   if (metaTheme) metaTheme.setAttribute('content', isDark ? '#0f0f0f' : '#f7f5f0');
+  // Native shell: system bar icons must flip with the theme. safe-area v8
+  // API: style 'dark' means dark UI (light icons), 'light' the reverse.
+  // try/catch because a shell-only failure here must never block boot.
+  try {
+    const sa = window.Capacitor?.Plugins?.SafeArea;
+    if (sa?.setSystemBarsStyle) {
+      sa.setSystemBarsStyle({ style: isDark ? 'dark' : 'light' }).catch(()=>{});
+    }
+  } catch(e){}
   const g = document.getElementById('dark-icon-game');
   if(g) g.textContent = isDark ? '☀️' : '🌙';
   const t = document.getElementById('settings-dark');
@@ -5293,11 +5313,14 @@ async function _retryLoadEvents(){
   Promise.all([
     loadEvents(),
     initSupabase(),
-  ]).then(() => {
-    applyDark(localStorage.getItem('chronology-dark') === '1');
-    syncSettingsUI();
-    syncTutToggleUI();
-    updateNotifDot();
+  ]).catch(()=>{}).then(() => {
+    // Cosmetic sync failures must never strand the start button on "Loading..."
+    try {
+      applyDark(localStorage.getItem('chronology-dark') === '1');
+      syncSettingsUI();
+      syncTutToggleUI();
+      updateNotifDot();
+    } catch(e){}
     _setStartBtnState();
   });
 })();
@@ -6718,7 +6741,11 @@ function _armHistGuard(){
   _histGuard = true;
 }
 
-window.addEventListener('popstate', ()=>{
+// Returns true when the press was handled in-app, false when it should
+// leave the app (start screen, nothing open). The browser exits naturally
+// on false because the guard entry stays down; the Capacitor shell has no
+// history to fall through, so its listener calls App.exitApp() instead.
+function handleBackPress(){
   _histGuard = false; // this press consumed the guard entry
   const current = _screenStack[_screenStack.length - 1] || 'start';
 
@@ -6727,7 +6754,7 @@ window.addEventListener('popstate', ()=>{
   if(cardDetail && cardDetail.classList.contains('visible')){
     closeCardDetail();
     _armHistGuard();
-    return;
+    return true;
   }
   const openModal = document.querySelector('.modal-overlay.visible');
   if(openModal){
@@ -6736,14 +6763,14 @@ window.addEventListener('popstate', ()=>{
     else if(openModal.id === 'filter-modal') closeFilterModal();
     else openModal.classList.remove('visible');
     _armHistGuard();
-    return;
+    return true;
   }
 
   // Mid-game back (tutorial included): ask, never silently abandon the run
   if(current === 'game' && !gameEnded){
     quitGame();
     _armHistGuard();
-    return;
+    return true;
   }
 
   if(current !== 'start'){
@@ -6753,11 +6780,22 @@ window.addEventListener('popstate', ()=>{
     _screenStack.push('start');
     _showScreenInternal('start');
     _armHistGuard();
-    return;
+    return true;
   }
   // At the start screen with nothing open: guard stays down, the next
   // back press leaves the app.
-});
+  return false;
+}
+
+window.addEventListener('popstate', ()=>{ handleBackPress(); });
+
+// Capacitor shell: the webview never sees hardware back as popstate, so the
+// App plugin delivers it here instead. No bundler, so use the injected global.
+if (window.Capacitor?.Plugins?.App) {
+  window.Capacitor.Plugins.App.addListener('backButton', ()=>{
+    if(!handleBackPress()) window.Capacitor.Plugins.App.exitApp();
+  });
+}
 
 // Reset tutorial state when navigating away
 function showScreen(id){
@@ -6916,15 +6954,8 @@ function _tutP1StepA(){
   _tcA.style.display = 'block';
   _tcA.onclick = _tutScrimTap;
 
-  // Pill over the "WHEN DOES THIS EVENT BELONG?" label
-  const card = document.getElementById('active-card');
-  const pill = document.getElementById('tut-pill');
-  if(card){
-    const cr = card.getBoundingClientRect();
-    pill.style.left = Math.max(8, cr.left + cr.width/2 - 150) + 'px';
-    pill.style.top  = Math.max(10, cr.top - 60) + 'px';
-  }
-  pill.classList.add('tut-on');
+  // Pill position is fixed by CSS (one slot for every instruction bubble)
+  document.getElementById('tut-pill').classList.add('tut-on');
 }
 
 // Step B1: spotlight both cards — "look at the year"
@@ -7355,31 +7386,16 @@ function _startTutFingerHold(){
 }
 
 // ── POSITIONING HELPERS ──────────────────────────────────────
-function _tutPosPillInStageGap(){
+// The instruction pill lives in ONE fixed CSS slot (below the header band)
+// so it never jumps between steps. These helpers survive as no-ops that
+// clear any stale inline position; callers are unchanged.
+function _tutPosPillClear(){
   const pill = document.getElementById('tut-pill');
-  const header = document.querySelector('.game-header');
-  const card = document.getElementById('active-card');
-  if(header && card){
-    const hr = header.getBoundingClientRect();
-    const cr = card.getBoundingClientRect();
-    // Center pill vertically between header bottom and card top
-    const gapMid = (hr.bottom + cr.top) / 2;
-    pill.style.left = Math.max(8, cr.left + cr.width/2 - 150) + 'px';
-    pill.style.top  = (gapMid - 25) + 'px';
-  } else {
-    _tutPosPillAtTop();
-  }
+  pill.style.left = ''; pill.style.top = '';
 }
+function _tutPosPillInStageGap(){ _tutPosPillClear(); }
 
-function _tutPosPillAtTop(){
-  const pill = document.getElementById('tut-pill');
-  const header = document.querySelector('.game-header');
-  if(header){
-    const hr = header.getBoundingClientRect();
-    pill.style.left = Math.max(8, hr.left + hr.width/2 - 150) + 'px';
-    pill.style.top  = (hr.top + 6) + 'px';
-  }
-}
+function _tutPosPillAtTop(){ _tutPosPillClear(); }
 
 function _tutPosContinueBelowPill(){
   const pill = document.getElementById('tut-pill');
@@ -7409,20 +7425,9 @@ function _tutShowHandOnCard(){
   hand.classList.add('tut-on');
 }
 
-function _tutPosPillAboveCard(){
-  const card=document.getElementById('active-card'); if(!card) return;
-  const r=card.getBoundingClientRect(), pill=document.getElementById('tut-pill');
-  pill.style.left = Math.max(8, r.left+r.width/2-150)+'px';
-  pill.style.top  = Math.max(60, r.top-58)+'px';
-}
+function _tutPosPillAboveCard(){ _tutPosPillClear(); }
 
-function _tutPosPillAbovePlaced(){
-  if(!_tutTargetItem) return;
-  const tlCard=_tutTargetItem.querySelector('.tl-card'); if(!tlCard) return;
-  const r=tlCard.getBoundingClientRect(), pill=document.getElementById('tut-pill');
-  pill.style.left = Math.max(8, r.left+r.width/2-165)+'px';
-  pill.style.top  = Math.max(60, r.top-62)+'px';
-}
+function _tutPosPillAbovePlaced(){ _tutPosPillClear(); }
 
 function _tutPosLblBelowPlaced(){
   if(!_tutTargetItem) return;

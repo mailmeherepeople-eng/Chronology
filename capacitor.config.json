@@ -1,0 +1,17 @@
+{
+  "appId": "com.gitgud.chronology",
+  "appName": "Chronology",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SafeArea": {
+      "statusBarStyle": "default",
+      "navigationBarStyle": "default"
+    },
+    "SystemBars": {
+      "insetsHandling": "disable"
+    }
+  }
+}
