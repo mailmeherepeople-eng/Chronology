@@ -645,13 +645,16 @@
     flex-shrink: 0;
     margin-bottom: 15px;
   }
-  /* Permanent footer hint under the timeline, same voice as .stage-label */
+  /* Permanent footer hints under the timeline, same voice as .stage-label.
+     Two stacked rows: hold-to-read (tutorial skippers must still learn it)
+     above the scroll hint. */
   .timeline-hint {
     flex-shrink: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 9px;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 1.5px;
@@ -662,6 +665,7 @@
     user-select: none;
     pointer-events: none;
   }
+  .timeline-hint .hint-row { display: flex; align-items: center; gap: 7px; }
   .timeline-hint svg { flex-shrink: 0; opacity: .75; }
 
   /* Row 4: (toast row removed) */
@@ -1968,6 +1972,15 @@
     box-shadow: 0 4px 0 #1C0F0A, inset 0 2px 0 rgba(255,255,255,0.08);
   }
   body.dark .col-back-btn:active { box-shadow: 0 1px 0 #1C0F0A, inset 0 2px 0 rgba(255,255,255,0.08); }
+
+  /* Museum + Stats: cards are hold-to-read surfaces, not selectable text.
+     Long-press must read like the in-game cards, never select-highlight. */
+  #screen-collection, #screen-stats {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   /* Collection content area */
   .col-content {
@@ -3817,13 +3830,22 @@
     </div>
   </div>
   <div class="timeline-hint">
-    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Scroll through the timeline to view
-    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <div class="hint-row">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="2"/>
+        <circle cx="8" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+      Press and hold a card to read
+    </div>
+    <div class="hint-row">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Scroll through the timeline to view
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </div>
 
   <!-- Streak moment — fullscreen centered with dimming overlay -->
@@ -4375,6 +4397,16 @@ if (window.Sentry) {
     });
   } catch(e){}
 }
+
+// ═══════════════════════════════════════════════════════════
+//  INVITE DESTINATIONS - the native app funnels invited friends to the
+//  Play Store (code shared as text; a store link cannot carry ?room=).
+//  The web version keeps the instant-join web link: the store listing
+//  only resolves once the app is published, and web joiners need no
+//  install. location.origin is unusable in the shell (capacitor://).
+// ═══════════════════════════════════════════════════════════
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.gitgud.chronology';
+const IS_NATIVE_APP  = !!window.Capacitor;
 
 // ═══════════════════════════════════════════════════════════
 //  SUPABASE CONFIG
@@ -5927,12 +5959,18 @@ function _hideWaiting(){
 }
 function shareRoom(){
   if(!onlineMatch) return;
-  const link = location.origin + location.pathname + '?room=' + onlineMatch.code;
-  const text = 'Play Chronology with me! Room code: ' + onlineMatch.code;
+  let link, text;
+  if(IS_NATIVE_APP){
+    link = PLAY_STORE_URL;
+    text = 'Play Chronology with me! Get the app, tap 2 Player then Play Online, and enter room code: ' + onlineMatch.code;
+  } else {
+    link = location.origin + location.pathname + '?room=' + onlineMatch.code;
+    text = 'Play Chronology with me! Room code: ' + onlineMatch.code;
+  }
   if(navigator.share){
     navigator.share({ title: 'Chronology', text, url: link }).catch(()=>{});
   } else if(navigator.clipboard){
-    navigator.clipboard.writeText(text + ' — ' + link);
+    navigator.clipboard.writeText(text + ' - ' + link);
     const el = document.getElementById('tp-wait-code');
     el.textContent = 'Copied!';
     setTimeout(()=>{ if(onlineMatch) el.textContent = onlineMatch.code; }, 1200);
@@ -6832,6 +6870,10 @@ function showScreen(id){
 }
 
 function _showScreenInternal(id){
+  // Game-scoped audio dies with the screen it belongs to. Entering
+  // 'gameover' is exempt: the fatal wrong sound and the end special must
+  // survive the game -> end screen transition.
+  if(id !== 'gameover') stopGameSounds();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   if(id === 'tutorial'){
@@ -7960,7 +8002,7 @@ function addLongPress(el, ev) {
   const MOVE_THRESHOLD  = 8;     // px — cancel if finger drifts (scroll safe)
 
   function tryHaptic(pattern) {
-    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
+    _vibrate(pattern);
   }
 
   function start(x, y) {
@@ -8408,8 +8450,11 @@ async function initAudio(){
   console.log(`Chronology audio ready. Correct: ${!!_sfxBuffers.correct}, Wrong: ${_sfxBuffers.wrong.length}, Milestone: ${!!_sfxBuffers.milestone}, CatTaps: ${Object.keys(_sfxBuffers.catTap).length}`);
 }
 
-// Play a loaded buffer
-function playBuffer(buffer){
+// Play a loaded buffer. gameScoped sounds (wrong + end specials) keep a
+// handle so leaving the game/end screen can cut them mid-note; everything
+// else (correct, milestone, museum cat taps) stays fire-and-forget.
+let _gameSrcs = [];
+function playBuffer(buffer, gameScoped){
   if(!buffer) return;
   if(getSettingMuted()) return;
   try {
@@ -8422,7 +8467,16 @@ function playBuffer(buffer){
     src.connect(gain);
     gain.connect(ac.destination);
     src.start(0);
+    if(gameScoped){
+      _gameSrcs.push(src);
+      src.onended = () => { const i = _gameSrcs.indexOf(src); if(i >= 0) _gameSrcs.splice(i, 1); };
+    }
   } catch(e){}
+}
+
+function stopGameSounds(){
+  _gameSrcs.forEach(s => { try { s.stop(); } catch(e){} });
+  _gameSrcs = [];
 }
 
 function playCorrectSound(){
@@ -8432,7 +8486,7 @@ function playCorrectSound(){
 function playWrongSound(){
   if(!_sfxBuffers.wrong.length) return;
   const idx = Math.floor(Math.random() * _sfxBuffers.wrong.length);
-  playBuffer(_sfxBuffers.wrong[idx]);
+  playBuffer(_sfxBuffers.wrong[idx], true);
 }
 
 function playMilestoneSound(){
@@ -8449,26 +8503,47 @@ function playCatTapSound(cat){
 function playSpecialEndSound(prevHigh, wrongCount){
   if(score > prevHigh && wrongCount >= 2){
     // New high score but with a lot of wrong answers — suspicious
-    playBuffer(_sfxSpecial.suspicious);
+    playBuffer(_sfxSpecial.suspicious, true);
   } else if(score > prevHigh){
     // Clean new high score
-    playBuffer(_sfxSpecial.new_high);
+    playBuffer(_sfxSpecial.new_high, true);
   } else if(score === 0){
     // Zero points — total defeat
-    playBuffer(_sfxSpecial.zero);
+    playBuffer(_sfxSpecial.zero, true);
   } else if(prevHigh > 0 && score > 0 && (prevHigh - score) <= 3){
     // Died within 3 points of high score without beating it
-    playBuffer(_sfxSpecial.near_miss);
+    playBuffer(_sfxSpecial.near_miss, true);
   }
   // else: normal game over, no special sound
 }
 
 // ═══════════════════════════════════════════════════════════
 //  HAPTIC FEEDBACK
+//  Android's WebView has no navigator.vibrate (Chrome-only API), so the
+//  native shell routes through the Haptics plugin. Multi-segment
+//  patterns [on, off, on, ...] are replayed with timers.
 // ═══════════════════════════════════════════════════════════
+function _vibrate(pattern){
+  const H = window.Capacitor?.Plugins?.Haptics;
+  if (H?.vibrate) {
+    const segs = Array.isArray(pattern) ? pattern : [pattern];
+    let at = 0;
+    for (let i = 0; i < segs.length; i++) {
+      if (i % 2 === 0) {
+        const dur = segs[i];
+        if (at === 0) H.vibrate({ duration: dur }).catch(()=>{});
+        else setTimeout(()=>{ H.vibrate({ duration: dur }).catch(()=>{}); }, at);
+      }
+      at += segs[i];
+    }
+    return;
+  }
+  try { if(navigator.vibrate) navigator.vibrate(pattern); } catch(e){}
+}
+
 function haptic(pattern){
   if(!getSettingVibration()) return;
-  try { if(navigator.vibrate) navigator.vibrate(pattern); } catch(e){}
+  _vibrate(pattern);
 }
 
 // Chunky CTAs tick on press: the visual travel gets a physical counterpart
@@ -9010,8 +9085,13 @@ async function inviteToDuel(){
     _onlineSubscribe(data.id);
     _showWaiting(data.code);
 
-    const text =
-`Play me 1v1 in Chronology!
+    const text = IS_NATIVE_APP
+? `Play me 1v1 in Chronology!
+
+Get the app: ${PLAY_STORE_URL}
+
+Then tap 2 Player, Play Online, and enter room code: ${data.code}`
+: `Play me 1v1 in Chronology!
 
 Open the game, tap 2 Player, then Play Online, and enter room code: ${data.code}
 

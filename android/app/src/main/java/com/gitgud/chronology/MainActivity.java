@@ -24,6 +24,11 @@ public class MainActivity extends BridgeActivity {
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
 
+        // Fixed-layout game: the WebView otherwise applies the system font
+        // scale as text zoom, overflowing the tuned card layouts. The game
+        // does its own text sizing.
+        getBridge().getWebView().getSettings().setTextZoom(100);
+
         applyImmersiveMode();
     }
 
