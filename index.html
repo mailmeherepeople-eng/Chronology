@@ -2564,12 +2564,19 @@
   body.dark .col-card-secret { border-color: #4A4234; }
 
   /* Collection notification dot */
+  /* Floating badge on the chip corner - out of the text flow so the
+     label stays aligned with its neighbours */
+  .btn-chip-collection { position: relative; }
   .col-notif-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 11px;
+    height: 11px;
     background: var(--danger);
+    border: 2px solid var(--bg);
     border-radius: 50%;
+    font-size: 0;
     margin-left: 4px;
     vertical-align: middle;
     font-size: 0;
@@ -3273,6 +3280,74 @@
   .ranks-chosen-sub { font-size: 10.5px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
   .ranks-close-hint { text-align: center; font-size: 10.5px; color: var(--muted); margin-top: 10px; }
 
+  /* ═══════════ GAME OVER: trophy plate + scribe's note ═══════════ */
+  .go-plate {
+    width: 100%; max-width: 340px;
+    padding: 18px 14px 15px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .go-rank-strip {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 13px; padding-top: 12px;
+    border-top: 1px solid rgba(154,98,0,.18);
+    position: relative;
+  }
+  body.dark .go-rank-strip { border-top-color: rgba(192,132,20,.25); }
+  .go-rank-strip img { width: 34px; height: 38px; object-fit: contain; flex-shrink: 0; }
+  .go-bar-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 5px; font-size: 10.5px;
+  }
+  .go-bar-meta span:first-child { color: #55350A; }
+  body.dark .go-bar-meta span:first-child { color: #C9B080; }
+  .go-bar-meta span:last-child { font-weight: 700; letter-spacing: .8px; color: #8a7040; }
+  body.dark .go-bar-meta span:last-child { color: #A08850; }
+  /* end-screen bar animates slower than the stats page so the gain reads */
+  .go-bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+  .go-bar-tip  { transition: left  1.2s cubic-bezier(0.4,0,0.2,1); }
+
+  .go-rankup { position: relative; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(154,98,0,.18); }
+  body.dark .go-rankup { border-top-color: rgba(192,132,20,.25); }
+  .go-rankup-label { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--accent); }
+  .go-rankup-badge {
+    position: relative; width: 92px; height: 96px; margin: 8px auto 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .go-rankup-badge::before {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 128px; height: 128px; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, rgba(200,150,40,.35) 0%, transparent 65%);
+  }
+  .go-rankup-badge img {
+    position: relative; max-width: 100%; max-height: 100%;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,.3));
+  }
+  .go-rankup.pop .go-rankup-badge { animation: rankPop 0.55s cubic-bezier(0.34,1.4,0.64,1) both; }
+  @keyframes rankPop {
+    from { transform: scale(0.55); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .go-rankup-name { font-family: 'Lora', serif; font-size: 23px; font-weight: 700; color: #2A1E08; }
+  body.dark .go-rankup-name { color: #F0E6D0; }
+  .go-rankup-sub { font-size: 12px; color: #8a7040; margin-top: 2px; }
+
+  .go-note {
+    width: 100%; max-width: 340px;
+    background: #FBF3DF; border: 1.5px solid #E0D5BD; border-radius: 12px;
+    padding: 11px 14px; margin-bottom: 14px; text-align: left;
+  }
+  body.dark .go-note { background: #2E2814; border-color: #4A3E1C; }
+  .go-note-line { font-size: 13px; color: #55350A; line-height: 1.45; margin-bottom: 3px; }
+  body.dark .go-note-line { color: #E8D8A8; }
+  .go-note-study { font-size: 12.5px; font-weight: 700; color: #9A6200; }
+  body.dark .go-note-study { color: #E0B860; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .go-rankup.pop .go-rankup-badge { animation: none; }
+    .go-bar-fill, .go-bar-tip { transition: none; }
+  }
+
   /* Collection + Settings chips: mini chunky treatment */
   .btn-chip {
     font-family: 'Lilita One', 'Source Sans 3', sans-serif;
@@ -3769,50 +3844,67 @@
 <!-- GAME OVER -->
 <div id="screen-gameover" class="screen">
 
-  <!-- New cards unlocked — sits above score when present -->
-  <div class="go-new-cards" id="go-new-cards" style="display:none;" onclick="
-    showScreen('collection');
-    _collectionSort='recent';
-    _selectedEras=new Set(ERAS.map(e=>e.label));
-    _selectedCats=new Set(Object.keys(CAT));
-    document.getElementById('era-chips').innerHTML='';
-    document.getElementById('cat-chips').innerHTML='';
-    initAudio();
-    if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
-  ">
-    <div class="go-new-cards-icon">✦</div>
-    <div class="go-new-cards-text">
-      <div class="go-new-cards-title" id="go-new-cards-title"></div>
-      <div class="go-new-cards-sub" id="go-new-cards-sub"></div>
+  <!-- Trophy plate: score + rank progress (or rank-up moment) -->
+  <div class="stats-hero go-plate">
+    <div class="stats-hero-frame"></div>
+    <svg class="stats-hero-corner c1" width="22" height="22" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c2" width="22" height="22" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c3" width="22" height="22" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c4" width="22" height="22" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <div class="stats-hero-sheen"></div>
+
+    <div class="gameover-score-hero" id="go-score-hero" style="position:relative;">
+      <div class="gameover-score-num" id="go-score-num">0</div>
+      <div class="gameover-score-label">Points</div>
+      <div class="gameover-score-high" id="go-score-high"></div>
     </div>
-    <div class="go-new-cards-arrow">›</div>
+
+    <!-- Rank strip: bar animates up by the cards unlocked this game -->
+    <div class="go-rank-strip" id="go-rank-strip">
+      <img id="go-rank-badge" src="" alt="">
+      <div style="flex:1;min-width:0;">
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill go-bar-fill" id="go-bar-fill" style="width:0%"></div>
+          <div class="stats-bar-tip go-bar-tip" id="go-bar-tip" style="left:0%"></div>
+        </div>
+        <div class="go-bar-meta">
+          <span id="go-bar-count"></span>
+          <span id="go-bar-next"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rank up: replaces the strip on threshold games -->
+    <div class="go-rankup" id="go-rankup" style="display:none;">
+      <div class="go-rankup-label">RANK UP</div>
+      <div class="go-rankup-badge"><img id="go-rankup-img" src="" alt=""></div>
+      <div class="go-rankup-name" id="go-rankup-name"></div>
+      <div class="go-rankup-sub" id="go-rankup-sub"></div>
+    </div>
   </div>
 
-  <!-- Hero score -->
-  <div class="gameover-score-hero" id="go-score-hero">
-    <div class="gameover-score-num" id="go-score-num">0</div>
-    <div class="gameover-score-label">Points</div>
-    <div class="gameover-score-high" id="go-score-high"></div>
-  </div>
-
-  <!-- Personalised insight -->
-  <div class="gameover-insight" id="go-insight" style="display:none;"></div>
-
-  <!-- 2x2 stat chips -->
-  <div class="gameover-chips" id="go-chips"></div>
-
-  <!-- Category breakdown card -->
-  <div class="share-card" id="share-card">
-    <div id="sc-cats"></div>
-    <div class="share-card-brand">Chronology &nbsp;·&nbsp; <strong>A History Card Game</strong></div>
+  <!-- Scribe's note -->
+  <div class="go-note">
+    <div class="go-note-line" id="go-insight" style="display:none;"></div>
+    <div class="go-note-study">Study your weakest cards in the museum.</div>
   </div>
 
   <div class="share-feedback" id="share-feedback">Copied to clipboard!</div>
 
   <div class="btn-group" style="width:100%;max-width:320px;">
-    <button class="btn-primary" style="width:100%;" onclick="startGame()">Play Again</button>
-    <button class="btn-outline" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
-    <button class="btn-ghost" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
+    <button class="btn-start btn-2p" style="width:100%;" onclick="
+      showScreen('collection');
+      _collectionSort='recent';
+      _selectedEras=new Set(ERAS.map(e=>e.label));
+      _selectedCats=new Set(Object.keys(CAT));
+      document.getElementById('era-chips').innerHTML='';
+      document.getElementById('cat-chips').innerHTML='';
+      initAudio();
+      if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
+    ">Museum</button>
+    <button class="btn-start" style="width:100%;" onclick="startGame()">Play Again</button>
+    <button class="btn-start btn-2p" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
+    <button class="btn-start btn-howto" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
 </div>
 
@@ -3828,7 +3920,7 @@
 
     <!-- Header -->
     <div class="collection-header">
-      <div class="collection-title">My Museum</div>
+      <div class="collection-title">Museum</div>
       <div class="collection-subtitle" id="collection-count">Loading...</div>
       <div class="col-progress-bar-wrap">
         <div class="col-progress-bar-fill" id="col-progress-fill" style="width:0%"></div>
@@ -6494,6 +6586,7 @@ function _showScreenInternal(id){
     clearTimeout(tutDemoTimer); _d1Active = false; _s1Active = false;
   }
   if(id === 'settings') syncSettingsUI();
+  if(id === 'gameover') runGoPlateAnimations();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -8451,7 +8544,6 @@ function _showEndBar(finalScore, newCount, delay){
 
 async function prepareGameOverScreen(){
   const correct = timeline.filter(i=>!i.wrong).length - 1;
-  const wrong   = timeline.filter(i=>i.wrong).length; // also feeds Cards Placed chip
 
   // High score via localStorage
   const prevHigh = parseInt(localStorage.getItem('chronology-high') || '0');
@@ -8514,101 +8606,85 @@ async function prepareGameOverScreen(){
   // ── Record running averages ──
   recordSessionAvg(score, correct);
 
-  // ── Fetch global average from Supabase ──
-  let avgClass = 'avg-none';
-  let avgBarPct = 0;
-  let avgValue = null; // the number the player is compared against
-
-  if(_sbReady){
-    try {
-      // Single aggregate via security-definer RPC — clients can't read
-      // other players' sessions directly
-      const { data: globalAvg, error } = await _sb.rpc('get_global_avg_score');
-      if(error) throw new Error(error.message);
-      if(globalAvg !== null && globalAvg > 0){
-        avgValue = Math.round(globalAvg);
-        if(score >= globalAvg){
-          avgClass = 'avg-up';
-          // Bar: 50% = global avg. Score above avg maps 50-100%
-          avgBarPct = Math.min(100, Math.round(50 * (score / globalAvg)));
-        } else {
-          avgClass = 'avg-down';
-          // Bar: score below avg maps 0-50%
-          avgBarPct = Math.max(5, Math.round(50 * (score / globalAvg)));
-        }
-      }
-    } catch(e){
-      // If Supabase query fails, fall back to local average
-      const avgScore = getAvgScore();
-      const avgData  = getAvgData(AVG_SCORE_KEY);
-      if(avgData.count >= 2 && avgScore !== null){
-        const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
-        avgValue = prevAvg;
-        avgClass = score >= prevAvg ? 'avg-up' : 'avg-down';
-        avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score, 1) * 100));
-      }
-    }
-  } else {
-    // No Supabase — use local average
-    const avgScore = getAvgScore();
-    const avgData  = getAvgData(AVG_SCORE_KEY);
-    if(avgData.count >= 2 && avgScore !== null){
-      const prevAvg = Math.round((avgData.total - score) / (avgData.count - 1));
-      avgValue = prevAvg;
-      avgClass = score >= prevAvg ? 'avg-up' : 'avg-down';
-      avgBarPct = Math.min(100, Math.round(score / Math.max(newHigh, score, 1) * 100));
-    }
-  }
-
-  // No average data: show a real stat instead of an empty comparison
-  const avgChip = avgValue === null
-    ? `<div class="gameover-chip">
-        <div class="gameover-chip-label">Cards Placed</div>
-        <div class="gameover-chip-val">${correct + wrong}</div>
-      </div>`
-    : `<div class="gameover-chip chip-avg ${avgClass}">
-        <div class="chip-avg-label">vs Global Average</div>
-        <div class="chip-avg-nums">You <strong>${score}</strong> · Avg ${avgValue}</div>
-        <div class="chip-avg-track">
-          <div class="chip-avg-center"></div>
-          <div class="chip-avg-fill" style="width:${avgBarPct}%"></div>
-        </div>
-      </div>`;
-
-  const isNewHigh = score > prevHigh && prevHigh > 0;
-  document.getElementById('go-chips').innerHTML = `
-    <div class="gameover-chip chip-correct">
-      <div class="gameover-chip-label">Correct</div>
-      <div class="gameover-chip-val">${correct}</div>
-    </div>
-    <div class="gameover-chip chip-streak">
-      <div class="gameover-chip-label">Best Streak</div>
-      <div class="gameover-chip-val">${maxStreak}</div>
-    </div>
-    ${avgChip}
-    <div class="gameover-chip chip-highscore${isNewHigh ? ' chip-new-high' : ''}">
-      <div class="gameover-chip-label">High Score</div>
-      <div class="gameover-chip-val">${newHigh}</div>
-    </div>
-  `;
-
-  // ── New cards unlocked this run ──
+  // ── Rank plate: strip or rank-up moment ──
   const newIds = getNewIds();
   const newThisRun = timeline.map(i => i.ev).filter(ev => newIds.has(ev.id));
-  const newCardsEl = document.getElementById('go-new-cards');
-  if(newThisRun.length > 0){
-    newCardsEl.style.display = 'flex';
-    document.getElementById('go-new-cards-title').textContent =
-      newThisRun.length === 1 ? '1 new card unlocked' : `${newThisRun.length} new cards unlocked`;
-    const preview = newThisRun.slice(0, 2).map(ev => ev.label).join(' · ')
-      + (newThisRun.length > 2 ? ` · +${newThisRun.length - 2} more` : '');
-    document.getElementById('go-new-cards-sub').textContent = preview;
-  } else {
-    newCardsEl.style.display = 'none';
-  }
+  _prepareGoRank(newThisRun);
+}
 
-  // ── Category breakdown ──
-  document.getElementById('sc-cats').innerHTML = buildCategoryBreakdown();
+// Rank strip / rank-up state for the trophy plate. The bar is parked at the
+// pre-game count here; runGoPlateAnimations() moves it (or pops the new
+// badge) when the game-over screen actually becomes visible.
+let _goPlateAnim = null;
+function _prepareGoRank(newThisRun){
+  if(!EVENTS.length) return;
+  const total = EVENTS.length;
+  const { seen, count } = _statsSeenLive();
+  const liveNew = newThisRun.filter(ev => EVENTS.some(e => e.id === ev.id)).length;
+  const prev = Math.max(0, count - liveNew);
+  const chosen = _metaUnlocked(seen) && count < total;
+
+  let idxNow = -1, idxPrev = -1;
+  RANKS.forEach((r, i) => {
+    if(count >= r.at) idxNow = i;
+    if(prev  >= r.at) idxPrev = i;
+  });
+  const metaJustFound = chosen && newThisRun.some(ev => ev.cat === 'Meta');
+  const rankedUp = idxNow > idxPrev || metaJustFound;
+
+  const strip  = document.getElementById('go-rank-strip');
+  const rankup = document.getElementById('go-rankup');
+
+  if(rankedUp){
+    strip.style.display = 'none';
+    rankup.style.display = '';
+    rankup.classList.remove('pop');
+    document.getElementById('go-rankup-img').src =
+      metaJustFound ? CHOSEN_RANK_IMG : RANKS[idxNow].img;
+    document.getElementById('go-rankup-name').textContent =
+      metaJustFound ? 'The Chosen One' : RANKS[idxNow].name;
+    document.getElementById('go-rankup-sub').textContent =
+      metaJustFound ? 'You found the secret card' : `${count} cards unlocked`;
+    _goPlateAnim = { rankedUp: true };
+  } else {
+    rankup.style.display = 'none';
+    strip.style.display = '';
+    const badge = document.getElementById('go-rank-badge');
+    badge.src = chosen ? CHOSEN_RANK_IMG : (idxNow >= 0 ? RANKS[idxNow].img : RANKS[0].img);
+    badge.style.filter = (idxNow >= 0 || chosen) ? '' : 'grayscale(1) opacity(0.45)';
+    const next = RANKS[idxNow + 1] || null;
+    document.getElementById('go-bar-count').innerHTML = `<strong>${count}</strong> of ${total} cards`;
+    document.getElementById('go-bar-next').textContent =
+      chosen ? '' : (next ? next.name.toUpperCase() : 'COMPLETE');
+    // park the bar at the pre-game position without animating
+    const fromPct = Math.min(100, prev / total * 100);
+    const fill = document.getElementById('go-bar-fill');
+    const tip  = document.getElementById('go-bar-tip');
+    fill.style.transition = 'none'; tip.style.transition = 'none';
+    fill.style.width = fromPct + '%'; tip.style.left = fromPct + '%';
+    _goPlateAnim = { rankedUp: false, toPct: Math.min(100, count / total * 100) };
+  }
+}
+
+// Fired by _showScreenInternal when the game-over screen becomes visible
+function runGoPlateAnimations(){
+  if(!_goPlateAnim) return;
+  const anim = _goPlateAnim;
+  _goPlateAnim = null;
+  if(anim.rankedUp){
+    setTimeout(() => {
+      document.getElementById('go-rankup').classList.add('pop');
+      playMilestoneSound();
+    }, 350);
+  } else {
+    setTimeout(() => {
+      const fill = document.getElementById('go-bar-fill');
+      const tip  = document.getElementById('go-bar-tip');
+      fill.style.transition = ''; tip.style.transition = '';
+      fill.style.width = anim.toPct + '%';
+      tip.style.left  = anim.toPct + '%';
+    }, 500);
+  }
 }
 
 // ── SHARE SCORE ──
