@@ -3903,8 +3903,24 @@
       if(EVENTS.length>0){renderCollection();}else{loadEvents().then(renderCollection);}
     ">Museum</button>
     <button class="btn-start" style="width:100%;" onclick="startGame()">Play Again</button>
-    <button class="btn-start btn-2p" id="share-btn" style="width:100%;" onclick="shareScore()">Challenge a Friend</button>
+    <button class="btn-start btn-2p" id="share-btn" style="width:100%;" onclick="openChallengeModal()">Challenge a Friend</button>
+    <button class="btn-start btn-howto" style="width:100%;" onclick="openStats()">View Stats</button>
     <button class="btn-start btn-howto" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
+  </div>
+</div>
+
+<!-- CHALLENGE A FRIEND CHOOSER -->
+<div class="modal-overlay" id="challenge-modal" onclick="if(event.target===this)closeChallengeModal()">
+  <div class="modal-box">
+    <div class="modal-icon">🏆</div>
+    <div class="modal-title">Challenge a Friend</div>
+    <div class="modal-body">Send your score, or invite them to a live 1v1 duel.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+      <button class="btn-start" style="width:100%;" onclick="closeChallengeModal();shareScore()">Share My Score</button>
+      <button class="btn-start btn-2p" style="width:100%;" onclick="inviteToDuel()">Invite to a 1v1</button>
+      <button class="btn-start btn-howto" style="width:100%;" onclick="closeChallengeModal()">Cancel</button>
+    </div>
+    <div class="tp-room-note" id="challenge-note" style="text-align:center;"></div>
   </div>
 </div>
 
@@ -8689,6 +8705,50 @@ function runGoPlateAnimations(){
 }
 
 // ── SHARE SCORE ──
+// ── Challenge a Friend: share score, or spin up a live 1v1 room ──
+function openChallengeModal(){
+  _armHistGuard();
+  document.getElementById('challenge-note').textContent = '';
+  document.getElementById('challenge-modal').classList.add('visible');
+}
+function closeChallengeModal(){
+  document.getElementById('challenge-modal').classList.remove('visible');
+}
+async function inviteToDuel(){
+  const note = document.getElementById('challenge-note');
+  if(!_sbReady){ note.textContent = 'Connecting… try again in a moment.'; return; }
+  if(!EVENTS.length){ note.textContent = 'Still loading cards — one sec.'; return; }
+  note.textContent = 'Creating your room…';
+  try {
+    // Land on the 2P screen BEFORE the room exists: showScreen resigns any
+    // waiting room on the way out, which would kill the room we just made
+    closeChallengeModal();
+    initAudio();
+    showScreen('twoplayer');
+
+    const { data, error } = await _sb.rpc('create_match', { p_name: 'Player 1' });
+    if(error) throw new Error(error.message);
+    onlineMatch = data; onlineMyIdx = 0;
+    _onlineSubscribe(data.id);
+    _showWaiting(data.code);
+
+    const text =
+`Play me 1v1 in Chronology!
+
+Open the game, tap 2 Player, then Play Online, and enter room code: ${data.code}
+
+https://mailmeherepeople-eng.github.io/Chronology`;
+    if(navigator.share){
+      navigator.share({ title: 'Chronology 1v1', text }).catch(()=>{});
+    } else {
+      try { await navigator.clipboard.writeText(text); } catch(e){}
+    }
+  } catch(e){
+    document.getElementById('tp-room-note').textContent = 'Could not create a room. Try again.';
+    _hideWaiting();
+  }
+}
+
 function shareScore(){
   const correct = timeline.filter(i=>!i.wrong).length - 1;
   const wrong   = timeline.filter(i=>i.wrong).length;
