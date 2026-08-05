@@ -7300,7 +7300,7 @@ function startGame() {
     s.splice(2 + Math.floor(Math.random() * Math.max(1, s.length - 2)), 0, m);
   }
   timeline=[{ev:s[0],wrong:false}];
-  trackSeen(s[0]);
+  if(gameMode === 'solo') trackSeen(s[0]); // 1v1 never feeds the Museum
   currentCard=s[1];
   deck=s.slice(2);
   lives=3; score=0; locked=false; gameEnded=false;
@@ -8307,7 +8307,8 @@ function handleDrop(dropIdx){
   const placed=currentCard;
   currentCard=null;
   const firstSight = !getSeenIds().has(placed.id); // capture BEFORE trackSeen marks it
-  trackSeen(placed); // mark card as seen regardless of correct/wrong
+  // Museum progression is solo-only: cards seen in 1v1 never count
+  if(gameMode === 'solo') trackSeen(placed);
   _placements.push({ card_id: placed.id, drop_index: dropIdx }); // for server replay
 
   if(correct){
