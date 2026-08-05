@@ -2449,6 +2449,28 @@
   .modal-actions { display: flex; gap: 10px; justify-content: center; }
   .modal-actions .btn-primary { padding: 11px 28px; font-size: 14px; }
   .modal-actions .btn-secondary { padding: 10px 24px; font-size: 14px; }
+  /* Yes, Quit: same red as the in-game Quit button it confirms */
+  .modal-actions .btn-quit-confirm {
+    background: linear-gradient(180deg, #E2574B 0%, #C0392B 48%, #A82E22 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Lilita One', 'Source Sans 3', sans-serif;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.35), 1px -1px 0 rgba(0,0,0,0.35),
+                 -1px 1px 0 rgba(0,0,0,0.35), 1px 1px 0 rgba(0,0,0,0.35);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.1s ease;
+    box-shadow: 0 4px 0 #7A1E14, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .modal-actions .btn-quit-confirm:hover { filter: brightness(1.05); }
+  .modal-actions .btn-quit-confirm:active { transform: translateY(3px); box-shadow: 0 1px 0 #7A1E14, inset 0 2px 0 rgba(255,255,255,0.35); }
+  body.dark .modal-actions .btn-quit-confirm { box-shadow: 0 4px 0 #4A1009, inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -2px 0 rgba(0,0,0,0.12); }
+  body.dark .modal-actions .btn-quit-confirm:active { box-shadow: 0 1px 0 #4A1009, inset 0 2px 0 rgba(255,255,255,0.25); }
+
   .modal-actions .btn-keep {
     background: linear-gradient(180deg, #6DBE50 0%, #479A31 48%, #3B8428 100%);
     color: #fff;
@@ -4032,7 +4054,7 @@
     <div class="modal-body">Your progress will be lost. You'll go back to the start screen.</div>
     <div class="modal-actions">
       <button class="btn-keep" onclick="closeQuitModal()">Keep Playing</button>
-      <button class="btn-primary" onclick="confirmQuit()">Yes, Quit</button>
+      <button class="btn-quit-confirm" onclick="confirmQuit()">Yes, Quit</button>
     </div>
   </div>
 </div>
