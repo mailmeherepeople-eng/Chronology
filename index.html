@@ -379,26 +379,33 @@
   .tut-toggle-switch.on::after { transform: translateX(16px); }
 
   /* ── SETTINGS GAME BUTTON ── */
+  /* Same footprint as .btn-quit beside it, in the quiet stone family */
+  .btn-quit, .btn-settings-game { height: 30px; box-sizing: border-box; }
   .btn-settings-game {
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 10px;
+    background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
+    color: #5C5342;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 14px;
     font-size: 12px;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s;
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.1s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
   }
-  .btn-settings-game:hover {
-    background: var(--surface);
-    color: var(--text);
-    border-color: var(--muted);
-    transform: translateY(-1px);
+  .btn-settings-game:hover { filter: brightness(1.03); color: #443C2D; }
+  .btn-settings-game:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9);
   }
-  .btn-settings-game:active { transform: translateY(0); }
+  body.dark .btn-settings-game {
+    background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
+    color: #D8D2C6;
+    box-shadow: 0 4px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+  }
+  body.dark .btn-settings-game:active { box-shadow: 0 1px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08); }
 
   /* Expanded touch hit areas (44px min) — invisible, no visual change */
   .btn-quit, .btn-settings-game { position: relative; }
@@ -2151,6 +2158,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  /* Mirrors .card-text-wrap in the game: the label grows, so the sublabel
+     is pushed down to sit just above the year and the breathing room lands
+     between title and sublabel. */
+  .col-card-text-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
   .col-card-label {
     font-family: 'Lora', serif;
     font-size: 9px;
@@ -2159,15 +2176,18 @@
     line-height: 1.3;
     overflow: hidden;
     flex: 1;
+    min-height: 0;
   }
   .col-card-sub {
     font-size: 7px;
     color: var(--muted);
     font-style: italic;
     margin-top: 2px;
-    white-space: nowrap;
+    flex-shrink: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
   .col-card-year {
     font-size: 9px;
@@ -3354,6 +3374,74 @@
   body.dark .go-rankup-name { color: #F0E6D0; }
   .go-rankup-sub { font-size: 12px; color: #8a7040; margin-top: 2px; }
 
+  /* You vs the world: same plate material as the trophy above it */
+  .go-vs-plate {
+    width: 100%; max-width: 340px;
+    padding: 13px 14px 14px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .go-vs-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: #8a7040; margin-bottom: 9px;
+  }
+  body.dark .go-vs-title { color: #A08850; }
+  .go-vs-nums { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .go-vs-col { flex: 1; min-width: 0; }
+  .go-vs-num {
+    font-family: 'Lora', serif; font-size: 30px; font-weight: 700;
+    line-height: 1; letter-spacing: -1px; color: #2A1E08;
+  }
+  body.dark .go-vs-num { color: #F0E6D0; }
+  .go-vs-num.muted { color: #8a7040; }
+  body.dark .go-vs-num.muted { color: #A08850; }
+  .go-vs-lbl {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: #8a7040; margin-top: 4px;
+  }
+  .go-vs-sep { width: 1px; align-self: stretch; background: rgba(154,98,0,.22); }
+  body.dark .go-vs-sep { background: rgba(192,132,20,.28); }
+  .go-vs-track {
+    position: relative; height: 9px; border-radius: 5px; margin-top: 11px;
+    background: #E7DCC2; box-shadow: inset 0 1px 3px rgba(90,64,10,.28);
+    overflow: hidden;
+  }
+  body.dark .go-vs-track { background: #16120A; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
+  .go-vs-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px;
+    background: linear-gradient(180deg, #E8B23C 0%, #C88E14 55%, #A86F06 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .go-vs-fill.below {
+    background: linear-gradient(180deg, #D98A7A 0%, #C0604B 55%, #A34632 100%);
+  }
+  .go-vs-mid {
+    position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px;
+    background: #8a7040; opacity: .55; z-index: 1;
+  }
+  .go-vs-verdict {
+    font-size: 12.5px; font-weight: 700; color: #55350A; margin-top: 8px;
+  }
+  body.dark .go-vs-verdict { color: #E8D8A8; }
+
+  /* Back-to-start: matches the rose Back chips used everywhere else */
+  .btn-start.btn-rose {
+    background: linear-gradient(180deg, #F9E2DA 0%, #EFC4B6 48%, #E4AF9E 100%);
+    color: #6E2F20;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 5px 0 #B0705C, inset 0 2px 0 rgba(255,255,255,0.7), inset 0 -2px 0 rgba(0,0,0,0.06);
+  }
+  .btn-start.btn-rose:hover { filter: brightness(1.03); }
+  .btn-start.btn-rose:active { box-shadow: 0 1px 0 #B0705C, inset 0 2px 0 rgba(255,255,255,0.7); }
+  body.dark .btn-start.btn-rose {
+    background: linear-gradient(180deg, #4E332B 0%, #3E2820 48%, #35211A 100%);
+    color: #E8C4B8;
+    text-shadow: none;
+    box-shadow: 0 5px 0 #1C0F0A, inset 0 2px 0 rgba(255,255,255,0.08);
+  }
+  body.dark .btn-start.btn-rose:active { box-shadow: 0 1px 0 #1C0F0A, inset 0 2px 0 rgba(255,255,255,0.08); }
+
   .go-note {
     width: 100%; max-width: 340px;
     background: #FBF3DF; border: 1.5px solid #E0D5BD; border-radius: 12px;
@@ -3905,6 +3993,32 @@
     </div>
   </div>
 
+  <!-- You vs the world -->
+  <div class="stats-hero go-vs-plate" id="go-vs-plate" style="display:none;">
+    <div class="stats-hero-frame"></div>
+    <svg class="stats-hero-corner c1" width="20" height="20" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c2" width="20" height="20" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c3" width="20" height="20" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <svg class="stats-hero-corner c4" width="20" height="20" viewBox="0 0 26 26"><path d="M2 24 C2 10 10 2 24 2" fill="none" stroke="#9A6200" stroke-width="1"/><circle cx="24" cy="2" r="1.5" fill="#9A6200"/></svg>
+    <div class="go-vs-title">THIS RUN VS THE WORLD</div>
+    <div class="go-vs-nums">
+      <div class="go-vs-col">
+        <div class="go-vs-num" id="go-vs-you">0</div>
+        <div class="go-vs-lbl">You</div>
+      </div>
+      <div class="go-vs-sep"></div>
+      <div class="go-vs-col">
+        <div class="go-vs-num muted" id="go-vs-avg">0</div>
+        <div class="go-vs-lbl">Global average</div>
+      </div>
+    </div>
+    <div class="go-vs-track">
+      <div class="go-vs-mid"></div>
+      <div class="go-vs-fill" id="go-vs-fill" style="width:0%"></div>
+    </div>
+    <div class="go-vs-verdict" id="go-vs-verdict"></div>
+  </div>
+
   <!-- Scribe's note -->
   <div class="go-note">
     <div class="go-note-line" id="go-insight" style="display:none;"></div>
@@ -3926,8 +4040,8 @@
     ">Museum</button>
     <button class="btn-start" style="width:100%;" onclick="startGame()">Play Again</button>
     <button class="btn-start btn-2p" id="share-btn" style="width:100%;" onclick="openChallengeModal()">Challenge a Friend</button>
-    <button class="btn-start btn-howto" style="width:100%;" onclick="openStats()">View Stats</button>
-    <button class="btn-start btn-howto" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
+    <button class="btn-start" style="width:100%;" onclick="openStats()">View Stats</button>
+    <button class="btn-start btn-rose" style="width:100%;" onclick="showScreen('start')">Back to Start</button>
   </div>
 </div>
 
@@ -5356,7 +5470,7 @@ function makeUnlockedCard(ev){
         : `<div style="width:100%;height:100%;background:${col.bg};display:flex;align-items:center;justify-content:center;font-size:22px;">${col.emoji}</div>`}
     </div>
     <div class="col-card-body">
-      <div>
+      <div class="col-card-text-wrap">
         <div class="col-card-cat" style="color:${col.text}">${esc(ev.cat)}</div>
         <div class="col-card-label">${esc(ev.label)}</div>
         <div class="col-card-sub">${esc(ev.sublabel)}</div>
@@ -8649,6 +8763,63 @@ async function prepareGameOverScreen(){
   const newIds = getNewIds();
   const newThisRun = timeline.map(i => i.ev).filter(ev => newIds.has(ev.id));
   _prepareGoRank(newThisRun);
+
+  // ── You vs the world ──
+  _prepareGoVsAverage();
+}
+
+// Global comparison. Server aggregate when online, own running average as
+// the offline fallback; hidden entirely when there is nothing honest to show.
+async function _prepareGoVsAverage(){
+  const plate = document.getElementById('go-vs-plate');
+  let avg = null;
+  if(_sbReady){
+    try {
+      const { data, error } = await _sb.rpc('get_global_avg_score');
+      if(!error && data !== null && data > 0) avg = Math.round(data);
+    } catch(e){ /* fall through to local */ }
+  }
+  if(avg === null){
+    const d = getAvgData(AVG_SCORE_KEY);
+    // exclude this run so the player is not compared against themselves
+    if(d.count >= 3) avg = Math.round((d.total - score) / (d.count - 1));
+  }
+  if(!avg || avg <= 0){ plate.style.display = 'none'; return; }
+
+  document.getElementById('go-vs-you').textContent = score;
+  document.getElementById('go-vs-avg').textContent = avg;
+
+  const above = score >= avg;
+  // 50% of the track is the average; above it maps 50-100%, below 0-50%
+  const pct = above
+    ? Math.min(100, Math.round(50 + 50 * Math.min(1, (score - avg) / Math.max(avg, 1))))
+    : Math.max(4, Math.round(50 * (score / avg)));
+  const fill = document.getElementById('go-vs-fill');
+  fill.classList.toggle('below', !above);
+  fill.style.width = '0%';
+
+  const diff = Math.abs(score - avg);
+  document.getElementById('go-vs-verdict').textContent = above
+    ? (diff === 0 ? 'Dead level with the world.' : `${diff} above the world average.`)
+    : `${diff} to go to reach the world average.`;
+
+  plate.style.display = '';
+  _goVsTarget = pct;
+  // The RPC may resolve after the screen is already up (the end-bar sequence
+  // runs for seconds); in that case animate straight away.
+  if(document.getElementById('screen-gameover').classList.contains('active')){
+    runGoVsFill();
+  }
+}
+let _goVsTarget = null;
+function runGoVsFill(){
+  if(_goVsTarget === null) return;
+  const target = _goVsTarget;
+  _goVsTarget = null;
+  setTimeout(() => {
+    const f = document.getElementById('go-vs-fill');
+    if(f) f.style.width = target + '%';
+  }, 650);
 }
 
 // Rank strip / rank-up state for the trophy plate. The bar is parked at the
@@ -8707,6 +8878,7 @@ function _prepareGoRank(newThisRun){
 
 // Fired by _showScreenInternal when the game-over screen becomes visible
 function runGoPlateAnimations(){
+  runGoVsFill(); // vs-average bar fills once the screen is actually on
   if(!_goPlateAnim) return;
   const anim = _goPlateAnim;
   _goPlateAnim = null;
