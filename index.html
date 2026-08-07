@@ -3738,6 +3738,116 @@
     background: linear-gradient(180deg, #DE9A18 0%, #C07F0E 100%);
     box-shadow: inset 0 2px 3px rgba(0,0,0,0.22);
   }
+  /* ═══ PREMIUM PASS — trophy material across stats, the rare vault, and
+     museum controls. Placed last so it wins the cascade. ═══ */
+  .stats-card:not(.stats-night):not(.stats-bird) {
+    position: relative;
+    background: linear-gradient(170deg, #FCF8EF 0%, #F4EBD8 70%, #EFE3CA 100%);
+    border: 1px solid #D9CDB4; border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.10), inset 0 0 0 1px rgba(255,255,255,.55);
+  }
+  body.dark .stats-card:not(.stats-night):not(.stats-bird) {
+    background: linear-gradient(170deg, #282216 0%, #201B10 70%, #1A150C 100%);
+    border-color: #3E3624;
+    box-shadow: 0 3px 10px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .stats-card .stats-sec-title { color: #8a7040; }
+  body.dark .stats-card .stats-sec-title { color: #A08850; }
+  .stat-cell {
+    position: relative;
+    background: linear-gradient(170deg, #FCF8EF 0%, #F3EAD6 75%, #EDE1C6 100%);
+    border: 1px solid #D9CDB4; border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08), inset 0 0 0 1px rgba(255,255,255,.55);
+  }
+  .stat-cell::after {
+    content: ''; position: absolute; inset: 4px;
+    border: 1px solid rgba(154,98,0,.16); border-radius: 8px; pointer-events: none;
+  }
+  body.dark .stat-cell {
+    background: linear-gradient(170deg, #282216 0%, #201B10 75%, #1A150C 100%);
+    border-color: #3E3624;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  body.dark .stat-cell::after { border-color: rgba(192,132,20,.2); }
+  .stat-cell-label { color: #8a7040; }
+  body.dark .stat-cell-label { color: #A08850; }
+  /* RARE FINDS: the vault - container vars flip so inline var() text follows */
+  #stats-rare {
+    --text: #F0E6D2; --muted: #C9B080; --accent: #E0B860;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(130% 90% at 50% -10%, rgba(200,150,40,.22) 0%, transparent 55%),
+      linear-gradient(170deg, #2A2214 0%, #201A0E 60%, #191408 100%);
+    border: 1px solid #8A6A28; border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.30), inset 0 0 0 1px rgba(232,192,120,.14);
+  }
+  #stats-rare .stats-sec-title {
+    display: flex; align-items: center; gap: 10px;
+    color: #E0B860; letter-spacing: 2.6px;
+    text-shadow: 0 1px 6px rgba(200,150,40,.4);
+  }
+  #stats-rare .stats-sec-title::before,
+  #stats-rare .stats-sec-title::after {
+    content: ''; height: 1px; flex: 1;
+    background: linear-gradient(90deg, transparent, #C9A250);
+  }
+  #stats-rare .stats-sec-title::after { background: linear-gradient(90deg, #C9A250, transparent); }
+  #stats-rare .stats-hold-card {
+    box-shadow: 0 0 0 1px #C9A250, 0 4px 16px rgba(200,150,40,.35);
+    border-radius: 10px;
+  }
+  #stats-rare .stats-rare-row.gold div { color: #E8D8A8; }
+  #stats-rare .stats-rare-row.gold div div { color: #C9B080; }
+  #stats-rare::after {
+    content: ''; position: absolute; top: -20%; left: 0; width: 40px; height: 140%;
+    background: linear-gradient(90deg, transparent, rgba(232,192,120,.13), transparent);
+    transform: rotate(18deg); animation: rareSheen 7s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes rareSheen {
+    0%, 55% { transform: translateX(-80px) rotate(18deg); }
+    90%, 100% { transform: translateX(560px) rotate(18deg); }
+  }
+  /* Museum: filter button + sort chips join the pressable family */
+  .col-filter-btn {
+    background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
+    color: #5C5342; border: none; border-radius: 10px;
+    font-family: 'Lilita One', 'Source Sans 3', sans-serif; font-weight: 400;
+    letter-spacing: 0.4px; text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    box-shadow: 0 4px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.05);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+  .col-filter-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #B5AA92, inset 0 2px 0 rgba(255,255,255,0.9);
+  }
+  body.dark .col-filter-btn {
+    background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
+    color: #D8D2C6; text-shadow: none;
+    box-shadow: 0 4px 0 #14110C, inset 0 2px 0 rgba(255,255,255,0.08);
+  }
+  .col-filter-chip {
+    background: linear-gradient(180deg, #FDFBF6 0%, #EFE9DC 48%, #E2DACA 100%);
+    color: #5C5342; border: none;
+    box-shadow: 0 3px 0 #B5AA92, inset 0 1px 0 rgba(255,255,255,0.9);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, color 0.15s;
+  }
+  .col-filter-chip:active { transform: translateY(2px); box-shadow: 0 1px 0 #B5AA92, inset 0 1px 0 rgba(255,255,255,0.9); }
+  .col-filter-chip.selected {
+    background: linear-gradient(180deg, #F8ECD6 0%, #F2DFB9 48%, #E9D2A3 100%);
+    color: #7A4B00; border: none;
+    box-shadow: 0 3px 0 #B8934C, inset 0 1px 0 rgba(255,255,255,0.8), inset 0 0 0 1.5px #9A6200;
+  }
+  body.dark .col-filter-chip {
+    background: linear-gradient(180deg, #3A362E 0%, #2E2A23 48%, #2A2620 100%);
+    color: #D8D2C6;
+    box-shadow: 0 3px 0 #14110C, inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  body.dark .col-filter-chip.selected {
+    background: linear-gradient(180deg, #4A3714 0%, #3D2D10 48%, #33250C 100%);
+    color: #EBC078;
+    box-shadow: 0 3px 0 #14110C, inset 0 0 0 1.5px #C08414;
+  }
 </style>
 </head>
 <body>
