@@ -2538,18 +2538,46 @@
     animation: fadeIn 0.15s ease;
   }
   .modal-overlay.visible { display: flex; }
+  /* Modals share the trophy plate's material: parchment gradient, hairline
+     inner frame, ceremonial weight. Every modal is a small crafted object. */
   .modal-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    position: relative;
+    background: linear-gradient(170deg, #FCF8EF 0%, #F4EBD8 70%, #EFE3CA 100%);
+    border: 1px solid #D9CDB4;
+    box-shadow: 0 18px 50px rgba(0,0,0,.30), inset 0 0 0 1px rgba(255,255,255,.55);
     border-radius: 16px;
     padding: 32px 28px 24px;
     max-width: 340px;
     width: 90%;
     text-align: center;
-    box-shadow: var(--shadow-lg);
     animation: slideUp 0.2s ease;
   }
-  .modal-icon { font-size: 36px; margin-bottom: 12px; }
+  .modal-box::before {
+    content: ''; position: absolute; inset: 6px;
+    border: 1px solid rgba(154,98,0,.20);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+  body.dark .modal-box {
+    background: linear-gradient(170deg, #282216 0%, #201B10 70%, #1A150C 100%);
+    border-color: #3E3624;
+    box-shadow: 0 18px 50px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  body.dark .modal-box::before { border-color: rgba(192,132,20,.25); }
+  .modal-icon {
+    width: 58px; height: 58px; margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    background: radial-gradient(circle at 50% 32%, #FBF3DF 0%, #F1E2BC 70%, #E5CE9C 100%);
+    border: 1px solid #C9A250;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  body.dark .modal-icon {
+    background: radial-gradient(circle at 50% 32%, #3A3018 0%, #2C2410 75%, #241C0A 100%);
+    border-color: #8A6A28;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+  }
   .modal-title { font-family: 'Source Sans 3', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
   .modal-body { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 24px; }
   .modal-actions { display: flex; gap: 10px; justify-content: center; }
@@ -3060,8 +3088,15 @@
   .tut-sflash.tut-flash-blue  { background: radial-gradient(circle at center, rgba(var(--accent-rgb),0.18) 0%, transparent 60%); animation: tutFlashPulse 0.35s ease-out forwards; }
   @keyframes tutFlashPulse { 0%{opacity:0} 20%{opacity:1} 100%{opacity:0} }
 
-  /* Buttons are game controls, never text: no selection, no long-press
-     callout, no native tap flash. Covers every button-like element. */
+  /* The entire game is a control surface, not a document: nothing anywhere
+     is selectable or long-press-callout-able. Text fields are the only
+     exception - players must still be able to edit their names. */
+  html, body {
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  input, textarea { -webkit-user-select: text; user-select: text; }
   button, .btn-back, .dark-toggle, .dark-toggle-game, .tut-skip {
     -webkit-user-select: none; user-select: none;
     -webkit-touch-callout: none;
@@ -3189,6 +3224,22 @@
   }
   /* the See Results bar keeps its inner layout; give its pieces the outline too */
   .btn-score .score-eyebrow, .btn-score .score-label-right { color: #fff; }
+
+  /* Quit Game: red chunky, same anatomy as the other start CTAs */
+  .btn-start.btn-danger {
+    background: linear-gradient(180deg, #E2574B 0%, #C0392B 48%, #A82E22 100%);
+    box-shadow: 0 5px 0 #7A1E14, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start.btn-danger:hover {
+    background: linear-gradient(180deg, #E9655A 0%, #CC4436 48%, #B23428 100%);
+    box-shadow: 0 5px 0 #7A1E14, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+  .btn-start.btn-danger:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #7A1E14, inset 0 2px 0 rgba(255,255,255,0.35);
+  }
+  body.dark .btn-start.btn-danger { box-shadow: 0 5px 0 #4A1009, inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -2px 0 rgba(0,0,0,0.12); }
+  body.dark .btn-start.btn-danger:active { box-shadow: 0 1px 0 #4A1009, inset 0 2px 0 rgba(255,255,255,0.25); }
 
   /* How to Play: full-size CTA above Start Game, stone so gold stays the hero.
      Darker than the parchment bg + a real border so it doesn't blend in. */
@@ -3716,6 +3767,7 @@
         Settings
       </button>
     </div>
+    <button class="btn-start btn-danger" id="btn-quit-app" style="width:100%;" onclick="openQuitAppModal()">Quit Game</button>
   </div>
   <p class="start-note">398 events · 9 categories · 3 lives</p>
   <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
@@ -4367,6 +4419,18 @@
     <div class="modal-actions">
       <button class="btn-keep" onclick="closeQuitModal()">Keep Playing</button>
       <button class="btn-quit-confirm" onclick="confirmQuit()">Yes, Quit</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIT APP MODAL: closes the whole app from the start screen -->
+<div class="modal-overlay" id="quit-app-modal" onclick="if(event.target===this)closeQuitAppModal()">
+  <div class="modal-box">
+    <div class="modal-title">Really quit?</div>
+    <div class="modal-body">History will still be here when you get back.</div>
+    <div class="modal-actions" style="flex-direction:column;align-items:stretch;">
+      <button class="btn-keep" style="max-width:none;font-size:14px;padding:12px 10px;" onclick="closeQuitAppModal()">Yesn't</button>
+      <button class="btn-cancel" style="max-width:none;font-size:13px;padding:12px 10px;" onclick="quitApp()">Yes, I want to doomscroll</button>
     </div>
   </div>
 </div>
@@ -6716,6 +6780,26 @@ function closeQuitModal(){
   document.getElementById('quit-modal').classList.remove('visible');
   // resume the turn clock the modal paused
   if(gameMode === 'local2p' && _tpTimerDur && !gameEnded && currentCard) _tpStartTimer();
+}
+
+// ── Quit App (start screen): actually close the application ──
+function openQuitAppModal(){
+  document.getElementById('quit-app-modal').classList.add('visible');
+}
+function closeQuitAppModal(){
+  document.getElementById('quit-app-modal').classList.remove('visible');
+}
+function quitApp(){
+  // Native shell: App.exitApp closes the activity. Guarded per the
+  // no-bundler rule - never assume a plugin method exists.
+  try {
+    const app = window.Capacitor?.Plugins?.App;
+    if (app && typeof app.exitApp === 'function') { app.exitApp(); return; }
+  } catch(e) {}
+  // Web: window.close only works for script-opened tabs; try it, then
+  // just close the modal so the button never feels dead.
+  window.close();
+  closeQuitAppModal();
 }
 function confirmQuit(){
   document.getElementById('quit-modal').classList.remove('visible');
