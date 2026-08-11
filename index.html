@@ -4687,11 +4687,17 @@ if (window.Sentry) {
       sendDefaultPii: false,
       // In-app browsers (Instagram, Facebook, TikTok, LinkedIn) inject their
       // own scripts and throw these against our release. Not our bug.
+      //
+      // 'Java object is gone' is deliberately web-only. It is the Android
+      // WebView error for a collected @JavascriptInterface object: inside an
+      // in-app browser that is THEIR injected bridge dying (noise), but inside
+      // our own shell it would be Capacitor's androidBridge dying, which is a
+      // real crash we must not blind ourselves to. Sentry matches ignoreErrors
+      // by substring, so an unscoped entry would swallow both.
       ignoreErrors: [
-        'Java object is gone',
         'Error invoking postMessage',
         'Object Not Found Matching Id',
-      ],
+      ].concat(window.Capacitor ? [] : ['Java object is gone']),
       denyUrls: [/^iabjs:\/\//, /^fbjs:\/\//],
     });
   } catch(e){}
@@ -4736,6 +4742,9 @@ async function initSupabase() {
     if (!window.supabase) { _SB_ERR('SDK not loaded'); return; }
 
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Log the arrival before sign-in, so a failed auth still leaves a count
+    _recordVisit();
 
     // Restore the persisted auth session, or mint a new anonymous user
     let { data: { session } } = await _sb.auth.getSession();
@@ -4788,6 +4797,59 @@ async function initSupabase() {
   } catch (e) {
     _SB_ERR('init threw', e);
   }
+}
+
+// ── Visit attribution (web only) ──
+// Owned answer to "did the LinkedIn post send anyone", replacing the crash
+// dashboard we just stopped using as a traffic proxy. One row per browser
+// session: no player id, no auth uid, host only (never a full URL, which
+// could carry the referring site's query string). Nothing here is readable
+// with the anon key -- the table is insert-only by RLS.
+//
+// Skipped entirely in the native app: a capacitor:// origin has no referrer
+// to record, and staying inert on Android keeps the already-submitted Play
+// Data Safety declaration accurate.
+function _recordVisit() {
+  if (IS_NATIVE_APP || !_sb) return;
+  try {
+    // Reloads and in-game navigation must not inflate the count
+    if (sessionStorage.getItem('chronology-visit-logged')) return;
+    sessionStorage.setItem('chronology-visit-logged', '1');
+
+    let host = null;
+    if (document.referrer) {
+      try {
+        const u = new URL(document.referrer);
+        if (u.host && u.host !== location.host) host = u.host.slice(0, 120);
+      } catch (e) { /* malformed referrer: leave it null */ }
+    }
+
+    // Tagged links are the only signal that survives an in-app browser, which
+    // is exactly the traffic (Instagram, LinkedIn) worth measuring: those
+    // webviews routinely strip the referrer.
+    let src = null;
+    try {
+      const qs = new URLSearchParams(location.search);
+      src = (qs.get('utm_source') || qs.get('s') || '').trim().slice(0, 60) || null;
+    } catch (e) { /* no query string */ }
+
+    // Fire-and-forget, same as the stats write-through: never awaited, never
+    // blocks boot, and a failure is a log line rather than a broken game.
+    //
+    // The guard is set before the write so a reload mid-flight cannot double
+    // count, but it is released again on failure. Otherwise a single failed
+    // insert would silently lose that visit for the whole session, and since
+    // the table is unreadable with the anon key there would be no way to tell
+    // "nobody came" apart from "the write is broken".
+    _sb.from('visits')
+      .insert({ referrer_host: host, source: src })
+      .then(({ error }) => {
+        if (!error) return;
+        _SB_ERR('visit log failed', error.message);
+        try { sessionStorage.removeItem('chronology-visit-logged'); } catch (e) {}
+      })
+      .catch(() => {});
+  } catch (e) { /* sessionStorage blocked: skip silently */ }
 }
 
 // Pull cards seen on other devices and merge into local seen/new sets
