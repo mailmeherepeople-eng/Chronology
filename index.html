@@ -4685,6 +4685,14 @@ if (window.Sentry) {
       release: 'chronology@1.0.1',
       environment: window.Capacitor ? 'android' : 'web',
       sendDefaultPii: false,
+      // In-app browsers (Instagram, Facebook, TikTok, LinkedIn) inject their
+      // own scripts and throw these against our release. Not our bug.
+      ignoreErrors: [
+        'Java object is gone',
+        'Error invoking postMessage',
+        'Object Not Found Matching Id',
+      ],
+      denyUrls: [/^iabjs:\/\//, /^fbjs:\/\//],
     });
   } catch(e){}
 }
