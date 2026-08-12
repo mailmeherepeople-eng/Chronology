@@ -1034,6 +1034,12 @@
     opacity: 1;
     animation: quipSlideDown 0.3s ease;
   }
+  /* Solo has no turn indicator and no expiry notice, so the strip is a dead
+     55px band. Hidden per-mode rather than removed: 2P still needs the very
+     same element, and every clearQuip() call site would null-deref without it.
+     display:none (not height:0) so it leaves flex flow entirely, with no
+     border or animation left to zero out. */
+  body.mode-solo .quip-banner { display: none; }
   .quip-banner.correct { background: var(--accent); color: #fff; }
   .quip-banner.wrong   { background: var(--danger);  color: #fff; }
   .quip-banner.idle    { background: transparent; }
@@ -2885,7 +2891,7 @@
     position: fixed; inset: 0; z-index: 300;
     /* Same slot as .tut-pill so instruction bubbles never jump around */
     display: flex; align-items: flex-start; justify-content: center;
-    padding-top: calc(112px + var(--sat));
+    padding-top: calc(57px + var(--sat));
     background: rgba(0,0,0,0.54);
     opacity: 0; pointer-events: none;
     transition: opacity 0.3s;
@@ -2984,8 +2990,11 @@
   .tut-pill {
     position: fixed; z-index: 210;
     /* One fixed slot for every instruction bubble: centered, just below the
-       header + feedback-banner band. JS never positions this element. */
-    top: calc(118px + var(--sat));
+       header + feedback-banner band. JS never positions this element.
+       52 header + 11 gap. The 55px feedback banner used to sit between them,
+       but it is hidden in solo now and the tutorial is solo-only, so the slot
+       has to come up with the board or the pill covers the card's year. */
+    top: calc(63px + var(--sat));
     left: 12px; right: 12px; margin: 0 auto; width: max-content;
     background: rgba(8,6,3,0.93);
     border: 1.5px solid rgba(var(--accent-rgb),0.55);
@@ -6183,6 +6192,13 @@ let players  = [];       // [{name, lives, score, streak, maxStreak}]
 let activeIdx = 0;
 let _tpLoserIdx = 0;     // rematch: loser goes first
 
+// Mirrors gameMode onto the body so CSS can scope per-mode. Deliberately a
+// separate class from the header's .two-player flag: that one is header
+// layout, and the finished-online-match branch never sets it.
+function _syncModeClass(){
+  document.body.classList.toggle('mode-solo', gameMode === 'solo');
+}
+
 function _snapshotActive(){
   const p = players[activeIdx];
   if(!p) return;
@@ -6426,6 +6442,7 @@ function startOnlineGame(row){
   // a live game (no realtime update is coming to rescue it) — show the result.
   if(row.status && row.status !== 'active' && row.status !== 'waiting'){
     gameMode = 'online';
+    _syncModeClass();
     players = row.players.map(p => ({name: _safeName(p.name), lives: p.lives, score: p.score, streak: p.streak, maxStreak: p.maxStreak}));
     timeline = row.timeline.map(t => ({ev: _evById(t.card_id), wrong: !!t.wrong})).filter(x => x.ev);
     _hideWaiting();
@@ -6435,6 +6452,7 @@ function startOnlineGame(row){
     return;
   }
   gameMode = 'online';
+  _syncModeClass();
   _tpTimerDur = 0; _tpStopTimer();
   _gameGen++;
   initAudio();
@@ -8071,6 +8089,7 @@ function startGame() {
     _loadActive();
   }
   document.querySelector('.game-header').classList.toggle('two-player', gameMode==='local2p');
+  _syncModeClass();
   document.getElementById('tp-hud').style.display = gameMode==='local2p' ? 'flex' : 'none';
   document.getElementById('tp-endbar').classList.remove('show');
   document.getElementById('tp-end-reason').style.display='none';
