@@ -4755,17 +4755,10 @@ async function initSupabase() {
     }
     if (!session) { _SB_ERR('no auth session'); return; }
 
-    // One-time: re-parent rows created under the legacy localStorage anon_id
-    const legacyAnonId = localStorage.getItem('chronology-anon-id');
-    if (legacyAnonId && !localStorage.getItem('chronology-legacy-claimed')) {
-      const { error } = await _sb.rpc('claim_legacy_player', { p_anon_id: legacyAnonId });
-      if (!error) {
-        localStorage.setItem('chronology-legacy-claimed', '1');
-        _SB_LOG('legacy player claimed');
-      } else {
-        _SB_ERR('legacy claim failed', error.message);
-      }
-    }
+    // The legacy anon_id claim used to run here. Retired 2026-08-11: it let any
+    // fresh anonymous identity take over a player row using only its anon_id,
+    // so EXECUTE was revoked and the remaining anon_ids were cleared. The call
+    // could only 403 from then on, and the migration itself finished long ago.
 
     // Upsert player row — creates on first visit, fetches on return visits
     const { data, error } = await _sb
