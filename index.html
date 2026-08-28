@@ -2564,6 +2564,13 @@
     border-radius: 12px;
     pointer-events: none;
   }
+  /* Settings is the one modal tall enough to outgrow a short viewport
+     (four sections since music landed, and nothing locks orientation).
+     Scoped here so no other modal changes behaviour. */
+  #settings-modal .modal-box {
+    max-height: 92vh;
+    overflow-y: auto;
+  }
   body.dark .modal-box {
     background: linear-gradient(170deg, #282216 0%, #201B10 70%, #1A150C 100%);
     border-color: #3E3624;
@@ -3857,39 +3864,122 @@
     color: #EBC078;
     box-shadow: 0 3px 0 #14110C, inset 0 0 0 1.5px #C08414;
   }
+  /* ═══════════════════════════════════════════════════════════
+     START SCREEN V2 (2026-08-28): topbar corners, fan, category
+     strip, green/gold button ladder. Colors via tokens so dark
+     mode inherits; hard values only where light-only chrome.
+     ═══════════════════════════════════════════════════════════ */
+  .st-topbar { position:absolute; top:calc(12px + var(--sat)); left:16px; right:16px;
+    display:flex; justify-content:space-between; align-items:center; }
+  .st-settings { width:38px; height:38px; border-radius:50%; border:1.5px solid var(--border);
+    background:linear-gradient(180deg, #FFFFFF 0%, #F3EFE7 100%);
+    box-shadow:0 3px 0 #D8D2C6; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .st-settings svg { stroke:var(--muted); }
+  .st-settings:active { transform:translateY(2px); box-shadow:0 1px 0 #D8D2C6; }
+  body.dark .st-settings { background:linear-gradient(180deg, #262626 0%, #1a1a1a 100%); box-shadow:0 3px 0 #000; }
+  body.dark .st-settings:active { box-shadow:0 1px 0 #000; }
+  .btn-start.st-quit { padding:9px 18px 8px; font-size:13px; border-radius:10px;
+    box-shadow:0 3px 0 #7A1E14, inset 0 1px 0 rgba(255,255,255,0.3); }
+  .btn-start.st-quit:active { transform:translateY(2px); box-shadow:0 1px 0 #7A1E14, inset 0 1px 0 rgba(255,255,255,0.3); }
+  body.dark .btn-start.st-quit { box-shadow:0 3px 0 #4A1009, inset 0 1px 0 rgba(255,255,255,0.25); }
+  body.dark .btn-start.st-quit:active { box-shadow:0 1px 0 #4A1009, inset 0 1px 0 rgba(255,255,255,0.25); }
+
+  #screen-start .start-desc { margin-bottom:0; font-size:14px; line-height:1.6; max-width:330px; }
+  #btn-collection { position:relative; }
+  .st-fan { position:relative; width:252px; height:94px; margin:14px auto 0; flex-shrink:0; }
+  .st-mini { position:absolute; width:76px; height:90px; border-radius:8px; overflow:hidden;
+    border:1.5px solid var(--border); background:var(--surface); box-shadow:0 5px 14px rgba(0,0,0,0.16); }
+  .st-mini img { width:100%; height:60px; object-fit:cover; display:block; }
+  .st-ml { font-family:'Lora',serif; font-size:7.5px; font-weight:600; color:var(--text); padding-top:4px; line-height:1.2; text-align:center; }
+  .st-m1 { left:12px; top:9px; transform:rotate(-9deg); }
+  .st-m2 { left:88px; top:0; }
+  .st-m3 { left:164px; top:9px; transform:rotate(9deg); }
+
+  .st-catblock { width:100%; max-width:327px; margin:16px auto 0; }
+  .st-cathead { text-align:left; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
+  .st-strip { display:flex; gap:8px; margin-top:7px; }
+  .st-tile { flex:1; min-width:0; border-radius:10px; overflow:hidden; border:1.5px solid var(--border);
+    background:var(--surface); cursor:pointer; padding:0; font-family:'Source Sans 3',sans-serif; }
+  .st-tile img { width:100%; height:40px; object-fit:cover; display:block; }
+  .st-tile-name { font-size:8px; font-weight:700; color:var(--text); padding:3px 2px 4px; }
+  .st-tile:active { transform:translateY(1px); }
+  .st-tile-more { display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+    color:var(--accent); background:var(--accent-light); border-color:#ecd9b4; }
+  body.dark .st-tile-more { border-color:#5a4416; }
+
+  .st-actions { display:flex; flex-direction:column; gap:10px; align-items:center; width:100%; max-width:320px; margin:18px auto 0; }
+  .st-actions .btn-start { width:100%; }
+  .st-actions .st-sm { padding:13px 0; font-size:16px; }
+  .btn-start.btn-2p.btn-hero { padding:16px 0 13px; font-size:23px; border-radius:16px; line-height:1.15;
+    box-shadow:0 7px 0 #235217, 0 12px 22px rgba(0,0,0,0.16), inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -2px 0 rgba(0,0,0,0.12); }
+  .btn-start.btn-2p.btn-hero:active { transform:translateY(4px);
+    box-shadow:0 2px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.5); }
+  .btn-hero small { display:block; font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:10.5px;
+    letter-spacing:1.6px; text-transform:uppercase; opacity:0.92; margin-top:2px; text-shadow:none; }
+  .st-pair { display:flex; gap:10px; width:100%; }
+  .st-actions .st-pair .btn-start { flex:1; width:auto; padding:12px 0; font-size:15px; }
+  .st-foot { position:absolute; bottom:calc(14px + var(--sab)); left:0; right:0;
+    font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px;
+    color:var(--muted); text-transform:lowercase; }
+  .st-foot span { color:var(--accent); }
+
+  .catpick-box { width:min(92vw, 360px); max-height:88vh; overflow-y:auto; }
+  .catpick-title { font-family:'Lora',serif; font-size:18px; font-weight:700; color:var(--text); }
+  .catpick-sub { font-size:11px; color:var(--muted); margin-top:3px; }
+  .catpick-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .catpick-tile { border-radius:10px; overflow:hidden; border:1.5px solid var(--border);
+    background:var(--surface); cursor:pointer; padding:0; font-family:'Source Sans 3',sans-serif; }
+  .catpick-tile img { width:100%; height:52px; object-fit:cover; display:block; }
+  .catpick-tile div { font-size:9px; font-weight:700; color:var(--text); padding:4px 2px 5px; }
+  .catpick-tile:active { transform:translateY(1px); }
+
 </style>
 </head>
 <body>
 
 <!-- START -->
 <div id="screen-start" class="screen active">
-  <div class="start-eyebrow">A History Card Game</div>
+  <div class="st-topbar">
+    <button class="st-settings" aria-label="Settings" onclick="initAudio();showScreen('settings')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <button class="btn-start btn-danger st-quit" id="btn-quit-app" onclick="openQuitAppModal()">Quit</button>
+  </div>
+  <div class="start-eyebrow">A Timeline Card Game</div>
   <h1 class="start-title"><span class="ch">Ch</span><span class="rest">ronology</span></h1>
   <p class="start-desc">398 historical events, from the Indus Valley to ChatGPT. No dates given. Place them in order or lose a life. How far can you go?</p>
-  <p style="font-size:14px;color:var(--accent);font-weight:600;margin-bottom:32px;margin-top:-16px;">Can you unlock all 398 cards?</p>
-  <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;margin:0 auto;">
-    <button class="btn-start btn-howto" id="btn-howto" style="width:100%;" onclick="showScreen('tutorial')">How to Play</button>
-    <button class="btn-start btn-2p" id="btn-start" style="width:100%;" onclick="startSolo()">Start Game</button>
-    <button class="btn-start" id="btn-2p" style="width:100%;" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
-    <button class="btn-start btn-2p" id="btn-resume-online" style="width:100%;display:none;" onclick="resumeOnline()">Resume Online Match</button>
-    <div class="start-chip-row">
-      <button class="btn-chip btn-chip-collection" id="btn-collection" onclick="showScreen('collection');_collectionSort='unlocked';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="7" height="9" rx="1"/><rect x="13" y="3" width="9" height="5" rx="1"/><rect x="13" y="12" width="9" height="9" rx="1"/><rect x="2" y="16" width="7" height="5" rx="1"/></svg>
-        Museum<span class="col-notif-dot" id="col-notif-dot" style="display:none;margin-left:2px;">●</span>
-      </button>
-      <button class="btn-chip btn-chip-stats" id="btn-stats" onclick="openStats()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20v-4"/><path d="M12 20V10"/><path d="M18 20V4"/></svg>
-        Stats
-      </button>
-      <button class="btn-chip btn-chip-settings" onclick="showScreen('settings')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
-      </button>
-    </div>
-    <button class="btn-start btn-danger" id="btn-quit-app" style="width:100%;" onclick="openQuitAppModal()">Quit Game</button>
+  <div class="st-fan">
+    <div class="st-mini st-m1"><img src="images/categories/ancient_india.webp" alt=""><div class="st-ml">Indus Valley</div></div>
+    <div class="st-mini st-m2"><img src="images/categories/medieval_india.webp" alt=""><div class="st-ml">Taj Mahal</div></div>
+    <div class="st-mini st-m3"><img src="images/categories/science_tech.webp" alt=""><div class="st-ml">ChatGPT</div></div>
   </div>
-  <p class="start-note">398 events · 9 categories · 3 lives</p>
-  <p style="margin-top:10px;font-size:11px;font-family:'Source Sans 3',sans-serif;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:lowercase;">a <span style="color:var(--accent);">git gud</span> game</p>
+  <div class="st-catblock">
+    <div class="st-cathead">Play a category</div>
+    <div class="st-strip">
+      <button class="st-tile" onclick="startCategoryRun('Ancient India')"><img src="images/categories/ancient_india.webp" alt=""><div class="st-tile-name">Ancient India</div></button>
+      <button class="st-tile" onclick="startCategoryRun('Colonial India')"><img src="images/categories/colonial_india.webp" alt=""><div class="st-tile-name">Colonial India</div></button>
+      <button class="st-tile" onclick="startCategoryRun('Science &amp; Tech')"><img src="images/categories/science_tech.webp" alt=""><div class="st-tile-name">Science &amp; Tech</div></button>
+      <button class="st-tile st-tile-more" onclick="openCatPick()">+6</button>
+    </div>
+  </div>
+  <div class="st-actions">
+    <button class="btn-start btn-2p st-sm" id="btn-resume-online" style="display:none;" onclick="resumeOnline()">Resume Online Match</button>
+    <button class="btn-start btn-2p btn-hero" id="btn-start" onclick="startSolo()"><span id="btn-start-label">Start Game</span><small id="btn-start-sub">solo run &middot; 3 lives</small></button>
+    <button class="btn-start btn-2p st-sm" id="btn-2p" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
+    <button class="btn-start st-sm" id="btn-howto" onclick="showScreen('tutorial')">How to Play</button>
+    <div class="st-pair">
+      <button class="btn-start" id="btn-collection" onclick="showScreen('collection');_collectionSort='unlocked';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">Museum<span class="col-notif-dot" id="col-notif-dot" style="display:none;margin-left:4px;">&#9679;</span></button>
+      <button class="btn-start" id="btn-stats" onclick="openStats()">Stats</button>
+    </div>
+  </div>
+  <p class="st-foot">a <span>git gud</span> game</p>
+</div>
+
+<!-- CATEGORY RUN PICKER -->
+<div class="modal-overlay" id="catpick-modal" onclick="if(event.target===this)closeCatPick()">
+  <div class="modal-box catpick-box">
+    <div class="catpick-title">Play a Category</div>
+    <div class="catpick-sub">A solo run drawn from one category. More categories coming soon.</div>
+    <div class="catpick-grid" id="catpick-grid"></div>
+  </div>
 </div>
 
 <!-- TWO PLAYER MODE CHOOSER -->
@@ -4041,6 +4131,20 @@
   </div>
 
   <div class="settings-section">
+    <div class="settings-label">Background Music</div>
+    <div class="settings-slider-row">
+      <input type="range" class="settings-slider" id="settings-music-vol" min="0" max="100" value="35" oninput="onMusicVolChange(this.value)">
+      <span class="settings-slider-val" id="settings-music-vol-val">35%</span>
+    </div>
+    <div class="settings-toggle-row" style="margin-top:10px;">
+      <span class="settings-toggle-label">Music</span>
+      <button class="settings-toggle active" id="settings-music" onclick="toggleMusic()">
+        <span class="settings-toggle-knob"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-section">
     <div class="settings-label">Haptics / Vibration</div>
     <div class="settings-toggle-row">
       <span class="settings-toggle-label">Vibration</span>
@@ -4148,7 +4252,7 @@
         <!-- badge floats above button -->
         <div class="new-badge" id="end-new-badge"></div>
       </div>
-      <button class="btn-replay" onclick="startSolo()">Play Again</button>
+      <button class="btn-replay" onclick="playAgain()">Play Again</button>
     </div>
   </div>
   <div class="online-claim" id="online-claim" style="display:none;">
@@ -4603,6 +4707,19 @@
       <div class="settings-toggle-row" style="margin-top:10px;">
         <span class="settings-toggle-label">Mute</span>
         <button class="settings-toggle" id="modal-mute" onclick="toggleMute()">
+          <span class="settings-toggle-knob"></span>
+        </button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Background Music</div>
+      <div class="settings-slider-row">
+        <input type="range" class="settings-slider" id="modal-music-vol" min="0" max="100" value="35" oninput="onMusicVolChange(this.value)">
+        <span class="settings-slider-val" id="modal-music-vol-val">35%</span>
+      </div>
+      <div class="settings-toggle-row" style="margin-top:10px;">
+        <span class="settings-toggle-label">Music</span>
+        <button class="settings-toggle active" id="modal-music" onclick="toggleMusic()">
           <span class="settings-toggle-knob"></span>
         </button>
       </div>
@@ -5731,11 +5848,18 @@ function setTutFlyingCard(ev){
 }
 
 // Load events then initialise the game UI
+function _setStartLabel(t, showSub){
+  const l = document.getElementById('btn-start-label');
+  const sub = document.getElementById('btn-start-sub');
+  if(l) l.textContent = t;
+  else { const b = document.getElementById('btn-start'); if(b) b.textContent = t; }
+  if(sub) sub.style.display = showSub ? '' : 'none';
+}
 function _setStartBtnState(){
   const btn = document.getElementById('btn-start');
   if(!btn) return;
-  if(EVENTS.length){ btn.textContent = 'Start Game'; btn.disabled = false; }
-  else { btn.textContent = 'No connection. Tap to retry'; btn.disabled = false; }
+  if(EVENTS.length){ _setStartLabel('Start Game', true); btn.disabled = false; }
+  else { _setStartLabel('No connection. Tap to retry', false); btn.disabled = false; }
 }
 
 // First run with no network and no cache: EVENTS is empty and startGame
@@ -5745,7 +5869,7 @@ async function _retryLoadEvents(){
   if(_retryingLoad) return;
   _retryingLoad = true;
   const btn = document.getElementById('btn-start');
-  if(btn){ btn.textContent = 'Loading...'; btn.disabled = true; }
+  if(btn){ _setStartLabel('Loading...', false); btn.disabled = true; }
   try { await loadEvents(); } catch(e){}
   _retryingLoad = false;
   _setStartBtnState();
@@ -5753,7 +5877,7 @@ async function _retryLoadEvents(){
 
 (function(){
   const btn = document.getElementById('btn-start');
-  if(btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
+  if(btn) { _setStartLabel('Loading...', false); btn.disabled = true; }
 
   // Run both in parallel — Supabase init doesn't block game load
   Promise.all([
@@ -6210,7 +6334,46 @@ function _loadActive(){
   lives = p.lives; score = p.score; streak = p.streak; maxStreak = p.maxStreak;
 }
 
+// ── CATEGORY RUN: a solo run drawn from a single category ──
+let _categoryRun = null;
+function startCategoryRun(cat){
+  if(!EVENTS.length){ _retryLoadEvents(); return; }
+  _categoryRun = cat;
+  gameMode = 'solo';
+  players = [];
+  _tpTimerDur = 0;
+  closeCatPick();
+  startGame();
+}
+function openCatPick(){
+  initAudio();
+  const grid = document.getElementById('catpick-grid');
+  grid.innerHTML = '';
+  Object.keys(CAT).forEach(name => {
+    if(name === 'Meta') return;
+    const t = document.createElement('button');
+    t.className = 'catpick-tile';
+    const img = document.createElement('img');
+    img.src = CAT[name].img; img.alt = '';
+    const lb = document.createElement('div');
+    lb.textContent = name;
+    t.appendChild(img); t.appendChild(lb);
+    t.onclick = () => startCategoryRun(name);
+    grid.appendChild(t);
+  });
+  document.getElementById('catpick-modal').classList.add('visible');
+}
+function closeCatPick(){ document.getElementById('catpick-modal').classList.remove('visible'); }
+// Play Again repeats the current run type: a category run replays the same category
+function playAgain(){
+  gameMode = 'solo';
+  players = [];
+  _tpTimerDur = 0;
+  startGame();
+}
+
 function startSolo(){
+  _categoryRun = null;
   gameMode = 'solo';
   players = [];
   _tpTimerDur = 0;
@@ -7390,6 +7553,10 @@ function _showScreenInternal(id){
   document.querySelectorAll('.drag-clone').forEach(n=>n.remove());
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
+  // Background music follows the screen. Runs before the per-screen branches
+  // below (and guarded) so neither a music fault nor one of theirs can take
+  // the other down.
+  try { setMusicFor(id); } catch(e){}
   if(id === 'tutorial'){
     // Start the two-phase animation
     _s1Active = true;
@@ -8066,14 +8233,18 @@ function startGame() {
   initAudio();
   // Meta cards never enter the normal pool; the 0.1% injection only unlocks
   // for players who have already collected META_MIN_SEEN cards
-  const pool = EVENTS.filter(e => e.cat !== 'Meta');
+  let pool = EVENTS.filter(e => e.cat !== 'Meta');
+  if(_categoryRun){
+    const cp = pool.filter(e => e.cat === _categoryRun);
+    if(cp.length >= 8) pool = cp; else _categoryRun = null;
+  }
   const s = gameMode==='local2p'
     ? plainShuffle(pool)
     : weightedShuffle(pool, buildWeights(pool));
   const metas = EVENTS.filter(e => e.cat === 'Meta');
   const _live = new Set(EVENTS.map(e => e.id));
   const _seenLiveCount = [...getSeenIds()].filter(id => _live.has(id)).length;
-  if(metas.length && _seenLiveCount >= META_MIN_SEEN && Math.random() < META_DRAW_RATE){
+  if(!_categoryRun && metas.length && _seenLiveCount >= META_MIN_SEEN && Math.random() < META_DRAW_RATE){
     const m = metas[Math.floor(Math.random() * metas.length)];
     // never the seed or opening card: land it somewhere in the draw pile
     s.splice(2 + Math.floor(Math.random() * Math.max(1, s.length - 2)), 0, m);
@@ -8863,6 +9034,7 @@ function toggleMute(){
   const muted = !getSettingMuted();
   localStorage.setItem('chronology-muted', String(muted));
   syncSettingsUI();
+  _musApplyEnabled(); // master mute covers the background music too
 }
 
 function toggleVibration(){
@@ -8885,6 +9057,13 @@ function syncSettingsUI(){
 
   document.querySelectorAll('#settings-vibration, #modal-vibration').forEach(btn => {
     btn.classList.toggle('active', vib);
+  });
+
+  const musVol = getSettingMusicVol();
+  document.querySelectorAll('#settings-music-vol, #modal-music-vol').forEach(s => s.value = musVol);
+  document.querySelectorAll('#settings-music-vol-val, #modal-music-vol-val').forEach(s => s.textContent = musVol + '%');
+  document.querySelectorAll('#settings-music, #modal-music').forEach(btn => {
+    btn.classList.toggle('active', getSettingMusicOn());
   });
 }
 
@@ -9039,6 +9218,210 @@ function playSpecialEndSound(prevHigh, wrongCount){
   }
   // else: normal game over, no special sound
 }
+
+// ═══════════════════════════════════════════════════════════
+//  BACKGROUND MUSIC
+//  Deliberately NOT part of the SFX system above: decoding a two-minute
+//  track into an AudioContext buffer costs tens of MB of RAM on a phone.
+//  Music streams through <audio loop> instead, one element per track,
+//  crossfaded on screen change. A missing or unplayable file degrades to
+//  silence and is never retried, so the game is unaffected until the
+//  mp3s land in sounds/music/.
+// ═══════════════════════════════════════════════════════════
+const _MUS_V = 1; // cache-bust: bump when swapping music files
+const _MUS_SRC = {
+  calm: `sounds/music/calm.mp3?v=${_MUS_V}`, // menu, museum, stats, settings
+  game: `sounds/music/game.mp3?v=${_MUS_V}`, // during a run
+};
+// Every screen gets 'calm' unless listed here. 'gameover' is special-cased in
+// setMusicFor: the end-game special sound needs a beat of quiet to land in.
+const _MUS_BY_SCREEN = { game: 'game' };
+const _MUS_FADE_MS  = 500;  // crossfade on screen change
+const _MUS_GO_QUIET = 1300; // ms of silence on gameover before calm returns
+
+const _musEls   = {}; // key -> HTMLAudioElement, built on first use
+const _musFades = {}; // key -> interval id of an in-flight volume ramp
+const _musDead  = {}; // key -> true once that file has failed; never retried
+let _musWanted    = null; // track the current screen wants, even while muted
+let _musGoTimer   = null;
+let _musGestureOn = false;
+
+function getSettingMusicVol(){
+  const v = localStorage.getItem('chronology-music-vol');
+  return v !== null ? parseInt(v) : 35; // sits under the SFX by default
+}
+function getSettingMusicOn(){
+  const v = localStorage.getItem('chronology-music-on');
+  return v !== null ? v === 'true' : true;
+}
+
+// Peak volume for the music bed. Master mute silences everything; the music
+// toggle silences only this.
+function _musPeak(){
+  if(getSettingMuted() || !getSettingMusicOn()) return 0;
+  return getSettingMusicVol() / 100;
+}
+
+function onMusicVolChange(val){
+  val = parseInt(val);
+  localStorage.setItem('chronology-music-vol', String(val));
+  document.querySelectorAll('#settings-music-vol, #modal-music-vol').forEach(s => s.value = val);
+  document.querySelectorAll('#settings-music-vol-val, #modal-music-vol-val').forEach(s => s.textContent = val + '%');
+  // Dragging the slider tracks live: no fade, follow the finger.
+  const el = _musWanted && _musEls[_musWanted];
+  if(el && !el.paused){
+    _musCancelFade(_musWanted);
+    try { el.volume = _musPeak(); } catch(e){}
+  }
+}
+
+function toggleMusic(){
+  localStorage.setItem('chronology-music-on', String(!getSettingMusicOn()));
+  syncSettingsUI();
+  _musApplyEnabled();
+}
+
+// Start or stop the bed after a mute/music toggle, without losing track of
+// which screen's music should be playing.
+function _musApplyEnabled(){
+  if(_musPeak() === 0) _musStopAll();
+  else if(_musWanted) _musStart(_musWanted);
+}
+
+function _musEl(key){
+  if(_musEls[key]) return _musEls[key];
+  if(_musDead[key] || !_MUS_SRC[key]) return null;
+  let el;
+  try { el = new Audio(); } catch(e){ _musDead[key] = true; return null; }
+  el.src = _MUS_SRC[key];
+  el.loop = true;
+  el.preload = 'auto';
+  el.volume = 0;
+  // A 404 or an undecodable file must never nag: mark it dead, stay silent.
+  el.addEventListener('error', () => { _musDead[key] = true; });
+  _musEls[key] = el;
+  return el;
+}
+
+function _musCancelFade(key){
+  if(_musFades[key]){ clearInterval(_musFades[key]); delete _musFades[key]; }
+}
+
+// Linear volume ramp. HTMLMediaElement has no scheduled ramps, so this is a
+// timer. (iOS Safari makes .volume read-only — there the bed cuts instead of
+// fading, which is cosmetic; play/pause and the toggles still work.)
+function _musFadeTo(key, target, ms, onDone){
+  const el = _musEls[key];
+  if(!el) return;
+  _musCancelFade(key);
+  const from  = el.volume;
+  const steps = Math.max(1, Math.round(ms / 40));
+  let i = 0;
+  _musFades[key] = setInterval(() => {
+    i++;
+    const v = from + (target - from) * (i / steps);
+    try { el.volume = Math.max(0, Math.min(1, v)); } catch(e){}
+    if(i >= steps){
+      _musCancelFade(key);
+      if(onDone) onDone();
+    }
+  }, 40);
+}
+
+// Autoplay is allowed inside the Capacitor shell (the bridge clears the
+// gesture requirement) but blocked on the web build until the first tap.
+function _musArmGesture(){
+  if(_musGestureOn) return;
+  _musGestureOn = true;
+  const go = () => {
+    document.removeEventListener('pointerdown', go);
+    document.removeEventListener('touchend', go);
+    _musGestureOn = false;
+    if(_musWanted) _musStart(_musWanted);
+  };
+  document.addEventListener('pointerdown', go, { once: true });
+  document.addEventListener('touchend', go, { once: true });
+}
+
+function _musStart(key){
+  const peak = _musPeak();
+  if(peak === 0) return;
+  const el = _musEl(key);
+  if(!el) return;
+  Object.keys(_musEls).forEach(k => { if(k !== key) _musFadeOutPause(k); });
+  let p;
+  try { p = el.play(); } catch(e){ return; }
+  if(p && p.then){
+    p.then(() => _musFadeTo(key, _musPeak(), _MUS_FADE_MS))
+     .catch(err => {
+       // NotAllowedError is the autoplay policy — retry on the first touch.
+       // Anything else (missing or undecodable file) stays silent for good.
+       if(err && err.name === 'NotAllowedError') _musArmGesture();
+       else _musDead[key] = true;
+     });
+  } else {
+    _musFadeTo(key, peak, _MUS_FADE_MS);
+  }
+}
+
+function _musFadeOutPause(key){
+  const el = _musEls[key];
+  if(!el || el.paused) return;
+  _musFadeTo(key, 0, _MUS_FADE_MS, () => { try { el.pause(); } catch(e){} });
+}
+
+function _musStopAll(){
+  Object.keys(_musEls).forEach(k => _musFadeOutPause(k));
+}
+
+// The single entry point — called from _showScreenInternal on every change.
+function setMusicFor(screenId){
+  clearTimeout(_musGoTimer);
+  if(screenId === 'gameover'){
+    // Cut the game bed at once so the end-game special sound lands clean,
+    // then bring the calm track back under the score plate.
+    _musWanted = 'calm';
+    _musFadeOutPause('game');
+    _musGoTimer = setTimeout(() => { if(_musWanted === 'calm') _musStart('calm'); }, _MUS_GO_QUIET);
+    return;
+  }
+  const key = _MUS_BY_SCREEN[screenId] || 'calm';
+  if(_musWanted === key){
+    // Same bed: never restart it when bouncing between menu screens. Only
+    // pick it back up if it has been stopped or faded out.
+    const el = _musEls[key];
+    if(_musPeak() > 0 && (!el || el.paused || el.volume < _musPeak() - 0.01)) _musStart(key);
+    return;
+  }
+  _musWanted = key;
+  _musStart(key);
+}
+
+// Backgrounding: never keep playing over another app. Pause hard (no fade —
+// the app is already gone) and pick up where the screen left off on return.
+function _musPauseForBackground(){
+  clearTimeout(_musGoTimer);
+  Object.keys(_musEls).forEach(k => {
+    const el = _musEls[k];
+    if(el && !el.paused){ _musCancelFade(k); try { el.pause(); } catch(e){} }
+  });
+}
+function _musResumeFromBackground(){
+  if(_musWanted && _musPeak() > 0) _musStart(_musWanted);
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden') _musPauseForBackground();
+  else _musResumeFromBackground();
+});
+if (window.Capacitor?.Plugins?.App) {
+  window.Capacitor.Plugins.App.addListener('appStateChange', (s) => {
+    if(s && s.isActive === false) _musPauseForBackground();
+    else _musResumeFromBackground();
+  });
+}
+
+// Menu bed on launch: instant in the app, deferred to the first tap on web.
+try { setMusicFor('start'); } catch(e){}
 
 // ═══════════════════════════════════════════════════════════
 //  HAPTIC FEEDBACK

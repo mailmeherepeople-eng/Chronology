@@ -7,6 +7,52 @@ Newest first.
 
 ---
 
+## 2026-08-28
+
+### Start screen v2: the button ladder and the category strip
+
+**Decision.** The start screen is rebuilt around one hierarchy: Settings gear and Quit pill in the top corners, title block with the full description, a three-card fan (Indus Valley, Taj Mahal, ChatGPT, real cards, category art), a "Play a category" strip, then the button ladder: Start Game as a green hero with a "solo run, 3 lives" sublabel, 2 Player Mode in the same green, How to Play and Museum/Stats in the full gold. Green means "play", gold means "info", red exists only on Quit. No light shades; hierarchy is carried by the hero's size and sublabel alone (iterated through five shade mockups before landing here).
+
+**Category Run.** A solo run drawn from a single category. `_categoryRun` filters the pool in `startGame` (guarded: under 8 cards falls back to a full run), the meta-card injection is skipped during category runs, and everything else rides the normal solo pipeline: museum unlocks, stats, sessions. `startSolo()` clears the filter; the end-bar Play Again now calls `playAgain()`, which keeps it, so replaying a category run replays that category. The strip's three tiles start their category directly; "+6" opens a modal with all nine.
+
+**The start button grew a label span.** `_setStartBtnState` used to write `btn.textContent`, which would have wiped the hero's sublabel. All three writers (state sync, retry, boot IIFE) now go through `_setStartLabel(text, showSub)`, which targets `#btn-start-label` and hides the sublabel for non-idle states like "Loading..." and the retry message.
+
+**The notification dot trap.** `.col-notif-dot` is `position:absolute` top-right, designed for the old chip which was `position:relative`. The new gold Museum button was not, so the dot escaped to the screen edge and dragged a horizontal scrollbar with it. Fix: `#btn-collection { position:relative; }`. When moving a badge, move its anchor.
+
+**Removed from the screen**: the "Can you unlock all 398 cards?" line, the "398 events / 9 categories / 3 lives" note (the sublabel and description carry both), and the old chip row. All ids the JS reaches for (btn-start, btn-resume-online, btn-collection, col-notif-dot, btn-quit-app, btn-2p, btn-howto, btn-stats) survive in the new markup.
+
+---
+
+## 2026-08-13
+
+### Background music streams through `<audio>`, it does not join the SFX buffer system
+
+**Decision.** Two `<audio loop>` elements (`calm`, `game`) in a self-contained BACKGROUND MUSIC block, crossfaded by a timer. The `AudioContext` + `decodeAudioData` path above it is untouched and still owns every SFX.
+
+**Why.** `initAudio()` decodes each sound into a `AudioBuffer`, which holds raw PCM: fine for a 45 KB blip, ruinous for a two-minute bed. Stereo 44.1 kHz float32 is ~21 MB per decoded minute, so two music tracks through that path would cost ~80 MB of RAM on phones the game is meant to run on. Streaming costs a timer-driven fade instead of a scheduled `GainNode` ramp, which is the right trade.
+
+**Cost.** `HTMLMediaElement.volume` is read-only on iOS Safari, so the bed there cuts instead of fading. Cosmetic, and the toggles and pause/resume still work. If iOS ever matters, route the elements through `createMediaElementSource` into the existing `AudioContext` and fade a `GainNode`.
+
+### The screen → track map hangs off `_showScreenInternal`, not off the callers
+
+**Decision.** One `setMusicFor(id)` call near the top of `_showScreenInternal`, wrapped in `try/catch`. Everything is `calm` except `game`; `gameover` is special-cased.
+
+**Why there.** It is the single choke point every navigation already funnels through, including the hardware-back path, which bypasses `showScreen()` entirely. Hooking the call sites instead would have missed back-button navigation and every future screen. It sits *before* the per-screen branches so a throw in `runGoPlateAnimations()` cannot leave the game bed playing over the score plate, and the `try/catch` makes the converse impossible too.
+
+**Why `gameover` is special.** The end-of-run specials (`new_high`, `near_miss`, `zero`, `suspicious`) are the emotional payload of the screen and they lose to a music bed underneath them. The game track is cut on entry and `calm` fades back in 1.3 s later. Re-entering `game` (Play Again) clears that timer first, so a fast retap never gets a stray calm start.
+
+### Music has its own volume and toggle rather than riding the existing slider
+
+**Decision.** New `chronology-music-vol` (default 35) and `chronology-music-on` (default true), surfaced in both the settings screen and the in-game modal. Master Mute still silences everything.
+
+**Why.** Wanting the answer sounds but not the bed is the single most common reaction to background music in a game, and one shared slider makes that impossible. Default 35 against the SFX default of 70 keeps the bed under the sounds that carry information.
+
+**Cost.** The in-game settings modal gained a fourth section, so `#settings-modal .modal-box` is now capped at `92vh` with `overflow-y: auto`. Nothing locks orientation, and at 812x375 the modal was already taller than the viewport before music existed — this fixes that case rather than creating it. The cap is scoped to that one modal so no other modal's `::before` inset border can start scrolling with content.
+
+**Missing files are a supported state.** A 404 or an undecodable track is marked dead on first failure and never retried, so the game behaves exactly as it did before until `sounds/music/calm.mp3` and `game.mp3` exist. Autoplay is allowed in the Capacitor shell (`Bridge.java` clears the gesture requirement) but blocked on the web build, where a rejected `play()` with `NotAllowedError` arms a one-shot listener and starts on the first tap.
+
+---
+
 ## 2026-08-11 / 2026-08-12
 
 ### Hide the feedback banner in solo instead of removing it
