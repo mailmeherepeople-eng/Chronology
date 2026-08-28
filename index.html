@@ -3923,21 +3923,51 @@
     color:var(--muted); text-transform:lowercase; }
   .st-foot span { color:var(--accent); }
 
-  .catpick-box { width:min(92vw, 360px); max-height:88vh; overflow-y:auto; }
-  .catpick-title { font-family:'Lora',serif; font-size:18px; font-weight:700; color:var(--text); }
-  .catpick-sub { font-size:11px; color:var(--muted); margin-top:3px; }
-  .catpick-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
-  .catpick-tile { border-radius:10px; overflow:hidden; border:1.5px solid var(--border);
-    background:var(--surface); cursor:pointer; padding:0; font-family:'Source Sans 3',sans-serif; }
-  .catpick-tile img { width:100%; height:52px; object-fit:cover; display:block; }
-  .catpick-tile div { font-size:9px; font-weight:700; color:var(--text); padding:4px 2px 5px; }
+  /* Category picker: the Vault (Rare Finds premium language), lit-exhibit selection.
+     Inherently dark, so light and dark themes share one look (like #stats-rare). */
+  .modal-box.catpick-box, body.dark .modal-box.catpick-box {
+    width:min(92vw, 352px); max-height:88vh; overflow:hidden; position:relative;
+    background:
+      radial-gradient(130% 90% at 50% -10%, rgba(200,150,40,.25) 0%, transparent 55%),
+      linear-gradient(170deg, #2A2214 0%, #201A0E 60%, #191408 100%);
+    border:1px solid #8A6A28;
+    box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 0 0 1px rgba(232,192,120,.16); }
+  .modal-box.catpick-box::before, body.dark .modal-box.catpick-box::before {
+    border-color: rgba(232,192,120,.18); }
+  .catpick-sheen { position:absolute; top:-20%; left:0; width:40px; height:140%; pointer-events:none;
+    background:linear-gradient(90deg, transparent, rgba(232,192,120,.14), transparent);
+    transform:rotate(18deg); animation: rareSheen 7s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .catpick-sheen { animation:none; } }
+  .catpick-title { display:flex; align-items:center; gap:10px; font-family:'Source Sans 3',sans-serif;
+    font-size:14px; font-weight:700; letter-spacing:2.6px; text-transform:uppercase;
+    color:#E0B860; text-shadow:0 1px 6px rgba(200,150,40,.4); }
+  .catpick-title::before { content:''; height:1px; flex:1; background:linear-gradient(90deg, transparent, #C9A250); }
+  .catpick-title::after { content:''; height:1px; flex:1; background:linear-gradient(90deg, #C9A250, transparent); }
+  .catpick-sub { font-size:11px; color:#C9B080; margin-top:6px; }
+  .catpick-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:14px; position:relative; max-height:56vh; overflow-y:auto; }
+  .catpick-tile { position:relative; border-radius:10px; overflow:hidden; cursor:pointer; padding:0;
+    font-family:'Source Sans 3',sans-serif;
+    background:linear-gradient(170deg,#282216 0%,#201B10 75%,#1A150C 100%);
+    border:1px solid #3E3624; box-shadow:0 2px 6px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.04);
+    transition:box-shadow .18s, border-color .18s; }
+  .catpick-tile img { width:100%; height:52px; object-fit:cover; display:block; opacity:.92;
+    transition:opacity .18s, filter .18s; }
+  .catpick-tile div { font-size:9px; font-weight:700; color:#E8D8A8; padding:4px 2px 5px; transition:color .18s; }
   .catpick-tile:active { transform:translateY(1px); }
-  .catpick-tile { position:relative; }
-  .catpick-tile.sel { border-color:#479A31; box-shadow:0 0 0 1.5px #479A31; }
-  .catpick-check { position:absolute; top:4px; right:4px; width:18px; height:18px; border-radius:50%;
-    background:#479A31; border:1.5px solid #fff; display:none; align-items:center; justify-content:center; }
-  .catpick-tile.sel .catpick-check { display:flex; }
-  .catpick-play { width:100%; margin-top:14px; padding:13px 0; font-size:16px; }
+  /* Lit exhibit: once anything is selected, the unpicked tiles fall into shadow */
+  .catpick-grid.has-sel .catpick-tile:not(.sel) img { opacity:.45; filter:saturate(.55) brightness(.8); }
+  .catpick-grid.has-sel .catpick-tile:not(.sel) div { color:#8d7d58; }
+  .catpick-tile.sel { border-color:#F7DE9C;
+    box-shadow:0 0 0 2px #F7DE9C, 0 0 18px rgba(247,222,156,.45), 0 2px 6px rgba(0,0,0,.4); }
+  .catpick-tile.sel img { opacity:1; }
+  .catpick-tile.sel div { color:#F0E6D2; }
+  .catpick-tile.sel::before { content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(120% 70% at 50% 0%, rgba(247,222,156,.28) 0%, transparent 60%); }
+  .catpick-play { width:100%; margin-top:16px; padding:13px 0; font-size:16px; }
+  .btn-start.btn-2p.catpick-play {
+    box-shadow:0 5px 0 #235217, 0 8px 22px rgba(71,154,49,.35), inset 0 2px 0 rgba(255,255,255,0.45), inset 0 -2px 0 rgba(0,0,0,0.12); }
+  .btn-start.btn-2p.catpick-play:active { transform:translateY(4px);
+    box-shadow:0 1px 0 #235217, inset 0 2px 0 rgba(255,255,255,0.45); }
 
 </style>
 </head>
@@ -3982,6 +4012,7 @@
 <!-- CATEGORY RUN PICKER -->
 <div class="modal-overlay" id="catpick-modal" onclick="if(event.target===this)closeCatPick()">
   <div class="modal-box catpick-box">
+    <div class="catpick-sheen"></div>
     <div class="catpick-title">Play a Category</div>
     <div class="catpick-sub">Pick one or more categories, then play. More coming soon.</div>
     <div class="catpick-grid" id="catpick-grid"></div>
@@ -5018,7 +5049,12 @@ async function _hydrateSeenFromDB() {
 // ── Fire-and-forget helper ──
 function _sbRun(label, fn) {
   if (!_sbReady) return;
-  fn().then(() => _SB_LOG(label, 'synced')).catch(e => _SB_ERR(label, 'failed', e.message));
+  // supabase-js resolves with {error} instead of rejecting, so inspect the result:
+  // a plain .then() logged "synced" for rows PostgREST had actually rejected
+  fn().then(res => {
+    if (res && res.error) _SB_ERR(label, 'failed', res.error.message);
+    else _SB_LOG(label, 'synced');
+  }).catch(e => _SB_ERR(label, 'failed', e.message));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6347,14 +6383,24 @@ let _catPickSel = new Set();
 function startCategoryRun(cats){
   if(!EVENTS.length){ _retryLoadEvents(); return; }
   _categoryRun = Array.isArray(cats) ? cats.slice() : [cats];
+  _logCatRun('play', _categoryRun);
   gameMode = 'solo';
   players = [];
   _tpTimerDur = 0;
   closeCatPick();
   startGame();
 }
+function _logCatRun(event, cats){
+  try {
+    if(!_playerId) return;
+    _sbRun('catRun', () => _sb.from('category_runs').insert({
+      player_id: _playerId, event: event, cats: cats
+    }));
+  } catch(e){}
+}
 function openCatPick(preselect){
   initAudio();
+  _logCatRun('open', preselect ? [preselect] : []);
   _catPickSel = new Set(preselect ? [preselect] : []);
   const grid = document.getElementById('catpick-grid');
   grid.innerHTML = '';
@@ -6366,10 +6412,7 @@ function openCatPick(preselect){
     img.src = CAT[name].img; img.alt = '';
     const lb = document.createElement('div');
     lb.textContent = name;
-    const chk = document.createElement('span');
-    chk.className = 'catpick-check';
-    chk.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    t.appendChild(img); t.appendChild(lb); t.appendChild(chk);
+    t.appendChild(img); t.appendChild(lb);
     t.onclick = () => {
       if(_catPickSel.has(name)) _catPickSel.delete(name); else _catPickSel.add(name);
       t.classList.toggle('sel', _catPickSel.has(name));
@@ -6381,6 +6424,8 @@ function openCatPick(preselect){
   document.getElementById('catpick-modal').classList.add('visible');
 }
 function _catPickSyncPlay(){
+  const grid = document.getElementById('catpick-grid');
+  if(grid) grid.classList.toggle('has-sel', _catPickSel.size > 0);
   const b = document.getElementById('catpick-play');
   if(!b) return;
   const n = _catPickSel.size;
