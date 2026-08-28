@@ -3932,6 +3932,12 @@
   .catpick-tile img { width:100%; height:52px; object-fit:cover; display:block; }
   .catpick-tile div { font-size:9px; font-weight:700; color:var(--text); padding:4px 2px 5px; }
   .catpick-tile:active { transform:translateY(1px); }
+  .catpick-tile { position:relative; }
+  .catpick-tile.sel { border-color:#479A31; box-shadow:0 0 0 1.5px #479A31; }
+  .catpick-check { position:absolute; top:4px; right:4px; width:18px; height:18px; border-radius:50%;
+    background:#479A31; border:1.5px solid #fff; display:none; align-items:center; justify-content:center; }
+  .catpick-tile.sel .catpick-check { display:flex; }
+  .catpick-play { width:100%; margin-top:14px; padding:13px 0; font-size:16px; }
 
 </style>
 </head>
@@ -3954,9 +3960,9 @@
   <div class="st-catblock">
     <div class="st-cathead">Play a category</div>
     <div class="st-strip">
-      <button class="st-tile" onclick="startCategoryRun('Ancient India')"><img src="images/categories/ancient_india.webp" alt=""><div class="st-tile-name">Ancient India</div></button>
-      <button class="st-tile" onclick="startCategoryRun('Colonial India')"><img src="images/categories/colonial_india.webp" alt=""><div class="st-tile-name">Colonial India</div></button>
-      <button class="st-tile" onclick="startCategoryRun('Science &amp; Tech')"><img src="images/categories/science_tech.webp" alt=""><div class="st-tile-name">Science &amp; Tech</div></button>
+      <button class="st-tile" onclick="openCatPick('Ancient India')"><img src="images/categories/ancient_india.webp" alt=""><div class="st-tile-name">Ancient India</div></button>
+      <button class="st-tile" onclick="openCatPick('Colonial India')"><img src="images/categories/colonial_india.webp" alt=""><div class="st-tile-name">Colonial India</div></button>
+      <button class="st-tile" onclick="openCatPick('Science & Tech')"><img src="images/categories/science_tech.webp" alt=""><div class="st-tile-name">Science &amp; Tech</div></button>
       <button class="st-tile st-tile-more" onclick="openCatPick()">+6</button>
     </div>
   </div>
@@ -3977,8 +3983,9 @@
 <div class="modal-overlay" id="catpick-modal" onclick="if(event.target===this)closeCatPick()">
   <div class="modal-box catpick-box">
     <div class="catpick-title">Play a Category</div>
-    <div class="catpick-sub">A solo run drawn from one category. More categories coming soon.</div>
+    <div class="catpick-sub">Pick one or more categories, then play. More coming soon.</div>
     <div class="catpick-grid" id="catpick-grid"></div>
+    <button class="btn-start btn-2p catpick-play" id="catpick-play" onclick="catPickPlay()">Play</button>
   </div>
 </div>
 
@@ -6335,34 +6342,52 @@ function _loadActive(){
 }
 
 // ── CATEGORY RUN: a solo run drawn from a single category ──
-let _categoryRun = null;
-function startCategoryRun(cat){
+let _categoryRun = null;   // array of category names during a category run, else null
+let _catPickSel = new Set();
+function startCategoryRun(cats){
   if(!EVENTS.length){ _retryLoadEvents(); return; }
-  _categoryRun = cat;
+  _categoryRun = Array.isArray(cats) ? cats.slice() : [cats];
   gameMode = 'solo';
   players = [];
   _tpTimerDur = 0;
   closeCatPick();
   startGame();
 }
-function openCatPick(){
+function openCatPick(preselect){
   initAudio();
+  _catPickSel = new Set(preselect ? [preselect] : []);
   const grid = document.getElementById('catpick-grid');
   grid.innerHTML = '';
   Object.keys(CAT).forEach(name => {
     if(name === 'Meta') return;
     const t = document.createElement('button');
-    t.className = 'catpick-tile';
+    t.className = 'catpick-tile' + (_catPickSel.has(name) ? ' sel' : '');
     const img = document.createElement('img');
     img.src = CAT[name].img; img.alt = '';
     const lb = document.createElement('div');
     lb.textContent = name;
-    t.appendChild(img); t.appendChild(lb);
-    t.onclick = () => startCategoryRun(name);
+    const chk = document.createElement('span');
+    chk.className = 'catpick-check';
+    chk.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    t.appendChild(img); t.appendChild(lb); t.appendChild(chk);
+    t.onclick = () => {
+      if(_catPickSel.has(name)) _catPickSel.delete(name); else _catPickSel.add(name);
+      t.classList.toggle('sel', _catPickSel.has(name));
+      _catPickSyncPlay();
+    };
     grid.appendChild(t);
   });
+  _catPickSyncPlay();
   document.getElementById('catpick-modal').classList.add('visible');
 }
+function _catPickSyncPlay(){
+  const b = document.getElementById('catpick-play');
+  if(!b) return;
+  const n = _catPickSel.size;
+  b.disabled = n === 0;
+  b.textContent = n === 0 ? 'Pick a category' : (n === 1 ? 'Play' : 'Play (' + n + ' categories)');
+}
+function catPickPlay(){ if(_catPickSel.size) startCategoryRun([..._catPickSel]); }
 function closeCatPick(){ document.getElementById('catpick-modal').classList.remove('visible'); }
 // Play Again repeats the current run type: a category run replays the same category
 function playAgain(){
@@ -8235,7 +8260,7 @@ function startGame() {
   // for players who have already collected META_MIN_SEEN cards
   let pool = EVENTS.filter(e => e.cat !== 'Meta');
   if(_categoryRun){
-    const cp = pool.filter(e => e.cat === _categoryRun);
+    const cp = pool.filter(e => _categoryRun.includes(e.cat));
     if(cp.length >= 8) pool = cp; else _categoryRun = null;
   }
   const s = gameMode==='local2p'
