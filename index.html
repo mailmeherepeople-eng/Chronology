@@ -9300,19 +9300,29 @@ function playSpecialEndSound(prevHigh, wrongCount){
 // ═══════════════════════════════════════════════════════════
 const _MUS_V = 1; // cache-bust: bump when swapping music files
 const _MUS_SRC = {
-  calm: `sounds/music/calm.mp3?v=${_MUS_V}`, // menu, museum, stats, settings
-  game: `sounds/music/game.mp3?v=${_MUS_V}`, // during a run
+  menu:   `sounds/music/mainmenumusic1.mp3?v=${_MUS_V}`, // start, settings, 2P, tutorial
+  museum: `sounds/music/museummusic1.mp3?v=${_MUS_V}`,
+  stats:  `sounds/music/statsmusic1.mp3?v=${_MUS_V}`,
+  game1:  `sounds/music/ingamemusic1.mp3?v=${_MUS_V}`,
+  game2:  `sounds/music/ingamemusic2.mp3?v=${_MUS_V}`,
+  game3:  `sounds/music/ingamemusic3.mp3?v=${_MUS_V}`,
 };
-// Every screen gets 'calm' unless listed here. 'gameover' is special-cased in
+// In-game music is a POOL: each new game starts on a random track, and when
+// a track ends the next (different, still-alive) one takes over. The named
+// beds loop themselves.
+const _MUS_GAME_POOL = ['game1','game2','game3'];
+// _musWanted holds a GROUP: 'menu' | 'museum' | 'stats' | 'game'. Every
+// screen gets 'menu' unless listed here. 'gameover' is special-cased in
 // setMusicFor: the end-game special sound needs a beat of quiet to land in.
-const _MUS_BY_SCREEN = { game: 'game' };
+const _MUS_BY_SCREEN = { game: 'game', collection: 'museum', stats: 'stats' };
 const _MUS_FADE_MS  = 500;  // crossfade on screen change
 const _MUS_GO_QUIET = 1300; // ms of silence on gameover before calm returns
 
 const _musEls   = {}; // key -> HTMLAudioElement, built on first use
 const _musFades = {}; // key -> interval id of an in-flight volume ramp
 const _musDead  = {}; // key -> true once that file has failed; never retried
-let _musWanted    = null; // track the current screen wants, even while muted
+let _musWanted    = null; // GROUP the current screen wants, even while muted
+let _musGameCur   = null; // which pool track a game group resolves to right now
 let _musGoTimer   = null;
 let _musGestureOn = false;
 
@@ -9332,13 +9342,32 @@ function _musPeak(){
   return getSettingMusicVol() / 100;
 }
 
+// A group resolves to a concrete element key ('game' picks from the pool).
+function _musActiveKey(){
+  return _musWanted === 'game' ? _musGameCur : _musWanted;
+}
+function _musPickGame(exclude){
+  const alive = _MUS_GAME_POOL.filter(k => !_musDead[k] && k !== exclude);
+  if(alive.length) return alive[Math.floor(Math.random() * alive.length)];
+  // Only the excluded one left alive: repeat it rather than go silent.
+  return (exclude && !_musDead[exclude]) ? exclude : null;
+}
+function _musStartGroup(group){
+  if(group === 'game'){
+    if(!_musGameCur || _musDead[_musGameCur]) _musGameCur = _musPickGame(null);
+    if(_musGameCur) _musStart(_musGameCur);
+    return;
+  }
+  _musStart(group);
+}
 function onMusicVolChange(val){
   val = parseInt(val);
   localStorage.setItem('chronology-music-vol', String(val));
   document.querySelectorAll('#settings-music-vol, #modal-music-vol').forEach(s => s.value = val);
   document.querySelectorAll('#settings-music-vol-val, #modal-music-vol-val').forEach(s => s.textContent = val + '%');
   // Dragging the slider tracks live: no fade, follow the finger.
-  const el = _musWanted && _musEls[_musWanted];
+  const key = _musActiveKey();
+  const el = key && _musEls[key];
   if(el && !el.paused){
     _musCancelFade(_musWanted);
     try { el.volume = _musPeak(); } catch(e){}
@@ -9355,7 +9384,7 @@ function toggleMusic(){
 // which screen's music should be playing.
 function _musApplyEnabled(){
   if(_musPeak() === 0) _musStopAll();
-  else if(_musWanted) _musStart(_musWanted);
+  else if(_musWanted) _musStartGroup(_musWanted);
 }
 
 function _musEl(key){
@@ -9364,11 +9393,21 @@ function _musEl(key){
   let el;
   try { el = new Audio(); } catch(e){ _musDead[key] = true; return null; }
   el.src = _MUS_SRC[key];
-  el.loop = true;
+  el.loop = !_MUS_GAME_POOL.includes(key);
   el.preload = 'auto';
   el.volume = 0;
   // A 404 or an undecodable file must never nag: mark it dead, stay silent.
   el.addEventListener('error', () => { _musDead[key] = true; });
+  // Pool chaining: when a game track finishes, hand off to another one.
+  if(_MUS_GAME_POOL.includes(key)){
+    el.addEventListener('ended', () => {
+      if(_musWanted !== 'game' || _musPeak() === 0) return;
+      const next = _musPickGame(key);
+      if(!next) return;
+      _musGameCur = next;
+      _musStart(next);
+    });
+  }
   _musEls[key] = el;
   return el;
 }
@@ -9407,7 +9446,7 @@ function _musArmGesture(){
     document.removeEventListener('pointerdown', go);
     document.removeEventListener('touchend', go);
     _musGestureOn = false;
-    if(_musWanted) _musStart(_musWanted);
+    if(_musWanted) _musStartGroup(_musWanted);
   };
   document.addEventListener('pointerdown', go, { once: true });
   document.addEventListener('touchend', go, { once: true });
@@ -9449,22 +9488,25 @@ function setMusicFor(screenId){
   clearTimeout(_musGoTimer);
   if(screenId === 'gameover'){
     // Cut the game bed at once so the end-game special sound lands clean,
-    // then bring the calm track back under the score plate.
-    _musWanted = 'calm';
-    _musFadeOutPause('game');
-    _musGoTimer = setTimeout(() => { if(_musWanted === 'calm') _musStart('calm'); }, _MUS_GO_QUIET);
+    // then bring the menu track back under the score plate.
+    _musWanted = 'menu';
+    _MUS_GAME_POOL.forEach(k => _musFadeOutPause(k));
+    _musGoTimer = setTimeout(() => { if(_musWanted === 'menu') _musStart('menu'); }, _MUS_GO_QUIET);
     return;
   }
-  const key = _MUS_BY_SCREEN[screenId] || 'calm';
-  if(_musWanted === key){
+  const group = _MUS_BY_SCREEN[screenId] || 'menu';
+  if(_musWanted === group){
     // Same bed: never restart it when bouncing between menu screens. Only
     // pick it back up if it has been stopped or faded out.
-    const el = _musEls[key];
-    if(_musPeak() > 0 && (!el || el.paused || el.volume < _musPeak() - 0.01)) _musStart(key);
+    const key = _musActiveKey();
+    const el = key && _musEls[key];
+    if(_musPeak() > 0 && (!el || el.paused || el.volume < _musPeak() - 0.01)) _musStartGroup(group);
     return;
   }
-  _musWanted = key;
-  _musStart(key);
+  _musWanted = group;
+  // Every new game opens on a fresh random track from the pool.
+  if(group === 'game') _musGameCur = _musPickGame(null);
+  _musStartGroup(group);
 }
 
 // Backgrounding: never keep playing over another app. Pause hard (no fade —
@@ -9477,7 +9519,7 @@ function _musPauseForBackground(){
   });
 }
 function _musResumeFromBackground(){
-  if(_musWanted && _musPeak() > 0) _musStart(_musWanted);
+  if(_musWanted && _musPeak() > 0) _musStartGroup(_musWanted);
 }
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'hidden') _musPauseForBackground();

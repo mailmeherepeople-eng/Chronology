@@ -1,11 +1,19 @@
 # Background music
 
-Two files, exact names, this folder:
+Six files, exact names, this folder:
 
-| File       | Plays on                                        |
-|------------|-------------------------------------------------|
-| `calm.mp3` | menu, museum, stats, settings, 2P lobby, tutorial |
-| `game.mp3` | during a run                                     |
+| File                 | Plays on                                   |
+|----------------------|--------------------------------------------|
+| `mainmenumusic1.mp3` | start screen, settings, 2P chooser, tutorial |
+| `museummusic1.mp3`   | the Museum                                 |
+| `statsmusic1.mp3`    | the stats screen                           |
+| `ingamemusic1.mp3`   | during a run (random pool)                 |
+| `ingamemusic2.mp3`   | during a run (random pool)                 |
+| `ingamemusic3.mp3`   | during a run (random pool)                 |
+
+The named beds loop themselves. The in-game pool does not loop: each new
+game opens on a random track, and when one ends another (different, still
+alive) track takes over.
 
 Until both exist the game runs exactly as before — a missing file is marked
 dead on its first failure and the bed stays silent.
