@@ -13,6 +13,8 @@ Newest first.
 
 **Decision.** Named looping beds per place (menu covers start/settings/2P/tutorial, museum and stats get their own) and a three-track in-game POOL: `loop=false`, each new game opens on a random track, and an `ended` listener hands off to a different still-alive track. `_musWanted` now holds a GROUP (`menu|museum|stats|game`) with `_musGameCur` as the pool cursor, so the same-bed bounce guard, mute/volume plumbing, gesture retry and background resume all resolve through `_musActiveKey()`. Dead-file semantics unchanged: a failed pool track just drops out of the rotation.
 
+**Same day, user call: music is locked to the current screen.** No lingering crossfade: on a screen change the old bed stops within ~90ms (a declick ramp, not a fade, measured fully silent at ~104ms) and the new bed ramps up in 160ms. The 500ms crossfade is gone.
+
 ### Start screen v2: the button ladder and the category strip
 
 **Decision.** The start screen is rebuilt around one hierarchy: Settings gear and Quit pill in the top corners, title block with the full description, a three-card fan (Indus Valley, Taj Mahal, ChatGPT, real cards, category art), a "Play a category" strip, then the button ladder: Start Game as a green hero with a "solo run, 3 lives" sublabel, 2 Player Mode in the same green, How to Play and Museum/Stats in the full gold. Green means "play", gold means "info", red exists only on Quit. No light shades; hierarchy is carried by the hero's size and sublabel alone (iterated through five shade mockups before landing here).

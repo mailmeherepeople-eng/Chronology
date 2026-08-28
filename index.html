@@ -9315,7 +9315,10 @@ const _MUS_GAME_POOL = ['game1','game2','game3'];
 // screen gets 'menu' unless listed here. 'gameover' is special-cased in
 // setMusicFor: the end-game special sound needs a beat of quiet to land in.
 const _MUS_BY_SCREEN = { game: 'game', collection: 'museum', stats: 'stats' };
-const _MUS_FADE_MS  = 500;  // crossfade on screen change
+// Music is locked to the current screen: the old bed stops at once (a ~90ms
+// ramp only to avoid a pop) and the new bed comes up right away.
+const _MUS_FADE_OUT_MS = 90;
+const _MUS_FADE_IN_MS  = 160;
 const _MUS_GO_QUIET = 1300; // ms of silence on gameover before calm returns
 
 const _musEls   = {}; // key -> HTMLAudioElement, built on first use
@@ -9461,7 +9464,7 @@ function _musStart(key){
   let p;
   try { p = el.play(); } catch(e){ return; }
   if(p && p.then){
-    p.then(() => _musFadeTo(key, _musPeak(), _MUS_FADE_MS))
+    p.then(() => _musFadeTo(key, _musPeak(), _MUS_FADE_IN_MS))
      .catch(err => {
        // NotAllowedError is the autoplay policy — retry on the first touch.
        // Anything else (missing or undecodable file) stays silent for good.
@@ -9469,14 +9472,14 @@ function _musStart(key){
        else _musDead[key] = true;
      });
   } else {
-    _musFadeTo(key, peak, _MUS_FADE_MS);
+    _musFadeTo(key, peak, _MUS_FADE_IN_MS);
   }
 }
 
 function _musFadeOutPause(key){
   const el = _musEls[key];
   if(!el || el.paused) return;
-  _musFadeTo(key, 0, _MUS_FADE_MS, () => { try { el.pause(); } catch(e){} });
+  _musFadeTo(key, 0, _MUS_FADE_OUT_MS, () => { try { el.pause(); } catch(e){} });
 }
 
 function _musStopAll(){
