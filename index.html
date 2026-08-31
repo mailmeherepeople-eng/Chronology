@@ -3921,6 +3921,13 @@
     font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px;
     color:var(--muted); text-transform:lowercase; }
   .st-foot span { color:var(--accent); }
+  /* Web-only Play Store badge: hidden by default, revealed when not in the shell */
+  .st-badge-wrap { text-align:center; margin:2px 0 34px; }
+  .play-badge { display:inline-flex; align-items:center; gap:8px; background:#000; color:#fff;
+    border-radius:8px; padding:7px 16px; text-decoration:none; border:1px solid #a6a6a6; }
+  .play-badge:active { transform:translateY(1px); }
+  .play-badge .pb-top { display:block; font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:.6px; }
+  .play-badge .pb-name { display:block; font-family:'Source Sans 3',sans-serif; font-size:16px; font-weight:700; line-height:1.1; }
 
   /* Category picker: the Vault (Rare Finds premium language), lit-exhibit selection.
      Inherently dark, so light and dark themes share one look (like #stats-rare). */
@@ -4004,6 +4011,12 @@
       <button class="btn-start" id="btn-collection" onclick="showScreen('collection');_collectionSort='unlocked';_selectedEras=new Set(ERAS.map(e=>e.label));_selectedCats=new Set(Object.keys(CAT));document.getElementById('era-chips').innerHTML='';document.getElementById('cat-chips').innerHTML='';initAudio();if(EVENTS.length>0){renderCollection();}else{document.getElementById('collection-count').textContent='Loading...';loadEvents().then(renderCollection);}">Museum<span class="col-notif-dot" id="col-notif-dot" style="display:none;margin-left:4px;">&#9679;</span></button>
       <button class="btn-start" id="btn-stats" onclick="openStats()">Stats</button>
     </div>
+  </div>
+  <div class="st-badge-wrap" id="play-badge-wrap" style="display:none;">
+    <a class="play-badge" href="https://play.google.com/store/apps/details?id=com.gitgud.chronology&referrer=utm_source%3Dweb-game" target="_blank" rel="noopener">
+      <svg width="20" height="22" viewBox="0 0 24 26" aria-hidden="true"><path d="M2 1 L16 13 L2 25 Z" fill="#00d3ff"/><path d="M16 13 L21 9.5 L23 13 L21 16.5 Z" fill="#ffce00"/><path d="M2 1 L16 13 L11 16.8 Z" fill="#f43" opacity=".85"/></svg>
+      <span><span class="pb-top">GET IT ON</span><span class="pb-name">Google Play</span></span>
+    </a>
   </div>
   <p class="st-foot">a <span>git gud</span> game</p>
 </div>
@@ -4875,6 +4888,8 @@ if (window.Sentry) {
 // ═══════════════════════════════════════════════════════════
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.gitgud.chronology';
 const IS_NATIVE_APP  = !!window.Capacitor;
+// Web visitors get a pointer to the Play listing; the shell never shows it.
+if(!IS_NATIVE_APP){ try { document.getElementById('play-badge-wrap').style.display = ''; } catch(e){} }
 
 // ═══════════════════════════════════════════════════════════
 //  SUPABASE CONFIG
