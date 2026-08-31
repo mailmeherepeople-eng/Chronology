@@ -1,0 +1,119 @@
+<!doctype html><html><head><meta charset="utf-8"><title>feature graphic</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:#333; }
+  /* 1024x500 design, rendered at 2x via transform for a crisp downscale */
+  #stage-wrap { width:2048px; height:1000px; overflow:hidden; }
+  #stage { width:1024px; height:500px; transform:scale(2); transform-origin:top left; position:relative;
+    background:#f7f5f0; overflow:hidden; font-family:'Source Sans 3',sans-serif; }
+
+  /* parchment depth: warm glow behind the brand, soft vignette at the edges */
+  #stage::before { content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(880px 460px at 26% 46%, rgba(255,252,244,0.9), rgba(247,245,240,0) 70%),
+      radial-gradient(1400px 900px at 50% 50%, rgba(0,0,0,0) 58%, rgba(122,78,0,0.09) 100%); }
+
+  /* ── brand block: vertically centered ── */
+  .brand { position:absolute; left:64px; top:170px; width:400px; }
+  .brand h1 { font-family:'Lora',serif; font-weight:700; font-size:66px; letter-spacing:-1.5px;
+    color:#7A4E00; line-height:1.05; }
+  .brand .tag { font-family:'Lora',serif; font-style:italic; font-weight:600; font-size:31px;
+    color:#1c1a16; margin-top:14px; }
+  .brand .sub { font-size:14px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
+    color:#6e6a5f; margin-top:16px; }
+
+  /* ── timeline, game-faithful: the line runs ABOVE the cards, each hangs from a tick ── */
+  .timeline-line { position:absolute; top:230px; left:470px; right:0; height:2px;
+    background:linear-gradient(90deg, rgba(228,224,216,0), #e4e0d8 12%, #e4e0d8 100%); }
+  .tl-tick { position:absolute; top:232px; width:2px; height:18px; background:#c8c2b8; }
+
+  /* ── cards (game-faithful anatomy) ── */
+  .card { position:absolute; width:170px; height:196px; background:#ffffff; border:1.5px solid #e4e0d8;
+    border-radius:10px; overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 6px 22px rgba(0,0,0,0.13); }
+  .img { width:100%; height:90px; overflow:hidden; position:relative; flex-shrink:0; }
+  .img img { width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+  .img::after { content:''; position:absolute; bottom:0; left:0; right:0; height:40px;
+    background:linear-gradient(to bottom, transparent, #ffffff); }
+  .stripe { position:absolute; top:0; left:0; right:0; height:3px; z-index:2; }
+  .body { padding:8px 10px 9px; flex:1; display:flex; flex-direction:column; }
+  .cat { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .label { font-family:'Lora',serif; font-size:13px; font-weight:600; color:#1c1a16; line-height:1.3; }
+  .sublabel { font-size:12px; color:#6e6a5f; font-style:italic; font-weight:700; margin-top:1px; }
+  .year { margin-top:auto; font-family:'Lora',serif; font-size:11px; font-weight:700; color:#1c1a16;
+    border-top:1px solid #e4e0d8; padding-top:4px; }
+  .year.mystery { color:#9A6200; letter-spacing:2px; }
+
+  /* placed cards hang from the line, game-straight */
+  .c-indus { left:490px; top:250px; filter:sepia(0.45) saturate(0.85); }
+  .c-gpt   { left:850px; top:250px; }
+
+  /* the drop slot between them: where the dragged card is headed */
+  .slot { position:absolute; left:674px; top:250px; width:162px; height:188px; border-radius:10px;
+    border:2px dashed rgba(154,98,0,0.55); background:rgba(154,98,0,0.05); }
+
+  /* the card being dragged: lifted, tilted, deep shadow, mystery year */
+  .c-drag { left:668px; top:52px; transform:rotate(-5deg) scale(1.04);
+    box-shadow:0 20px 46px rgba(0,0,0,0.26); z-index:5; }
+
+  /* drag direction: two chevrons fading toward the slot */
+  .chev { position:absolute; z-index:4; }
+</style></head><body>
+<div id="stage-wrap"><div id="stage">
+
+  <div class="brand">
+    <h1>Chronology</h1>
+    <div class="tag">What&rsquo;s the order?</div>
+    <div class="sub">398 cards &middot; no dates given</div>
+  </div>
+
+  <div class="timeline-line"></div>
+  <div class="tl-tick" style="left:574px"></div>
+  <div class="tl-tick" style="left:754px"></div>
+  <div class="tl-tick" style="left:934px"></div>
+
+  <div class="card c-indus">
+    <div class="stripe" style="background:#7a5c2e"></div>
+    <div class="img"><img src="../images/categories/ancient_india.webp"></div>
+    <div class="body">
+      <div class="cat" style="color:#7a5c2e">Ancient India</div>
+      <div class="label">Indus Valley Civilization</div>
+      <div class="sublabel">began</div>
+      <div class="year">3300 BCE</div>
+    </div>
+  </div>
+
+  <div class="slot"></div>
+
+  <div class="card c-gpt">
+    <div class="stripe" style="background:#2a5070"></div>
+    <div class="img"><img src="../images/categories/science_tech.webp"></div>
+    <div class="body">
+      <div class="cat" style="color:#2a5070">Science &amp; Tech</div>
+      <div class="label">ChatGPT</div>
+      <div class="sublabel">launched</div>
+      <div class="year">2022 CE</div>
+    </div>
+  </div>
+
+  <div class="card c-drag">
+    <div class="stripe" style="background:#5e4a7a"></div>
+    <div class="img"><img src="../images/categories/colonial_india.webp"></div>
+    <div class="body">
+      <div class="cat" style="color:#5e4a7a">Colonial India</div>
+      <div class="label">Indian Independence</div>
+      <div class="sublabel">achieved</div>
+      <div class="year mystery">? ? ?</div>
+    </div>
+  </div>
+
+  <svg class="chev" style="left:742px; top:276px" width="26" height="16" viewBox="0 0 26 16" fill="none">
+    <path d="M3 3 L13 13 L23 3" stroke="#9A6200" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <svg class="chev" style="left:745px; top:294px; opacity:0.45" width="20" height="13" viewBox="0 0 20 13" fill="none">
+    <path d="M2.5 2.5 L10 10 L17.5 2.5" stroke="#9A6200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+
+</div></div>
+</body></html>

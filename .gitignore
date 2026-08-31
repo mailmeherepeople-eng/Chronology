@@ -3,6 +3,13 @@ social science textbooks/
 .claude/settings.local.json
 _archive/
 
+# Local AI-tooling configs (machine-specific, not part of the app)
+.agents/
+.claude/skills/
+.codex/
+.impeccable/
+skills-lock.json
+
 # Capacitor / Android
 node_modules/
 www/
