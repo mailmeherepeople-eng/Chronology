@@ -3537,7 +3537,6 @@
   }
   .ranks-chosen-img { width: 52px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .ranks-chosen-img img { max-width: 100%; max-height: 100%; }
-  .ranks-chosen-img.hidden-rank img { filter: blur(3px); }
   .ranks-chosen-title { font-family: 'Lora', serif; font-size: 13.5px; font-weight: 700; color: var(--text); }
   .ranks-chosen-sub { font-size: 10.5px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
   .ranks-close-hint { text-align: center; font-size: 10.5px; color: var(--muted); margin-top: 10px; }
@@ -3997,7 +3996,7 @@
     </div>
   </div>
   <div class="st-actions">
-    <button class="btn-start btn-2p st-sm" id="btn-resume-online" style="display:none;" onclick="resumeOnline()">Resume Online Match</button>
+    <button class="btn-start st-sm" id="btn-resume-online" style="display:none;" onclick="resumeOnline()">Resume Online Match</button>
     <button class="btn-start btn-2p btn-hero" id="btn-start" onclick="startSolo()"><span id="btn-start-label">Start Game</span><small id="btn-start-sub">solo run &middot; 3 lives</small></button>
     <button class="btn-start btn-2p st-sm" id="btn-2p" onclick="initAudio();showScreen('twoplayer')">2 Player Mode</button>
     <button class="btn-start st-sm" id="btn-howto" onclick="showScreen('tutorial')">How to Play</button>
@@ -4846,7 +4845,7 @@ if (window.Sentry) {
   try {
     Sentry.init({
       dsn: 'https://b85719374447197ccf5a659b0234dca0@o4511858272436224.ingest.de.sentry.io/4511858282922064',
-      release: 'chronology@1.1.0',
+      release: 'chronology@1.2.0',
       environment: window.Capacitor ? 'android' : 'web',
       sendDefaultPii: false,
       // In-app browsers (Instagram, Facebook, TikTok, LinkedIn) inject their
@@ -5170,23 +5169,24 @@ function trackSeen(ev){ if(ev) markSeen(ev.id); }
 
 // ═══════════════════════════════════════════════════════════
 //  STATS PAGE — "Your Record"
-//  Ranks are pure thresholds on the live seen-count. The Chosen
-//  One (secret card found before completing the Museum) supersedes
-//  the ladder everywhere the rank is shown.
+//  Ladder thresholds count PLAYABLE (non-Meta) cards only. The Chosen
+//  One (holds the secret card) supersedes the ladder everywhere the
+//  rank is shown, regardless of any other progress.
 // ═══════════════════════════════════════════════════════════
 const RANKS = [
   { name: 'Megasthenes', at: 1,   img: 'images/ranks/rank-01-megasthenes.png' },
-  { name: 'Herodotus',   at: 50,  img: 'images/ranks/rank-02-herodotus.png' },
-  { name: 'Confucius',   at: 100, img: 'images/ranks/rank-03-confucius.png' },
-  { name: 'Socrates',    at: 150, img: 'images/ranks/rank-04-socrates.png' },
-  { name: 'Chanakya',    at: 200, img: 'images/ranks/rank-05-chanakya.png' },
-  { name: 'Aristotle',   at: 250, img: 'images/ranks/rank-06-aristotle.png' },
-  { name: 'Al-Biruni',   at: 300, img: 'images/ranks/rank-07-albiruni.png' },
-  { name: 'Ibn Khaldun', at: 350, img: 'images/ranks/rank-08-ibnkhaldun.png' },
-  { name: 'Abul Fazl',   at: 397, img: 'images/ranks/rank-09-abulfazl.png' },
-  { name: 'Vyasa',       at: 398, img: 'images/ranks/rank-10-vyasa.png' },
+  { name: 'Herodotus',   at: 25,  img: 'images/ranks/rank-02-herodotus.png' },
+  { name: 'Confucius',   at: 50,  img: 'images/ranks/rank-03-confucius.png' },
+  { name: 'Socrates',    at: 100, img: 'images/ranks/rank-04-socrates.png' },
+  { name: 'Chanakya',    at: 150, img: 'images/ranks/rank-05-chanakya.png' },
+  { name: 'Aristotle',   at: 200, img: 'images/ranks/rank-06-aristotle.png' },
+  { name: 'Al-Biruni',   at: 250, img: 'images/ranks/rank-07-albiruni.png' },
+  { name: 'Ibn Khaldun', at: 300, img: 'images/ranks/rank-08-ibnkhaldun.png' },
+  { name: 'Abul Fazl',   at: 350, img: 'images/ranks/rank-09-abulfazl.png' },
+  { name: 'Vyasa',       at: 397, img: 'images/ranks/rank-10-vyasa.png' },
 ];
 const CHOSEN_RANK_IMG = 'images/ranks/rank-11-chosen.png';
+const CHOSEN_RANK_IMG_BLURRED = 'images/ranks/rank-11-chosen-blurred.png';
 
 function _statsSeenLive(){
   const live = new Set(EVENTS.map(e => e.id));
@@ -5194,6 +5194,20 @@ function _statsSeenLive(){
   return { seen, count: Math.min([...seen].filter(id => live.has(id)).length, EVENTS.length) };
 }
 function _metaUnlocked(seen){ return EVENTS.some(e => e.cat === 'Meta' && seen.has(e.id)); }
+function _rankIdxFor(n){
+  let idx = -1;
+  RANKS.forEach((r, i) => { if(n >= r.at) idx = i; });
+  return idx;
+}
+function _rankInfo(){
+  const { seen, count } = _statsSeenLive();      // incl. meta — feeds "N of 398" and bars
+  const liveNonMeta = new Set(EVENTS.filter(e => e.cat !== 'Meta').map(e => e.id));
+  const ladderCount = [...seen].filter(id => liveNonMeta.has(id)).length;
+  const chosen = EVENTS.length > 0 && _metaUnlocked(seen);
+  const idx = _rankIdxFor(ladderCount);
+  return { seen, count, ladderCount, chosen, idx,
+           cur: idx >= 0 ? RANKS[idx] : null, next: RANKS[idx + 1] || null };
+}
 function _setStat(id, v){ const el = document.getElementById(id); if(el) el.textContent = v; }
 
 function openStats(){
@@ -5209,14 +5223,7 @@ function openStats(){
 function renderStats(){
   if(!EVENTS.length) return;
   const total = EVENTS.length;
-  const { seen, count } = _statsSeenLive();
-  const chosen = _metaUnlocked(seen) && count < total;
-
-  // ── Rank resolution ──
-  let idx = -1;
-  RANKS.forEach((r, i) => { if(count >= r.at) idx = i; });
-  const cur  = idx >= 0 ? RANKS[idx] : null;
-  const next = RANKS[idx + 1] || null;
+  const { seen, count, chosen, cur, next } = _rankInfo();
 
   const badge = document.getElementById('stats-badge-img');
   badge.src = chosen ? CHOSEN_RANK_IMG : (cur ? cur.img : RANKS[0].img);
@@ -5473,13 +5480,13 @@ function openRanksModal(){
     <div class="rank-cell${i === 9 ? ' wide' : ''}">
       <div class="rank-cell-img"><img src="${r.img}" alt="${r.name} rank badge" loading="lazy"></div>
       <div class="rank-cell-name">${r.name}</div>
-      <div class="rank-cell-thresh">${r.at === 1 ? '1st card' : r.at === 398 ? 'All 398' : r.at + ' cards'}</div>
+      <div class="rank-cell-thresh">${r.at === 1 ? '1st card' : r.at === 397 ? 'Every card' : r.at + ' cards'}</div>
     </div>`).join('');
 
   const { seen } = _statsSeenLive();
   const has = EVENTS.length > 0 && _metaUnlocked(seen);
   document.getElementById('ranks-chosen').innerHTML = `
-    <div class="ranks-chosen-img${has ? '' : ' hidden-rank'}"><img src="${CHOSEN_RANK_IMG}" alt="" loading="lazy"></div>
+    <div class="ranks-chosen-img${has ? '' : ' hidden-rank'}"><img src="${has ? CHOSEN_RANK_IMG : CHOSEN_RANK_IMG_BLURRED}" alt="" loading="lazy"></div>
     <div style="min-width:0;">
       <div class="ranks-chosen-title">${has ? 'The Chosen One' : '???'} <span style="font-weight:400;color:var(--muted);font-size:11px;">a secret title</span></div>
       <div class="ranks-chosen-sub">${has
@@ -5746,7 +5753,7 @@ const CAT = {
   "Personalities":     { text:"#6a4e20", bg:"#f4ece0", emoji:"👤", img:"images/categories/personalities.webp" },
   "Social Reform":     { text:"#3d6040", bg:"#e6f0e7", emoji:"✊", img:"images/categories/social_reform.webp" },
   "Constitutional":    { text:"#2c5a60", bg:"#e3eff0", emoji:"📜", img:"images/categories/constitutional.webp" },
-  "Meta":              { text:"#7A4B00", bg:"#F8ECD6", emoji:"✨", img:"" },
+  "Meta":              { text:"#7A4B00", bg:"#F8ECD6", emoji:"✨", img:"images/categories/chronology.webp" },
 };
 
 // Ultra-rare Meta cards: excluded from normal decks. 0.1% of games, and the
@@ -9316,10 +9323,12 @@ const _MUS_GAME_POOL = ['game1','game2','game3'];
 // setMusicFor: the end-game special sound needs a beat of quiet to land in.
 const _MUS_BY_SCREEN = { game: 'game', collection: 'museum', stats: 'stats' };
 // Music is locked to the current screen: the old bed stops at once (a ~90ms
-// ramp only to avoid a pop) and the new bed comes up right away.
+// ramp only to avoid a pop), then the new bed comes up after a short beat
+// of quiet so the switch never feels like a hard cut.
 const _MUS_FADE_OUT_MS = 90;
 const _MUS_FADE_IN_MS  = 160;
 const _MUS_GO_QUIET = 1300; // ms of silence on gameover before calm returns
+const _MUS_SWITCH_QUIET = 500; // ms of silence between beds on a screen change
 
 const _musEls   = {}; // key -> HTMLAudioElement, built on first use
 const _musFades = {}; // key -> interval id of an in-flight volume ramp
@@ -9464,7 +9473,12 @@ function _musStart(key){
   let p;
   try { p = el.play(); } catch(e){ return; }
   if(p && p.then){
-    p.then(() => _musFadeTo(key, _musPeak(), _MUS_FADE_IN_MS))
+    p.then(() => {
+       // A newer start may have swept this element while play() resolved;
+       // fading it back in would leave a stale bed at full volume.
+       if(_musActiveKey() !== key){ try { el.pause(); } catch(e){} return; }
+       _musFadeTo(key, _musPeak(), _MUS_FADE_IN_MS);
+     })
      .catch(err => {
        // NotAllowedError is the autoplay policy — retry on the first touch.
        // Anything else (missing or undecodable file) stays silent for good.
@@ -9509,7 +9523,14 @@ function setMusicFor(screenId){
   _musWanted = group;
   // Every new game opens on a fresh random track from the pool.
   if(group === 'game') _musGameCur = _musPickGame(null);
-  _musStartGroup(group);
+  // Nothing audible (boot, music off, already faded): start without a gap.
+  const audible = Object.values(_musEls).some(el => el && !el.paused);
+  if(!audible){ _musStartGroup(group); return; }
+  // Old bed out now (90ms declick), a beat of quiet, then the new bed. The
+  // shared timer handle is cleared on every call, so rapid multi-switching
+  // collapses to a single pending start for the final screen.
+  _musStopAll();
+  _musGoTimer = setTimeout(() => { if(_musWanted === group) _musStartGroup(group); }, _MUS_SWITCH_QUIET);
 }
 
 // Backgrounding: never keep playing over another app. Pause hard (no fade —
@@ -10003,16 +10024,11 @@ let _goPlateAnim = null;
 function _prepareGoRank(newThisRun){
   if(!EVENTS.length) return;
   const total = EVENTS.length;
-  const { seen, count } = _statsSeenLive();
+  const { count, ladderCount, chosen, idx: idxNow } = _rankInfo();
   const liveNew = newThisRun.filter(ev => EVENTS.some(e => e.id === ev.id)).length;
-  const prev = Math.max(0, count - liveNew);
-  const chosen = _metaUnlocked(seen) && count < total;
-
-  let idxNow = -1, idxPrev = -1;
-  RANKS.forEach((r, i) => {
-    if(count >= r.at) idxNow = i;
-    if(prev  >= r.at) idxPrev = i;
-  });
+  const liveNewLadder = newThisRun.filter(ev => ev.cat !== 'Meta' && EVENTS.some(e => e.id === ev.id)).length;
+  const prev = Math.max(0, count - liveNew);                              // bar basis: all 398
+  const idxPrev = _rankIdxFor(Math.max(0, ladderCount - liveNewLadder));  // ladder basis: non-meta
   const metaJustFound = chosen && newThisRun.some(ev => ev.cat === 'Meta');
   const rankedUp = idxNow > idxPrev || metaJustFound;
 
