@@ -3922,7 +3922,13 @@
     color:var(--muted); text-transform:lowercase; }
   .st-foot span { color:var(--accent); }
   /* Web-only Play Store badge: hidden by default, revealed when not in the shell */
-  .st-badge-wrap { text-align:center; margin:2px 0 34px; }
+  /* Sits at the bottom of the screen, just above the footer: margin-top:auto
+     on it and on the eyebrow splits any spare height between the two, so the
+     main block stays centred and the badge drops away from the buttons. On
+     short screens (no spare height) it follows the buttons with a 22px gap.
+     Native shell: display:none, so the auto margin is inert there. */
+  .st-badge-wrap { text-align:center; margin:auto 0 0; padding-top:22px; }
+  #screen-start .start-eyebrow { margin-top:auto; }
   .play-badge { display:inline-flex; align-items:center; gap:8px; background:#000; color:#fff;
     border-radius:8px; padding:7px 16px; text-decoration:none; border:1px solid #a6a6a6; }
   .play-badge:active { transform:translateY(1px); }
